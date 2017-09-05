@@ -28,16 +28,17 @@ import Foundation
     }
 
     static func bpmToMsec(_ bpm: Double) -> Double {
-        return 60000 / bpm
+        return 60_000 / bpm
     }
 
     static func msecToBpm(_ msec: Double) -> Double {
-        return 60000 / msec
+        return 60_000 / msec
     }
     
     // QTc formulae
     
     // Bazett (QTcBZT)
+    // base formula
     static func qtcBzt(qtInSec: Double, rrInSec: Double) -> Double {
         return qtInSec / sqrt(rrInSec)
     }
@@ -53,5 +54,60 @@ import Foundation
     static func qtcBzt(qtInMsec: Double, rate: Double) -> Double {
         return qtcBzt(qtInMsec: qtInMsec, rrInMsec: bpmToMsec(rate))
     }
+    
+    // Fridericia (QTcFRD)
+    // base formula
+    static func qtcFrd(qtInSec: Double, rrInSec: Double) -> Double {
+        return qtInSec / pow(rrInSec, 1 / 3.0)
+    }
+    
+    static func qtcFrd(qtInMsec: Double, rrInMsec: Double) -> Double {
+        return secToMsec(qtcFrd(qtInSec: msecToSec(qtInMsec), rrInSec: msecToSec(rrInMsec)))
+    }
+    
+    static func qtcFrd(qtInSec: Double, rate: Double) -> Double {
+        return qtcFrd(qtInSec: qtInSec, rrInSec: bpmToSec(rate))
+    }
+    
+    static func qtcFrd(qtInMsec: Double, rate: Double) -> Double {
+        return qtcFrd(qtInMsec: qtInMsec, rrInMsec: bpmToMsec(rate))
+    }
+    
+    // Framingham (a.k.a. Sagie) (QTcFRM)
+    // base formula
+    static func qtcFrm(qtInSec: Double, rrInSec: Double) -> Double {
+        return qtInSec + 0.154 * (1.0 - rrInSec)
+    }
+    
+    static func qtcFrm(qtInMsec: Double, rrInMsec: Double) -> Double {
+        return secToMsec(qtcFrm(qtInSec: msecToSec(qtInMsec), rrInSec: msecToSec(rrInMsec)))
+    }
+    
+    static func qtcFrm(qtInSec: Double, rate: Double) -> Double {
+        return qtcFrm(qtInSec: qtInSec, rrInSec: bpmToSec(rate))
+    }
+    
+    static func qtcFrm(qtInMsec: Double, rate: Double) -> Double {
+        return qtcFrm(qtInMsec: qtInMsec, rrInMsec: bpmToMsec(rate))
+    }
+    
+    // Hodges (QTcHDG)
+    static func qtcHdg(qtInSec: Double, rrInSec: Double) -> Double {
+        return qtcHdg(qtInSec: qtInSec, rate: secToBpm(rrInSec))
+    }
+    
+    static func qtcHdg(qtInMsec: Double, rrInMsec: Double) -> Double {
+        return secToMsec(qtcHdg(qtInSec: msecToSec(qtInMsec), rate: msecToBpm(rrInMsec)))
+    }
+    
+    //base formula
+    static func qtcHdg(qtInSec: Double, rate: Double) -> Double {
+        return qtInSec + 0.00175 * (rate - 60)
+    }
+    
+    static func qtcHdg(qtInMsec: Double, rate: Double) -> Double {
+        return secToMsec(qtcHdg(qtInSec: msecToSec(qtInMsec), rate: rate))
+    }
+
 }
 
