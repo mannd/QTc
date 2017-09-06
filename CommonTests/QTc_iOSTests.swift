@@ -21,7 +21,7 @@ class QTc_iOSTests: XCTestCase {
     // uses online QTc calculator: http://www.medcalc.com/qtc.html, random values
     let qtcBztTable: [(qt: Double, interval: Double, qtc: Double)] = [(318, 1345, 274), (451, 878, 481), (333, 451, 496)]
     // table of calculated QTc from
-    let qtcMultipleTable: [(rate: Double, rrInSec: Double, rrInMsec: Double, qtInMsec: Double, qtcBzt: Double, qtcFrd: Double, qtcFrm: Double, qtcHDG: Double)] = [(88, 0.682, 681.8, 278, 336.7, 315.9, 327.0, 327.0)]
+    let qtcMultipleTable: [(rate: Double, rrInSec: Double, rrInMsec: Double, qtInMsec: Double, qtcBzt: Double, qtcFrd: Double, qtcFrm: Double, qtcHDG: Double)] = [(88, 0.682, 681.8, 278, 336.7, 315.9, 327.0, 327.0), (112, 0.536, 535.7, 334, 456.3, 411.2, 405.5, 425.0), (47, 1.2766, 1276.6, 402, 355.8, 370.6, 359.4, 379.3)]
  
  override func setUp() {
  super.setUp()
@@ -123,6 +123,9 @@ class QTc_iOSTests: XCTestCase {
             XCTAssertEqualWithAccuracy(QTc.qtcHdg(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcHdg), accuracy: roughDelta)
 
         }
+        
+        // QTcRHTa
+        XCTAssertEqualWithAccuracy(QTc.qtcRtha(qtInSec: 0.444, rate: 58.123), 0.43937, accuracy: delta)
         
         // handle zero RR
         XCTAssertEqual(QTc.qtcBzt(qtInSec: 300, rrInSec: 0), Double.infinity)

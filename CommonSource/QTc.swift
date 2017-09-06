@@ -9,7 +9,7 @@
 import Foundation
 
 /// TODO: is @objc tag needed if inheritance from NSObject?
-@objc public class QTc : NSObject {
+@objc public class QTc: NSObject {
     // static conversion functions
     static func secToMsec(_ sec: Double) -> Double {
         return sec * 1000
@@ -44,11 +44,11 @@ import Foundation
     }
     
     static func qtcBzt(qtInMsec: Double, rrInMsec: Double) -> Double {
-        return secToMsec(qtcBzt(qtInSec:msecToSec(qtInMsec), rrInSec:msecToSec(rrInMsec)))
+        return secToMsec(qtcBzt(qtInSec: msecToSec(qtInMsec), rrInSec: msecToSec(rrInMsec)))
     }
     
     static func qtcBzt(qtInSec: Double, rate: Double) -> Double {
-        return qtcBzt(qtInSec:qtInSec, rrInSec: bpmToSec(rate))
+        return qtcBzt(qtInSec: qtInSec, rrInSec: bpmToSec(rate))
     }
     
     static func qtcBzt(qtInMsec: Double, rate: Double) -> Double {
@@ -108,6 +108,23 @@ import Foundation
     static func qtcHdg(qtInMsec: Double, rate: Double) -> Double {
         return secToMsec(qtcHdg(qtInSec: msecToSec(qtInMsec), rate: rate))
     }
+
+    // Rautaharju (2014) (QTcRTHa)
+    static func qtcRtha(qtInSec: Double, rrInSec: Double) -> Double {
+        return qtcRtha(qtInSec: qtInSec, rate: secToBpm(rrInSec))
+   }
+
+   static func qtcRtha(qtInMsec: Double, rrInMsec: Double) -> Double  {
+       return secToMsec(qtcRtha(qtInSec: msecToSec(qtInMsec), rate: msecToBpm(rrInMsec)))
+   }
+    
+   static func qtcRtha(qtInSec: Double, rate: Double) -> Double {
+       return qtInSec * (120.0 + rate) / 180.0 
+   }
+   
+   static func qtcRtha(qtInMsec: Double, rate: Double) -> Double {
+       return secToMsec(qtcRtha(qtInSec: msecToSec(qtInMsec), rate: rate))
+   }
 
 }
 
