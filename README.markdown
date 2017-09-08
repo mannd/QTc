@@ -1,13 +1,14 @@
 ## Description
-*NOTE: Under development.  Not ready for production yet.  I will remove this line when this situation changes.*
-
-This QTc framework is intended for universal use with both iOS and MacOs devices.  The framework will include formulas for QTc calculation, both common and obscure.
+This QTc framework is intended for universal use with both iOS and MacOs devices.  The framework includes formulas for QTc calculation, both common and obscure.
 
 This QTc framework is open source, and licensed under the 
 [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).  When used with Apple devices via the iTunes App Store, it is subject to the [standard Apple iOS license agreement](http://images.apple.com/legal/sla/docs/AppleStoreApp.pdf).
 
 ## Installation
-TBD.
+Download or git clone the project and then drag the QTc.xcodeproj into your project in Xcode.
+![figure 1](images/capture1.gif)
+
+In the General tab of the target of your project click the Plus (+) under Linked Frameworks and Libraries and then select the QTc.framework from the dialog box.  Switch the target for your build to the appropriate Framework (QTc\_iOS or QTc\_Mac) 
 
 ## Copyright
 Copyright © 2017 [EP Studios, Inc.](http://www.epstudiossoftware.com)

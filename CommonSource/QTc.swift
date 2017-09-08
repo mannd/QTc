@@ -39,7 +39,7 @@ import Foundation
     
     // Bazett (QTcBZT)
     // base formula
-    static func qtcBzt(qtInSec: Double, rrInSec: Double) -> Double {
+    public static func qtcBzt(qtInSec: Double, rrInSec: Double) -> Double {
         return qtInSec / sqrt(rrInSec)
     }
     
