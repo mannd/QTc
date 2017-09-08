@@ -5,10 +5,32 @@ This QTc framework is open source, and licensed under the
 [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).  When used with Apple devices via the iTunes App Store, it is subject to the [standard Apple iOS license agreement](http://images.apple.com/legal/sla/docs/AppleStoreApp.pdf).
 
 ## Installation
-Download or git clone the project and then drag the QTc.xcodeproj into your project in Xcode.
+Download or clone the project and then drag the QTc.xcodeproj into your project in Xcode.
 ![figure 1](images/capture1.gif)
 
-In the General tab of the target of your project click the Plus (+) under Linked Frameworks and Libraries and then select the QTc.framework from the dialog box.  Switch the target for your build to the appropriate Framework (QTc\_iOS or QTc\_Mac) 
+In the General tab of the target of your project click the Plus (+) under Linked Frameworks and Libraries and then select the QTc.framework from the dialog box.
+![figure 2](images/capture2.gif)
+
+Switch the target for your build to the appropriate Framework (QTc\_iOS or QTc\_Mac) and build the framework.  Afterwards switch the target back to your project.
+![figure 3](images/capture3.gif)
+
+Add this import statement to any Swift file using the framework:
+
+    import QTc
+
+To use with an Objective C file add:
+
+    #import <QTc/QTc-Swift.h>
+
+
+## Using the framework
+QTc functions are labeled based on the proposed standard nomenclatue of [Rabkin](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16).  Thus, for example, Bazett’s QTc formulat is QTcBZT and the Framingham formula is QTcFRM.  All QTc formulas are static functions and are called like:
+
+    let qtc = QTc.qtcBzt(qtInSec: 420, rate: 56) // Swift
+
+    double qtc = [QTc qtcBztWithQtInSec: 420, rate: 56]; // Objective C
+
+Each function has 4 different signatures, using QT in sec or msec, RR in sec or msec or heart rate in beats per minute.  Functions using msec parameters return QTc in msec, while those using second parameters return QTc in seconds.  All parameters are Double in Swift, double in Objective C.
 
 ## Copyright
 Copyright © 2017 [EP Studios, Inc.](http://www.epstudiossoftware.com)
