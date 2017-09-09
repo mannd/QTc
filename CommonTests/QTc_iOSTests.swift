@@ -21,7 +21,7 @@ class QTc_iOSTests: XCTestCase {
     // uses online QTc calculator: http://www.medcalc.com/qtc.html, random values
     let qtcBztTable: [(qt: Double, interval: Double, qtc: Double)] = [(318, 1345, 274), (451, 878, 481), (333, 451, 496)]
     // table of calculated QTc from
-    let qtcMultipleTable: [(rate: Double, rrInSec: Double, rrInMsec: Double, qtInMsec: Double, qtcBzt: Double, qtcFrd: Double, qtcFrm: Double, qtcHDG: Double)] = [(88, 0.682, 681.8, 278, 336.7, 315.9, 327.0, 327.0), (112, 0.536, 535.7, 334, 456.3, 411.2, 405.5, 425.0), (47, 1.2766, 1276.6, 402, 355.8, 370.6, 359.4, 379.3)]
+    let qtcMultipleTable: [(rate: Double, rrInSec: Double, rrInMsec: Double, qtInMsec: Double, qtcBzt: Double, qtcFrd: Double, qtcFrm: Double, qtcHDG: Double)] = [(88, 0.682, 681.8, 278, 336.7, 315.9, 327.0, 327.0), (112, 0.536, 535.7, 334, 456.3, 411.2, 405.5, 425.0), (47, 1.2766, 1276.6, 402, 355.8, 370.6, 359.4, 379.3), (132, 0.4545, 454.5, 219, 324.8, 284.8, 303, 345)]
  
  override func setUp() {
  super.setUp()
@@ -87,6 +87,7 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqualWithAccuracy(QTc.qtcBzt(qtInMsec: 369, rrInMsec: 600), 476.4, accuracy: roughDelta)
         XCTAssertEqualWithAccuracy(QTc.qtcBzt(qtInSec: 2.78, rate: 88), 3.3667, accuracy: roughDelta)
         XCTAssertEqualWithAccuracy(QTc.qtcBzt(qtInSec: 2.78, rrInSec: QTc.bpmToSec(88)), 3.3667, accuracy: roughDelta)
+        XCTAssertEqual(QTc.qtcBzt(qtInSec: 5.0, rrInSec: 0), Double.infinity)
 
 
         // QTcFRD (Fridericia)
@@ -94,6 +95,7 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqualWithAccuracy(QTc.qtcFrd(qtInMsec: 369, rrInMsec: 600), 437.5, accuracy: roughDelta)
         XCTAssertEqualWithAccuracy(QTc.qtcFrd(qtInSec: 2.78, rate: 88), 3.1586, accuracy: roughDelta)
         XCTAssertEqualWithAccuracy(QTc.qtcFrd(qtInSec: 2.78, rrInSec: QTc.bpmToSec(88)), 3.1586, accuracy: roughDelta)
+        XCTAssertEqual(QTc.qtcBzt(qtInSec: 5.0, rrInSec: 0), Double.infinity)
         
         // run through multiple QTcs
         for (rate, rrInSec, rrInMsec, qtInMsec, qtcBzt, qtcFrd, qtcFrm, qtcHdg) in qtcMultipleTable {
@@ -113,7 +115,7 @@ class QTc_iOSTests: XCTestCase {
             // QTcFRM
             XCTAssertEqualWithAccuracy(QTc.qtcFrm(qtInMsec: qtInMsec, rate: rate), qtcFrm, accuracy: roughDelta)
             XCTAssertEqualWithAccuracy(QTc.qtcFrm(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcFrm), accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(QTc.qtcFrm(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcFrm   , accuracy: roughDelta)
+            XCTAssertEqualWithAccuracy(QTc.qtcFrm(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcFrm, accuracy: roughDelta)
             XCTAssertEqualWithAccuracy(QTc.qtcFrm(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcFrm), accuracy: roughDelta)
             
             // QTcHDG
@@ -132,6 +134,21 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(QTc.qtcFrd(qtInSec: 300, rrInSec: 0), Double.infinity)
 
         
+    }
+    
+    func testEnumeratedFunctions() {
+        XCTAssertEqualWithAccuracy(QTc.qtc(formula: .qtcRtha, qtInSec: 0.444, rrInSec: 1.03229319942), 0.43937, accuracy: roughDelta)
+    }
+    
+    func testQTcCalculatorFactory() {
+        let factory = QTcCalculatorFactory()
+        var qtcCalculator = factory.getCalculator(formula: .qtcBzt)
+        XCTAssertEqualWithAccuracy(qtcCalculator.calculate(qtInMsec: 413, rate: 60), 413, accuracy: delta)
+        XCTAssert(qtcCalculator.shortName == "QTcBZT")
+        XCTAssert(qtcCalculator.longName == "Bazett")
+        XCTAssert(qtcCalculator.formula == .qtcBzt)
+        qtcCalculator = factory.getCalculator(formula: .qtcFrd)
+        XCTAssert(qtcCalculator.shortName == "QTcFRD")
     }
     
 }

@@ -24,6 +24,7 @@ To use with an Objective C file add:
 
 
 ## Using the framework
+### Static functions
 QTc functions are labeled based on the proposed standard nomenclatue of [Rabkin](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16).  Thus, for example, Bazett’s QTc formulat is QTcBZT and the Framingham formula is QTcFRM.  All QTc formulas are static functions and are called like:
 
     let qtc = QTc.qtcBzt(qtInSec: 420, rate: 56) // Swift
@@ -31,6 +32,17 @@ QTc functions are labeled based on the proposed standard nomenclatue of [Rabkin]
     double qtc = [QTc qtcBztWithQtInSec: 420, rate: 56]; // Objective C
 
 Each function has 4 different signatures, using QT in sec or msec, RR in sec or msec or heart rate in beats per minute.  Functions using msec parameters return QTc in msec, while those using second parameters return QTc in seconds.  All parameters are Double in Swift, double in Objective C.
+
+### QTcCalculator factory
+You can get an instance of a QTcCalculator using QTcCalculatorFactory.  For example:
+
+    let qtcCalculator = QTcCalculatorFactory(formula .qtcBzt)
+
+Then use the qtcCalculator instance to do calculations and get information about the calculator:
+
+    let qtc = qtcCalculator.calculate(qtInMsec: 345, rate: 74) // qtc = 383
+    let qtcCalculatorLongName = qtcCalculator.longName // longName = "Bazett"
+    let qtcCalculatorShorName = qtcCalculator.shortName // shortName = "QTcBZT"
 
 ## Copyright
 Copyright © 2017 [EP Studios, Inc.](http://www.epstudiossoftware.com)
@@ -40,7 +52,7 @@ TBD.
 The universal framework template was created based on this helpful [Medium post](https://medium.com/@ataibarkai/create-a-universal-swift-framework-for-ios-os-x-watchos-and-tvos-2aa26a8190dc) by Atai Barkai.
 
 ## Author
-David Mann
+David Mann, MD
 
 Email: [mannd@epstudiossoftware.com](mailto:mannd@epstudiossoftware.com)  
 Website: [https://www.epstudiossoftware.com](https://www.epstudiossoftware.com)   
