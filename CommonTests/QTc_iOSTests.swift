@@ -121,7 +121,7 @@ class QTc_iOSTests: XCTestCase {
             // QTcHDG
             XCTAssertEqualWithAccuracy(QTc.qtcHdg(qtInMsec: qtInMsec, rate: rate), qtcHdg, accuracy: roughDelta)
             XCTAssertEqualWithAccuracy(QTc.qtcHdg(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcHdg), accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(QTc.qtcHdg(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcHdg   , accuracy: roughDelta)
+            XCTAssertEqualWithAccuracy(QTc.qtcHdg(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcHdg, accuracy: roughDelta)
             XCTAssertEqualWithAccuracy(QTc.qtcHdg(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcHdg), accuracy: roughDelta)
 
         }
@@ -133,6 +133,8 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(QTc.qtcBzt(qtInSec: 300, rrInSec: 0), Double.infinity)
         XCTAssertEqual(QTc.qtcFrd(qtInSec: 300, rrInSec: 0), Double.infinity)
 
+        // QTcMyd
+        XCTAssertEqualWithAccuracy(QTc.qtcMyd(qtInSec: 0.399, rrInSec: 0.788), 0.46075606, accuracy: delta)
         
     }
     
