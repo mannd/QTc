@@ -20,8 +20,12 @@ class QTc_iOSTests: XCTestCase {
     let rateIntervalTable: [(rate: Double, interval: Double)] = [(20, 3000),  (25, 2400), (30, 2000), (35, 1714), (40, 1500), (45, 1333), (50, 1200), (55, 1091), (60, 1000), (65, 923), (70, 857), (75, 800), (80, 750), (85, 706), (90, 667), (95, 632), (100, 600), (105, 571), (110, 545), (115, 522), (120, 500), (125, 480), (130, 462), (135, 444), (140, 429), (145, 414), (150, 400), (155, 387), (160, 375), (165, 364), (170, 353), (175, 343), (180, 333), (185, 324), (190, 316), (195, 308), (200, 300), (205, 293), (210, 286), (215, 279), (220, 273), (225, 267), (230, 261), (235, 255), (240, 250), (245, 245), (250, 240), (255, 235), (260, 231), (265, 226), (270, 222), (275, 218), (280, 214), (285, 211), (290, 207), (295, 203), (300, 200), (305, 197), (310, 194), (315, 190), (320, 188), (325, 185), (330, 182), (335, 179), (340, 176), (345, 174), (350, 171), (355, 169), (360, 167), (365, 164), (370, 162), (375, 160), (380, 158), (385, 156), (390, 154), (395, 152), (400, 150)]
     // uses online QTc calculator: http://www.medcalc.com/qtc.html, random values
     let qtcBztTable: [(qt: Double, interval: Double, qtc: Double)] = [(318, 1345, 274), (451, 878, 481), (333, 451, 496)]
+    // TODO: Add other hand calculated tables for each formula
     // table of calculated QTc from
     let qtcMultipleTable: [(rate: Double, rrInSec: Double, rrInMsec: Double, qtInMsec: Double, qtcBzt: Double, qtcFrd: Double, qtcFrm: Double, qtcHDG: Double)] = [(88, 0.682, 681.8, 278, 336.7, 315.9, 327.0, 327.0), (112, 0.536, 535.7, 334, 456.3, 411.2, 405.5, 425.0), (47, 1.2766, 1276.6, 402, 355.8, 370.6, 359.4, 379.3), (132, 0.4545, 454.5, 219, 324.8, 284.8, 303, 345)]
+    // TODO: Add new formulae here
+    // Convenience array of QTc formulae
+    let formulas: [Formula] = [.qtcBzt, .qtcFrd, .qtcHdg, .qtcFrm, .qtcMyd, .qtcRtha]
  
  override func setUp() {
  super.setUp()
@@ -132,14 +136,32 @@ class QTc_iOSTests: XCTestCase {
         // handle zero RR
         XCTAssertEqual(QTc.qtcBzt(qtInSec: 300, rrInSec: 0), Double.infinity)
         XCTAssertEqual(QTc.qtcFrd(qtInSec: 300, rrInSec: 0), Double.infinity)
+        // handle zero QT and RR
+        XCTAssert(QTc.qtcFrd(qtInMsec: 0, rrInMsec: 0).isNaN)
+        // handle negative RR
+        XCTAssert(QTc.qtcBzt(qtInMsec: 300, rrInMsec: -100).isNaN)
 
         // QTcMyd
         XCTAssertEqualWithAccuracy(QTc.qtcMyd(qtInSec: 0.399, rrInSec: 0.788), 0.46075606, accuracy: delta)
         
     }
+
+    // Most QTc functions will have QTc == QT at HR 60 (RR 1000 msec)
+    func testEquipose() {
+        let sampleQTs = [0.345, 1.0, 0.555, 0.114, 0, 0.888]
+        for formula in formulas {
+            for qt in sampleQTs {
+                XCTAssertEqual(QTc.qtc(formula: formula, qtInSec: qt, rrInSec: 1.0), qt)
+            }
+        }
+    }
     
     func testEnumeratedFunctions() {
         XCTAssertEqualWithAccuracy(QTc.qtc(formula: .qtcRtha, qtInSec: 0.444, rrInSec: 1.03229319942), 0.43937, accuracy: roughDelta)
+        XCTAssertEqualWithAccuracy(QTc.qtc(formula: .qtcBzt, qtInMsec: 369, rrInMsec: 600), 476.4, accuracy: roughDelta)
+        XCTAssertEqualWithAccuracy(QTc.qtc(formula: .qtcHdg, qtInMsec: 278, rate: 88), 327, accuracy: roughDelta)
+        XCTAssertEqualWithAccuracy(QTc.qtc(formula: .qtcFrm, qtInSec: 0.278, rate: 88), 0.327, accuracy: roughDelta)
+
     }
     
     func testQTcCalculatorFactory() {

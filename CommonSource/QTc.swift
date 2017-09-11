@@ -150,7 +150,7 @@ public class qtcMyd: NSObject, QTcCalculator {
     public let longName = "Mayeda"
     public let shortName = "QTcMYD"
     public let formula = Formula.qtcMyd
-    public let reference = "Mayeda I. On time relation between systolic duration of heart and pulse rate. Acta Sch Med Univ Imp. 1934;17:53-55"
+    public let reference = "Mayeda I. On time relation between systolic duration of heart and pulse rate. Acta Sch Med Univ Imp. 1934;17:53-55."
     
     public func calculate(qtInSec: Double, rate: Double) -> Double {
         return QTc.qtcMyd(qtInSec: qtInSec, rate: rate)
@@ -367,9 +367,15 @@ public class QTcCalculatorFactory: NSObject {
     public static func qtcRtha(qtInMsec: Double, rate: Double) -> Double {
         return qtcConvert(qtcRtha(qtInSec:rrInSec:), qtInMsec: qtInMsec, rate: rate)
     }
+
+    // QTp functions.  These functions calculate what the QT "should be" at a given rate
+    // or interval.
+    public static func qtpArr(rrInSec: Double) -> Double {
+        return 0.12 + 0.492 * exp(-0.008 * secToBpm(rrInSec))
+    }
+    // etc.
    
-    // TODO: probably eliminate this, since having a QTcCalculatorFactory is better.
-    // Enumerated funcs
+    // MARK: Enumerated static funcs
     // Using the Formula enum, select a formula or iterate through them all
     public static func qtc(formula: Formula, qtInSec: Double, rrInSec: Double) -> Double {
         switch formula {
@@ -388,6 +394,59 @@ public class QTcCalculatorFactory: NSObject {
         }
     }
     
-    
+    public static func qtc(formula: Formula, qtInMsec: Double, rrInMsec: Double) -> Double {
+        switch formula {
+        case .qtcBzt:
+            return qtcBzt(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+        case .qtcFrd:
+            return qtcFrd(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+        case .qtcFrm:
+            return qtcFrm(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+        case .qtcHdg:
+            return qtcHdg(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+        case .qtcRtha:
+            return qtcRtha(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+        case .qtcMyd:
+            return qtcMyd(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+        }
+    }
+
+    public static func qtc(formula: Formula, qtInSec: Double, rate: Double) -> Double {
+        switch formula {
+        case .qtcBzt:
+            return qtcBzt(qtInSec: qtInSec, rate: rate)
+        case .qtcFrd:
+            return qtcFrd(qtInSec: qtInSec, rate: rate)
+        case .qtcFrm:
+            return qtcFrm(qtInSec: qtInSec, rate: rate)
+        case .qtcHdg:
+            return qtcHdg(qtInSec: qtInSec, rate: rate)
+        case .qtcRtha:
+            return qtcRtha(qtInSec: qtInSec, rate: rate)
+        case .qtcMyd:
+            return qtcMyd(qtInSec: qtInSec, rate: rate)
+        }
+    }
+
+    public static func qtc(formula: Formula, qtInMsec: Double, rate: Double) -> Double {
+        switch formula {
+        case .qtcBzt:
+            return qtcBzt(qtInMsec: qtInMsec, rate: rate)
+        case .qtcFrd:
+            return qtcFrd(qtInMsec: qtInMsec, rate: rate)
+        case .qtcFrm:
+            return qtcFrm(qtInMsec: qtInMsec, rate: rate)
+        case .qtcHdg:
+            return qtcHdg(qtInMsec: qtInMsec, rate: rate)
+        case .qtcRtha:
+            return qtcRtha(qtInMsec: qtInMsec, rate: rate)
+        case .qtcMyd:
+            return qtcMyd(qtInMsec: qtInMsec, rate: rate)
+        }
+    }
+
+
+        
+  
 }
 
