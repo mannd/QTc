@@ -16,6 +16,7 @@ public enum Formula {
     case qtcHdg
     case qtcRtha
     case qtcMyd
+    case qtcArr
 }
 
 public protocol QTcCalculator {
@@ -30,6 +31,8 @@ public protocol QTcCalculator {
     func calculate(qtInMsec: Double, rate: Double) -> Double
     func calculate(qtInSec: Double, rate: Double) -> Double
 }
+
+// MARK: QTc classes
 
 public class qtcBzt: NSObject, QTcCalculator {
     public let longName = "Bazett"
@@ -169,6 +172,29 @@ public class qtcMyd: NSObject, QTcCalculator {
     }
 }
 
+public class qtcArr: NSObject, QTcCalculator {
+    public let longName = "Arrowood"
+    public let shortName = "QTcArr"
+    public let formula = Formula.qtcArr
+    public let reference = "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohanty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223"
+    
+    public func calculate(qtInSec: Double, rate: Double) -> Double {
+        return QTc.qtcArr(qtInSec: qtInSec, rate: rate)
+    }
+    
+    public func calculate(qtInMsec: Double, rate: Double) -> Double {
+        return QTc.qtcArr(qtInMsec: qtInMsec, rate: rate)
+    }
+    
+    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
+        return QTc.qtcArr(qtInSec: qtInSec, rrInSec: rrInSec)
+    }
+    
+    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
+        return QTc.qtcArr(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+    }
+}
+
 // TODO: other qtc classes here
 
 // Factory class
@@ -187,9 +213,13 @@ public class QTcCalculatorFactory: NSObject {
             return qtcRtha()
         case .qtcMyd:
             return qtcMyd()
+        case .qtcArr:
+            return qtcArr()
         }
     }
 }
+
+// MARK: QTc class
 
 /// TODO: is @objc tag needed if inheritance from NSObject?
 @objc public class QTc: NSObject {
@@ -221,8 +251,15 @@ public class QTcCalculatorFactory: NSObject {
     }
     
     // Power QTc formula function
+    // These have form QTc = QT / pow(RR, exp)
     private static func qtcExp(qtInSec: Double, rrInSec: Double, exp: Double) -> Double {
         return qtInSec / pow(rrInSec, exp)
+    }
+    
+    // Linear QTc formula function
+    // These have form QTc = QT + α(1 - RR)
+    private static func qtcLinear(qtInSec: Double, rrInSec: Double, alpha: Double) -> Double {
+        return qtInSec + alpha * (1 - rrInSec)
     }
     
     // Convert from one set of units to another
@@ -240,6 +277,16 @@ public class QTcCalculatorFactory: NSObject {
     private static func qtcConvert(_ qtcFunction: (Double, Double) -> Double,
                                               qtInMsec: Double, rate: Double) -> Double {
         return secToMsec(qtcFunction(msecToSec(qtInMsec), bpmToSec(rate)))
+    }
+    
+    // QTp conversion
+    private static func qtpConvert(_ qtpFunction: (Double) -> Double, rrInMsec: Double) -> Double {
+        return secToMsec(qtpFunction(msecToSec(rrInMsec)))
+    }
+    
+    // returns QTp in seconds!
+    private static func qtpConvert(_ qtpFunction: (Double) -> Double, rate: Double) -> Double {
+        return qtpFunction(bpmToSec(rate))
     }
 
     // QTc formulae
@@ -313,7 +360,7 @@ public class QTcCalculatorFactory: NSObject {
     // Framingham (a.k.a. Sagie) (QTcFRM)
     // Base formula
     public static func qtcFrm(qtInSec: Double, rrInSec: Double) -> Double {
-        return qtInSec + 0.154 * (1.0 - rrInSec)
+        return qtcLinear(qtInSec: qtInSec, rrInSec: rrInSec, alpha: 0.154)
     }
     
     public static func qtcFrm(qtInMsec: Double, rrInMsec: Double) -> Double {
@@ -367,14 +414,44 @@ public class QTcCalculatorFactory: NSObject {
     public static func qtcRtha(qtInMsec: Double, rate: Double) -> Double {
         return qtcConvert(qtcRtha(qtInSec:rrInSec:), qtInMsec: qtInMsec, rate: rate)
     }
+    
+    // Arrowood
+    public static func qtcArr(qtInSec: Double, rrInSec: Double) -> Double {
+        return qtInSec + 0.304 - 0.492 * exp(-0.008 * secToBpm(rrInSec))
+    }
+    
+    public static func qtcArr(qtInMsec: Double, rrInMsec: Double) -> Double  {
+        return qtcConvert(qtcArr(qtInSec:rrInSec:), qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+    }
+    
+    public static func qtcArr(qtInSec: Double, rate: Double) -> Double {
+        return qtcConvert(qtcArr(qtInSec:rrInSec:), qtInSec: qtInSec, rate: rate)
+    }
+    
+    public static func qtcArr(qtInMsec: Double, rate: Double) -> Double {
+        return qtcConvert(qtcArr(qtInSec:rrInSec:), qtInMsec: qtInMsec, rate: rate)
+    }
 
-    // QTp functions.  These functions calculate what the QT "should be" at a given rate
+    // MARK: QTp functions.  These functions calculate what the QT "should be" at a given rate
     // or interval.
+    
+    // QTpARR
     public static func qtpArr(rrInSec: Double) -> Double {
         return 0.12 + 0.492 * exp(-0.008 * secToBpm(rrInSec))
     }
-    // etc.
-   
+    
+    public static func qtpArr(rrInMsec: Double) -> Double {
+        return qtpConvert(qtpArr(rrInSec:), rrInMsec: rrInMsec)
+    }
+    
+    // TODO: should functions like this return in msec, ie. make msec the default return value?
+    // or have qtp funcs named like qtpArrInMsec(), qtpArrInSec()??
+    // returns QTp in seconds
+    public static func qtpArr(rate: Double) -> Double {
+        return qtpConvert(qtpArr(rrInSec:), rate: rate)
+    }
+
+    
     // MARK: Enumerated static funcs
     // Using the Formula enum, select a formula or iterate through them all
     public static func qtc(formula: Formula, qtInSec: Double, rrInSec: Double) -> Double {
@@ -391,6 +468,8 @@ public class QTcCalculatorFactory: NSObject {
             return qtcRtha(qtInSec: qtInSec, rrInSec: rrInSec)
         case .qtcMyd:
             return qtcMyd(qtInSec: qtInSec, rrInSec: rrInSec)
+        case .qtcArr:
+            return qtcArr(qtInSec: qtInSec, rrInSec: rrInSec)
         }
     }
     
@@ -408,6 +487,8 @@ public class QTcCalculatorFactory: NSObject {
             return qtcRtha(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
         case .qtcMyd:
             return qtcMyd(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+        case .qtcArr:
+            return qtcArr(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
         }
     }
 
@@ -425,6 +506,8 @@ public class QTcCalculatorFactory: NSObject {
             return qtcRtha(qtInSec: qtInSec, rate: rate)
         case .qtcMyd:
             return qtcMyd(qtInSec: qtInSec, rate: rate)
+        case .qtcArr:
+            return qtcArr(qtInSec: qtInSec, rate: rate)
         }
     }
 
@@ -442,6 +525,8 @@ public class QTcCalculatorFactory: NSObject {
             return qtcRtha(qtInMsec: qtInMsec, rate: rate)
         case .qtcMyd:
             return qtcMyd(qtInMsec: qtInMsec, rate: rate)
+        case .qtcArr:
+            return qtcArr(qtInMsec: qtInMsec, rate: rate)
         }
     }
 
