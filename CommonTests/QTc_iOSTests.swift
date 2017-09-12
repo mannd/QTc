@@ -24,7 +24,7 @@ class QTc_iOSTests: XCTestCase {
     // table of calculated QTc from
     let qtcMultipleTable: [(rate: Double, rrInSec: Double, rrInMsec: Double, qtInMsec: Double, qtcBzt: Double, qtcFrd: Double, qtcFrm: Double, qtcHDG: Double)] = [(88, 0.682, 681.8, 278, 336.7, 315.9, 327.0, 327.0), (112, 0.536, 535.7, 334, 456.3, 411.2, 405.5, 425.0), (47, 1.2766, 1276.6, 402, 355.8, 370.6, 359.4, 379.3), (132, 0.4545, 454.5, 219, 324.8, 284.8, 303, 345)]
     // TODO: Add new formulae here
-    // Convenience array of QTc formulae
+    // Convenience array of QTc formulae, only including non-exponential formulas
     let formulas: [Formula] = [.qtcBzt, .qtcFrd, .qtcHdg, .qtcFrm, .qtcMyd, .qtcRtha]
  
  override func setUp() {
@@ -144,6 +144,9 @@ class QTc_iOSTests: XCTestCase {
         // QTcMyd
         XCTAssertEqualWithAccuracy(QTc.qtcMyd(qtInSec: 0.399, rrInSec: 0.788), 0.46075606, accuracy: delta)
         
+        // QTcArr
+        XCTAssertEqualWithAccuracy(QTc.qtcArr(qtInSec: 0.275, rate: 69), 0.295707844, accuracy: delta)
+        
     }
 
     // Most QTc functions will have QTc == QT at HR 60 (RR 1000 msec)
@@ -154,6 +157,18 @@ class QTc_iOSTests: XCTestCase {
                 XCTAssertEqual(QTc.qtc(formula: formula, qtInSec: qt, rrInSec: 1.0), qt)
             }
         }
+    }
+    
+    func testQTcConvert() {
+        XCTAssertEqual(QTc.qtcBzt(qtInMsec: 356.89, rrInMsec: 891.32), QTc.secToMsec(QTc.qtcBzt(qtInSec: 0.35689, rrInSec: 0.89132)))
+        XCTAssertEqual(QTc.qtcHdg(qtInSec: 0.299, rrInSec: 0.5), QTc.msecToSec(QTc.qtcHdg(qtInMsec: 299, rate: 120)))
+        XCTAssertEqual(QTc.qtcRtha(qtInSec: 0.489, rate: 78.9), QTc.msecToSec(QTc.qtcRtha(qtInMsec: 489, rate: 78.9)))
+        XCTAssertEqual(QTc.qtcFrm(qtInMsec: 843, rrInMsec: 300), QTc.qtcFrm(qtInMsec: 843, rate: 200))
+    }
+    
+    func testQTpConvert() {
+        XCTAssertEqual(QTc.qtpArr(rrInSec: 0.253), QTc.msecToSec(QTc.qtpArr(rrInMsec: 253)))
+        XCTAssertEqual(QTc.qtpArr(rrInSec: 0.500), QTc.qtpArr(rate: 120))
     }
     
     func testEnumeratedFunctions() {
