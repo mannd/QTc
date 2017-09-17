@@ -24,36 +24,48 @@ To use with an Objective C file add:
     #import <QTc/QTc-Swift.h>
 
 ## Using the framework
-### Static functions
-QTc functions are labeled based on the proposed standard nomenclatue of [Rabkin](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16).  Thus, for example, Bazett’s QTc formulat is QTcBZT and the Framingham formula is QTcFRM.  All QTc formulas are static functions and can be called like this:
+QTc functions are labeled based on the proposed standard nomenclatue of [Rabkin](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16).  Use the enum Formula to select the QTc function:
 
-    let qtc = QTc.qtcBzt(qtInSec: 420, rate: 56) // Swift
+	public enum Formula {
+		case qtcBzt  // Bazett
+		case qtcFrd  // Fridericia
+		case qtcFrm  // Framingham
+		case qtcHdg  // Hodges
+		case qtcRtha // Rautaharju (2014)a
+		case qtcMyd  // Mayeda
+		case qtcArr  // Arrowood
+		// more coming
+	}
 
-    double qtc = [QTc qtcBztWithQtInSec: 420, rate: 56]; // Objective C
+Generate a qtcCalculator class using the static function QTc.qtcCalculator(formula: Formula) as shown below.
 
-Each function has 4 different signatures, using QT in sec or msec, RR in sec or msec or heart rate in beats per minute.  Functions using msec parameters return QTc in msec, while those using second parameters return QTc in seconds.  All parameters are Double in Swift, double in Objective C.
+	let qtcBztCalculator = QTc.qtcCalculator(formula: .qtcBzt) // Swift
 
-You can also call these functions from a single static function with signature:
+	QTcCalculator qtcBztCalculator = [QTc qtcCalculatorWithFormula: Formula.qtcBzt]; // Objective C
 
-	let qtc = QTc.qtc(formula: .qtcBzt, qtInSec: 420, rate: 56) // Swift
+Then use the calculator to calculate the QTc:
 
-	double qtc = [QTc qtcWithFormula: Formula.qtcBzt qtInSec: 420 rate: 56]; // Objective C
+	let qtcBzt = qtcBztCalculator.calculate(qtInSec: 0.334, rrInSec: 0.785) // Swift
 
-### QTcCalculatorFactory
-You can get an instance of a QTcCalculator using QTcCalculatorFactory.  For example:
+	double qtcBzt = [qtcBztCalculator calculateWithQtInSec: 0.334 rrInSec: 0.785]; // Objective C
 
-    let qtcCalculator = QTcCalculatorFactory(formula .qtcBzt)
+Each function has 4 different signatures, using QT in sec or msec, RR in sec or msec or heart rate in beats per minute.  Functions using msec parameters return QTc in msec, while those using second parameters return QTc in seconds.  All parameters are Double in Swift, double in Objective C.  For example:
 
-Then use the qtcCalculator instance to do calculations and get information about the calculator:
+	let qtcInMsec = qtcBztCalculator.calculate(qtInMsec: 402, rate 72) // returns QTc in msec
 
-    let qtc = qtcCalculator.calculate(qtInMsec: 345, rate: 74) // qtc = 383
+	let qtcInSec = qtcBztCalculator.calculate(qtInSec: 0.402, rate 72) // returns QTc in sec
+
+You can get other information from the calculator instance, for example:
+
+	let qtcCalculator = QTc.qtcCalculator(formulat: .qtcBzt)
     let qtcCalculatorLongName = qtcCalculator.longName // longName = "Bazett"
     let qtcCalculatorShorName = qtcCalculator.shortName // shortName = "QTcBZT"
+	let qtcCalculatorReference = qtcCalculator.reference // reference = full literature reference of the formula
 
-### Errors
+## Errors
 None of the functions throw exceptions.  However, some QTc formulas have the potential for division by zero or performing fractional power operations on negative numbers.  Parameters are not checked for these problematic inputs.  Division by zero (generally if the RR interval is zero) will result in the value Double.infinity, and zero divided by itself (generally if the QT and RR are both zero) or a fractional root of a negative number (if the RR is negative) will result in Double.nan.  Thus if input parameters are not checked for sanity, it is necessary to check results as follows:
 
-	let qtc = QTc.qtcBzt(qtInMsec: qt, rrInMsec: rr)
+	let qtc = QTc.qtcCalculator(formulat: .qtcBzt).calculate(qtInMsec: qt, rrInMsec: rr)
 	if qtc == Double.infinity || qtc.isNaN {
 		Error("Division by zero or root of negative number!")
 		return
@@ -67,10 +79,19 @@ Of course your other option is never to send these bad parameters to the formula
 		Error("QT and RR can’t be less than or equal to zero!")
 		return
 	} else {
-		let qtc = QTc.qtcBzt(qtInMsec: qt, rrInMsec: rr)
+		let qtc = QTc.qtcCalculator(formate: .qtcBzt).calculate(qtInMsec: qt, rrInMsec: rr)
 	}
 
-### Tests
+## Conversion functions
+The QTc framework includes static functions to do common conversions, e.g.:
+
+	let intervalInSec = 0.890
+	let intervalInMsec = QTc.secToMsec(intervalInSec) // = 890
+	let rate = QTc.msecToBpm(intervalInMsec) // = 67.41573
+
+etc.
+
+## Tests
 The QTc framework includes numerous unit tests to confirm accuracy, with more coming.
 
 ## References (partial list)
@@ -80,6 +101,7 @@ The QTc framework includes numerous unit tests to confirm accuracy, with more co
 - Hodges M, Salerno D, Erlien D. Bazett\’s QT correction reviewed: Evidence that a linear QT correction for heart rate is better. J Am Coll Cardiol. 1983;1:1983.
 - Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. Int J Cardiol. 2014;174:535-540.
 - Mayeda I. On time relation between systolic duration of heart and pulse rate. Acta Sch Med Univ Imp. 1934;17:53-55.
+- Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohrnty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223.
 
 More QTc formulas coming!
 

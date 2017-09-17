@@ -10,14 +10,14 @@ import Foundation
 
 // Nomenclature from Rabkin and Cheng, 2015: https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B17
 public enum Formula {
-    case qtcBzt
-    case qtcFrd
-    case qtcFrm
-    case qtcHdg
-    case qtcRtha
-    case qtcMyd
-    case qtcArr
-    // add more, including QTp formulae
+    case qtcBzt  // Bazett
+    case qtcFrd  // Fridericia
+    case qtcFrm  // Framingham
+    case qtcHdg  // Hodges
+    case qtcRtha // Rautaharju (2014)a
+    case qtcMyd  // Mayeda
+    case qtcArr  // Arrowood
+    // more coming
 }
 
 // If Swift had "protected" access we would use it here.  We do want the properties of this class
@@ -88,7 +88,7 @@ public class QTcCalculator: BaseCalculator {
         case .qtcRtha:
             calculator = QTcCalculator(formula: .qtcRtha, longName: "Rautaharju (2014)a", shortName: "QTcRTHa", reference: "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. Int J Cardiol. 2014;174:535-540.", baseEquation: {qtInSec, rrInSec in qtInSec * (120.0 + secToBpm(rrInSec)) / 180.0})
         case .qtcArr:
-            calculator = QTcCalculator(formula: .qtcArr, longName: "Arrowood", shortName: "QTcARR", reference: "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohanty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223", baseEquation: {qtInSec, rrInSec in qtInSec + 0.304 - 0.492 * exp(-0.008 * secToBpm(rrInSec))})
+            calculator = QTcCalculator(formula: .qtcArr, longName: "Arrowood", shortName: "QTcARR", reference: "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohrnty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223.", baseEquation: {qtInSec, rrInSec in qtInSec + 0.304 - 0.492 * exp(-0.008 * secToBpm(rrInSec))})
         }
         return calculator
     }
