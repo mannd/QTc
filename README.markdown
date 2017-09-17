@@ -24,7 +24,7 @@ To use with an Objective C file add:
     #import <QTc/QTc-Swift.h>
 
 ## Using the framework
-QTc functions are labeled based on the proposed standard nomenclatue of [Rabkin](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16).  Use the enum Formula to select the QTc function:
+QTc functions are labeled based on the proposed standard nomenclature of [Rabkin](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16).  Use the enum Formula to select the QTc function:
 
 	public enum Formula {
 		case qtcBzt  // Bazett
@@ -57,7 +57,7 @@ Each function has 4 different signatures, using QT in sec or msec, RR in sec or 
 
 You can get other information from the calculator instance, for example:
 
-	let qtcCalculator = QTc.qtcCalculator(formulat: .qtcBzt)
+	let qtcCalculator = QTc.qtcCalculator(formula: .qtcBzt)
     let qtcCalculatorLongName = qtcCalculator.longName // longName = "Bazett"
     let qtcCalculatorShorName = qtcCalculator.shortName // shortName = "QTcBZT"
 	let qtcCalculatorReference = qtcCalculator.reference // reference = full literature reference of the formula
@@ -65,7 +65,7 @@ You can get other information from the calculator instance, for example:
 ## Errors
 None of the functions throw exceptions.  However, some QTc formulas have the potential for division by zero or performing fractional power operations on negative numbers.  Parameters are not checked for these problematic inputs.  Division by zero (generally if the RR interval is zero) will result in the value Double.infinity, and zero divided by itself (generally if the QT and RR are both zero) or a fractional root of a negative number (if the RR is negative) will result in Double.nan.  Thus if input parameters are not checked for sanity, it is necessary to check results as follows:
 
-	let qtc = QTc.qtcCalculator(formulat: .qtcBzt).calculate(qtInMsec: qt, rrInMsec: rr)
+	let qtc = QTc.qtcCalculator(formula: .qtcBzt).calculate(qtInMsec: qt, rrInMsec: rr)
 	if qtc == Double.infinity || qtc.isNaN {
 		Error("Division by zero or root of negative number!")
 		return
