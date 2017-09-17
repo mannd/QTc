@@ -17,236 +17,317 @@ public enum Formula {
     case qtcRtha
     case qtcMyd
     case qtcArr
+    // add more, including QTp formulae
 }
 
-public protocol QTcCalculator {
-    var longName: String { get }
-    var shortName: String { get }
-    var formula: Formula { get }
-    // Original reference for the formula
-    var reference: String { get }
+// If Swift had "protected" access we would use it here.  We do want the properties of this class
+// to be accessible via QTcCalculator, but we don't want BaseCalculator to be instantialized by users.
+public class BaseCalculator {
+    public let formula: Formula
+    public let longName: String
+    public let shortName: String
+    public let reference: String
     
-    func calculate(qtInMsec: Double, rrInMsec: Double) -> Double
-    func calculate(qtInSec: Double, rrInSec: Double) -> Double
-    func calculate(qtInMsec: Double, rate: Double) -> Double
-    func calculate(qtInSec: Double, rate: Double) -> Double
-}
-
-// MARK: QTc classes
-
-private struct qtcFunction {
-    let longName: String
-    let shortName: String
-    let reference: String
-    let baseFunction: (Double, Double) -> Double
-    
-    init(shortName: String, longName: String, reference: String, baseFunction: @escaping (Double, Double) -> Double) {
-        self.shortName = shortName
+    init(formula: Formula, longName: String, shortName: String, reference: String) {
+        self.formula = formula
         self.longName = longName
+        self.shortName = shortName
         self.reference = reference
-        self.baseFunction = baseFunction
+    }
+}
+
+typealias qtcEquation = (Double, Double) -> Double
+typealias qtpEquation = (Double) -> Double
+
+public class QTcCalculator: BaseCalculator {
+    let baseEquation: qtcEquation
+    
+    init(formula: Formula, longName: String, shortName: String, reference: String, baseEquation: @escaping qtcEquation) {
+        self.baseEquation = baseEquation
+        super.init(formula: formula, longName: longName, shortName: shortName, reference: reference)
+        
     }
     
-    func calculate(qt: Double, rr: Double) -> Double {
-        return baseFunction(qt, rr)
+    func calculate(qtInSec: Double, rrInSec: Double) -> Double {
+        return baseEquation(qtInSec, rrInSec)
     }
     
     func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
-        return QTc.qtcConvert(baseFunction, qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+        return QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rrInMsec: rrInMsec)
     }
     
-}
-
-public class qtcBzt: NSObject, QTcCalculator {
-    public let longName = "Bazett"
-    public let shortName = "QTcBZT"
-    public let formula = Formula.qtcBzt
-    public let reference = "Bazett HC. An analysis of the time relations of electrocardiograms. Heart 1920; 7:353-367."
-    
-    public func calculate(qtInSec: Double, rate: Double) -> Double {
-        return QTc.qtcBzt(qtInSec: qtInSec, rate: rate)
+    func calculate(qtInSec: Double, rate: Double) -> Double {
+        return QTc.qtcConvert(baseEquation, qtInSec: qtInSec, rate: rate)
     }
     
-    public func calculate(qtInMsec: Double, rate: Double) -> Double {
-        return QTc.qtcBzt(qtInMsec: qtInMsec, rate: rate)
-    }
-    
-    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
-        return QTc.qtcBzt(qtInSec: qtInSec, rrInSec: rrInSec)
-    }
-    
-    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
-        return QTc.qtcBzt(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+    func calculate(qtInMsec: Double, rate: Double) -> Double {
+        return QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rate: rate)
     }
 }
 
-public class qtcFrd: NSObject, QTcCalculator {
-    public let longName = "Fridericia"
-    public let shortName = "QTcFRD"
-    public let formula = Formula.qtcFrd
-    public let reference = "Fridericia L. Die sytolendauer in elektrokardiogramm bei normalen menschen und bei herzkranken. Acta Med Scand. 1920;53:469-486."
-    
-    public func calculate(qtInSec: Double, rate: Double) -> Double {
-        return QTc.qtcFrd(qtInSec: qtInSec, rate: rate)
-    }
-    
-    public func calculate(qtInMsec: Double, rate: Double) -> Double {
-        return QTc.qtcFrd(qtInMsec: qtInMsec, rate: rate)
-    }
-    
-    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
-        return QTc.qtcFrd(qtInSec: qtInSec, rrInSec: rrInSec)
-    }
-    
-    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
-        return QTc.qtcFrd(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
-    }
-}
+// TODO:
+// class QTpCalculator {}
 
-public class qtcFrm: NSObject, QTcCalculator {
-    public let longName = "Framingham (Sagie)"
-    public let shortName = "QTcFRM"
-    public let formula = Formula.qtcFrm
-    public let reference = "Sagie A, Larson MG, Goldberg RJ, Bengtson JR, Levy D. An improved method for adjusting the QT interval for heart rate (the Framingham Heart Study). Am J Cardiol. 1992;70:797-801."
-    
-    public func calculate(qtInSec: Double, rate: Double) -> Double {
-        return QTc.qtcFrm(qtInSec: qtInSec, rate: rate)
-    }
-    
-    public func calculate(qtInMsec: Double, rate: Double) -> Double {
-        return QTc.qtcFrm(qtInMsec: qtInMsec, rate: rate)
-    }
-    
-    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
-        return QTc.qtcFrm(qtInSec: qtInSec, rrInSec: rrInSec)
-    }
-    
-    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
-        return QTc.qtcFrm(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
-    }
-}
 
-public class qtcHdg: NSObject, QTcCalculator {
-    public let longName = "Hodges"
-    public let shortName = "QTcHDG"
-    public let formula = Formula.qtcHdg
-    public let reference = "Hodges M, Salerno D, Erlien D. Bazett’s QT correction reviewed: Evidence that a linear QT correction for heart rate is better. J Am Coll Cardiol. 1983;1:1983."
-    
-    public func calculate(qtInSec: Double, rate: Double) -> Double {
-        return QTc.qtcHdg(qtInSec: qtInSec, rate: rate)
-    }
-    
-    public func calculate(qtInMsec: Double, rate: Double) -> Double {
-        return QTc.qtcHdg(qtInMsec: qtInMsec, rate: rate)
-    }
-    
-    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
-        return QTc.qtcHdg(qtInSec: qtInSec, rrInSec: rrInSec)
-    }
-    
-    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
-        return QTc.qtcHdg(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
-    }
-}
 
-public class qtcRtha: NSObject, QTcCalculator {
-    public let longName = "Rautaharju (2014)a"
-    public let shortName = "QTcRTHa"
-    public let formula = Formula.qtcRtha
-    public let reference = "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. Int J Cardiol. 2014;174:535-540."
-    
-    public func calculate(qtInSec: Double, rate: Double) -> Double {
-        return QTc.qtcRtha(qtInSec: qtInSec, rate: rate)
-    }
-    
-    public func calculate(qtInMsec: Double, rate: Double) -> Double {
-        return QTc.qtcRtha(qtInMsec: qtInMsec, rate: rate)
-    }
-    
-    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
-        return QTc.qtcRtha(qtInSec: qtInSec, rrInSec: rrInSec)
-    }
-    
-    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
-        return QTc.qtcRtha(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
-    }
-}
+//public protocol QTcCalculator {
+//    var longName: String { get }
+//    var shortName: String { get }
+//    var formula: Formula { get }
+//    // Original reference for the formula
+//    var reference: String { get }
+//    
+//    func calculate(qtInMsec: Double, rrInMsec: Double) -> Double
+//    func calculate(qtInSec: Double, rrInSec: Double) -> Double
+//    func calculate(qtInMsec: Double, rate: Double) -> Double
+//    func calculate(qtInSec: Double, rate: Double) -> Double
+//}
 
-public class qtcMyd: NSObject, QTcCalculator {
-    public let longName = "Mayeda"
-    public let shortName = "QTcMYD"
-    public let formula = Formula.qtcMyd
-    public let reference = "Mayeda I. On time relation between systolic duration of heart and pulse rate. Acta Sch Med Univ Imp. 1934;17:53-55."
-    
-    public func calculate(qtInSec: Double, rate: Double) -> Double {
-        return QTc.qtcMyd(qtInSec: qtInSec, rate: rate)
-    }
-    
-    public func calculate(qtInMsec: Double, rate: Double) -> Double {
-        return QTc.qtcMyd(qtInMsec: qtInMsec, rate: rate)
-    }
-    
-    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
-        return QTc.qtcMyd(qtInSec: qtInSec, rrInSec: rrInSec)
-    }
-    
-    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
-        return QTc.qtcMyd(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
-    }
-}
+//typealias qtcFunc = (Msec, Double) -> Double
+//typealias qtpFunc = (Double) -> Double
 
-public class qtcArr: NSObject, QTcCalculator {
-    public let longName = "Arrowood"
-    public let shortName = "QTcArr"
-    public let formula = Formula.qtcArr
-    public let reference = "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohanty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223"
-    
-    public func calculate(qtInSec: Double, rate: Double) -> Double {
-        return QTc.qtcArr(qtInSec: qtInSec, rate: rate)
-    }
-    
-    public func calculate(qtInMsec: Double, rate: Double) -> Double {
-        return QTc.qtcArr(qtInMsec: qtInMsec, rate: rate)
-    }
-    
-    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
-        return QTc.qtcArr(qtInSec: qtInSec, rrInSec: rrInSec)
-    }
-    
-    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
-        return QTc.qtcArr(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
-    }
-}
+// MARK: QTc classes
+
+//public struct qtcFunction {
+//    let formula: Formula
+//    let longName: String
+//    let shortName: String
+//    let reference: String
+//    let baseFunction: qtcFunc
+//    
+////    init(shortName: String, longName: String, reference: String, baseFunction: @escaping qtcFunc) {
+////        self.shortName = shortName
+////        self.longName = longName
+////        self.reference = reference
+////        self.baseFunction = baseFunction
+////    }
+//    
+//    func calculate(qtInSec: Double, rrInSec: Double) -> Double {
+//        return baseFunction(qtInSec, rrInSec)
+//    }
+//    
+//    func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
+//        return QTc.qtcConvert(baseFunction, qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+//    }
+//    
+//    func calculate(qtInSec: Double, rate: Double) -> Double {
+//        return QTc.qtcConvert(baseFunction, qtInSec: qtInSec, rate: rate)
+//    }
+//    
+//    func calculate(qtInMsec: Double, rate: Double) -> Double {
+//        return QTc.qtcConvert(baseFunction, qtInMsec: qtInMsec, rate: rate)
+//    }
+//    
+//}
+
+//public class qtcBzt: NSObject, QTcCalculator {
+//    public let longName = "Bazett"
+//    public let shortName = "QTcBZT"
+//    public let formula = Formula.qtcBzt
+//    public let reference = "Bazett HC. An analysis of the time relations of electrocardiograms. Heart 1920; 7:353-367."
+//    
+//    public func calculate(qtInSec: Double, rate: Double) -> Double {
+//        return QTc.qtcBzt(qtInSec: qtInSec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rate: Double) -> Double {
+//        return QTc.qtcBzt(qtInMsec: qtInMsec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
+//        return QTc.qtcBzt(qtInSec: qtInSec, rrInSec: rrInSec)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
+//        return QTc.qtcBzt(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+//    }
+//}
+
+//public class qtcFrd: NSObject, QTcCalculator {
+//    public let longName = "Fridericia"
+//    public let shortName = "QTcFRD"
+//    public let formula = Formula.qtcFrd
+//    public let reference = "Fridericia L. Die sytolendauer in elektrokardiogramm bei normalen menschen und bei herzkranken. Acta Med Scand. 1920;53:469-486."
+//    
+//    public func calculate(qtInSec: Double, rate: Double) -> Double {
+//        return QTc.qtcFrd(qtInSec: qtInSec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rate: Double) -> Double {
+//        return QTc.qtcFrd(qtInMsec: qtInMsec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
+//        return QTc.qtcFrd(qtInSec: qtInSec, rrInSec: rrInSec)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
+//        return QTc.qtcFrd(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+//    }
+//}
+//
+//public class qtcFrm: NSObject, QTcCalculator {
+//    public let longName = "Framingham (Sagie)"
+//    public let shortName = "QTcFRM"
+//    public let formula = Formula.qtcFrm
+//    public let reference = "Sagie A, Larson MG, Goldberg RJ, Bengtson JR, Levy D. An improved method for adjusting the QT interval for heart rate (the Framingham Heart Study). Am J Cardiol. 1992;70:797-801."
+//    
+//    public func calculate(qtInSec: Double, rate: Double) -> Double {
+//        return QTc.qtcFrm(qtInSec: qtInSec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rate: Double) -> Double {
+//        return QTc.qtcFrm(qtInMsec: qtInMsec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
+//        return QTc.qtcFrm(qtInSec: qtInSec, rrInSec: rrInSec)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
+//        return QTc.qtcFrm(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+//    }
+//}
+//
+//public class qtcHdg: NSObject, QTcCalculator {
+//    public let longName = "Hodges"
+//    public let shortName = "QTcHDG"
+//    public let formula = Formula.qtcHdg
+//    public let reference = "Hodges M, Salerno D, Erlien D. Bazett’s QT correction reviewed: Evidence that a linear QT correction for heart rate is better. J Am Coll Cardiol. 1983;1:1983."
+//    
+//    public func calculate(qtInSec: Double, rate: Double) -> Double {
+//        return QTc.qtcHdg(qtInSec: qtInSec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rate: Double) -> Double {
+//        return QTc.qtcHdg(qtInMsec: qtInMsec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
+//        return QTc.qtcHdg(qtInSec: qtInSec, rrInSec: rrInSec)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
+//        return QTc.qtcHdg(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+//    }
+//}
+//
+//public class qtcRtha: NSObject, QTcCalculator {
+//    public let longName = "Rautaharju (2014)a"
+//    public let shortName = "QTcRTHa"
+//    public let formula = Formula.qtcRtha
+//    public let reference = "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. Int J Cardiol. 2014;174:535-540."
+//    
+//    public func calculate(qtInSec: Double, rate: Double) -> Double {
+//        return QTc.qtcRtha(qtInSec: qtInSec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rate: Double) -> Double {
+//        return QTc.qtcRtha(qtInMsec: qtInMsec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
+//        return QTc.qtcRtha(qtInSec: qtInSec, rrInSec: rrInSec)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
+//        return QTc.qtcRtha(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+//    }
+//}
+//
+//public class qtcMyd: NSObject, QTcCalculator {
+//    public let longName = "Mayeda"
+//    public let shortName = "QTcMYD"
+//    public let formula = Formula.qtcMyd
+//    public let reference = "Mayeda I. On time relation between systolic duration of heart and pulse rate. Acta Sch Med Univ Imp. 1934;17:53-55."
+//    
+//    public func calculate(qtInSec: Double, rate: Double) -> Double {
+//        return QTc.qtcMyd(qtInSec: qtInSec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rate: Double) -> Double {
+//        return QTc.qtcMyd(qtInMsec: qtInMsec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
+//        return QTc.qtcMyd(qtInSec: qtInSec, rrInSec: rrInSec)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
+//        return QTc.qtcMyd(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+//    }
+//}
+//
+//public class qtcArr: NSObject, QTcCalculator {
+//    public let longName = "Arrowood"
+//    public let shortName = "QTcArr"
+//    public let formula = Formula.qtcArr
+//    public let reference = "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohanty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223"
+//    
+//    public func calculate(qtInSec: Double, rate: Double) -> Double {
+//        return QTc.qtcArr(qtInSec: qtInSec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rate: Double) -> Double {
+//        return QTc.qtcArr(qtInMsec: qtInMsec, rate: rate)
+//    }
+//    
+//    public func calculate(qtInSec: Double, rrInSec: Double) -> Double {
+//        return QTc.qtcArr(qtInSec: qtInSec, rrInSec: rrInSec)
+//    }
+//    
+//    public func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
+//        return QTc.qtcArr(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+//    }
+//}
 
 // TODO: other qtc classes here
 
-// Factory class
-public class QTcCalculatorFactory: NSObject {
-    public func getCalculator(formula: Formula) -> QTcCalculator {
-        switch formula {
-        case .qtcBzt:
-            return qtcBzt()
-        case .qtcFrd:
-            return qtcFrd()
-        case .qtcFrm:
-            return qtcFrm()
-        case .qtcHdg:
-            return qtcHdg()
-        case .qtcRtha:
-            return qtcRtha()
-        case .qtcMyd:
-            return qtcMyd()
-        case .qtcArr:
-            return qtcArr()
-        }
-    }
-}
-
+//// Factory class
+//public class QTcCalculatorFactory: NSObject {
+//    public func getCalculator(formula: Formula) -> QTcCalculator {
+//        switch formula {
+//        case .qtcBzt:
+//            return qtcBzt()
+//        case .qtcFrd:
+//            return qtcFrd()
+//        case .qtcFrm:
+//            return qtcFrm()
+//        case .qtcHdg:
+//            return qtcHdg()
+//        case .qtcRtha:
+//            return qtcRtha()
+//        case .qtcMyd:
+//            return qtcMyd()
+//        case .qtcArr:
+//            return qtcArr()
+//        }
+//    }
+//}
+//
 // MARK: QTc class
 
 /// TODO: is @objc tag needed if inheritance from NSObject?
 @objc public class QTc: NSObject {
     
+    
+//    public static func qtcCalculator(formula: Formula) -> qtcFunction {
+//        let qtcBztFunc = qtcFunction(formula: .qtcBzt, longName: "xxx", shortName: "xxx", reference: "xxx", baseFunction: {qtInSec, rrInSec in qtInSec + qtInSec })
+//        
+//        return qtcBztFunc
+//    }
+//    
+    
+    public static func qtcCalculator(formula: Formula) -> QTcCalculator? {
+        var calculator: QTcCalculator? = nil
+        switch formula {
+        case .qtcBzt:
+            calculator = QTcCalculator(formula: .qtcBzt, longName: "Bazett", shortName: "QTcBZT", reference: "reference", baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.5)})
+        default:
+            calculator = nil
+        }
+        return calculator
+    }
    
     // static conversion functions
     public static func secToMsec(_ sec: Double) -> Double {
@@ -292,12 +373,12 @@ public class QTcCalculatorFactory: NSObject {
         return secToMsec(qtcFunction(msecToSec(qtInMsec), msecToSec(rrInMsec)))
     }
     
-    private static func qtcConvert(_ qtcFunction: (Double, Double) -> Double,
+    public static func qtcConvert(_ qtcFunction: (Double, Double) -> Double,
                                      qtInSec: Double, rate: Double) -> Double {
         return qtcFunction(qtInSec, bpmToSec(rate))
     }
     
-    private static func qtcConvert(_ qtcFunction: (Double, Double) -> Double,
+    public static func qtcConvert(_ qtcFunction: (Double, Double) -> Double,
                                               qtInMsec: Double, rate: Double) -> Double {
         return secToMsec(qtcFunction(msecToSec(qtInMsec), bpmToSec(rate)))
     }
@@ -553,18 +634,18 @@ public class QTcCalculatorFactory: NSObject {
         }
     }
     
-    private static func qtcBztAlt(qtInSec: Double, rrInSec: Double) -> Double {
-        return qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.5)    }
-    
-    public static func qtcAlt(qt: Double, rr: Double) -> Double {
-        let qtcBzt = qtcFunction(shortName: "qtcBztAlt", longName: "", reference: "", baseFunction: qtcBztAlt)
-        return qtcBzt.calculate(qt: qt, rr: rr)
-    }
-    
-    public static func qtcAlt(qtInMsec: Double, rrInMsec: Double) -> Double {
-        let qtcBzt = qtcFunction(shortName: "qtcBztAlt", longName: "", reference: "", baseFunction: qtcBztAlt)
-        return qtcBzt.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
-    }
+//    private static func qtcBztAlt(qtInSec: Double, rrInSec: Double) -> Double {
+//        return qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.5)    }
+//    
+//    public static func qtcAlt(qt: Double, rr: Double) -> Double {
+//        let qtcBzt = qtcFunction(formula: .qtcBzt, longName: "", shortName: "qtcBztAlt", reference: "", baseFunction: qtcBztAlt)
+//        return qtcBzt.calculate(qtInSec: qt, rrInSec: rr)
+//    }
+//    
+//    public static func qtcAlt(qtInMsec: Double, rrInMsec: Double) -> Double {
+//        let qtcBzt = qtcFunction(formula: .qtcBzt, longName: "", shortName: "qtcBztAlt", reference: "", baseFunction: qtcBztAlt)
+//        return qtcBzt.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+//    }
   
 }
 

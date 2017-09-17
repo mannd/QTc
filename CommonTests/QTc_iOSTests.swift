@@ -178,23 +178,30 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqualWithAccuracy(QTc.qtc(formula: .qtcFrm, qtInSec: 0.278, rate: 88), 0.327, accuracy: roughDelta)
 
     }
-
-    func testQTcCalculatorFactory() {
-        let factory = QTcCalculatorFactory()
-        var qtcCalculator = factory.getCalculator(formula: .qtcBzt)
-        XCTAssertEqualWithAccuracy(qtcCalculator.calculate(qtInMsec: 413, rate: 60), 413, accuracy: delta)
-        XCTAssert(qtcCalculator.shortName == "QTcBZT")
-        XCTAssert(qtcCalculator.longName == "Bazett")
-        XCTAssert(qtcCalculator.formula == .qtcBzt)
-        qtcCalculator = factory.getCalculator(formula: .qtcFrd)
-        XCTAssert(qtcCalculator.shortName == "QTcFRD")
-    }
     
-    // MARK: alternative qtc classes
-    func testAlt() {
-        XCTAssertEqualWithAccuracy(QTc.qtcAlt(qt: 0.278, rr: 0.682), 0.3367, accuracy: roughDelta)
-        XCTAssertEqualWithAccuracy(QTc.qtcAlt(qtInMsec: 278, rrInMsec: 682), 336.7, accuracy: roughDelta)
+    func testQTcQTcCalculator() {
+        let qtcCalculator = QTc.qtcCalculator(formula: .qtcBzt)
+        XCTAssertEqualWithAccuracy(qtcCalculator!.calculate(qtInMsec: 413, rate: 60), 413, accuracy: delta)
+        XCTAssertEqual(qtcCalculator!.shortName, "QTcBZT")
 
     }
+
+//    func testQTcCalculatorFactory() {
+//        let factory = QTcCalculatorFactory()
+//        var qtcCalculator = factory.getCalculator(formula: .qtcBzt)
+//        XCTAssertEqualWithAccuracy(qtcCalculator.calculate(qtInMsec: 413, rate: 60), 413, accuracy: delta)
+//        XCTAssert(qtcCalculator.shortName == "QTcBZT")
+//        XCTAssert(qtcCalculator.longName == "Bazett")
+//        XCTAssert(qtcCalculator.formula == .qtcBzt)
+//        qtcCalculator = factory.getCalculator(formula: .qtcFrd)
+//        XCTAssert(qtcCalculator.shortName == "QTcFRD")
+//    }
+//    
+//    // MARK: alternative qtc classes
+//    func testAlt() {
+//        XCTAssertEqualWithAccuracy(QTc.qtcAlt(qt: 0.278, rr: 0.682), 0.3367, accuracy: roughDelta)
+//        XCTAssertEqualWithAccuracy(QTc.qtcAlt(qtInMsec: 278, rrInMsec: 682), 336.7, accuracy: roughDelta)
+//
+//    }
     
 }
