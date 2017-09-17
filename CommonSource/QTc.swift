@@ -34,11 +34,34 @@ public protocol QTcCalculator {
 
 // MARK: QTc classes
 
+private struct qtcFunction {
+    let longName: String
+    let shortName: String
+    let reference: String
+    let baseFunction: (Double, Double) -> Double
+    
+    init(shortName: String, longName: String, reference: String, baseFunction: @escaping (Double, Double) -> Double) {
+        self.shortName = shortName
+        self.longName = longName
+        self.reference = reference
+        self.baseFunction = baseFunction
+    }
+    
+    func calculate(qt: Double, rr: Double) -> Double {
+        return baseFunction(qt, rr)
+    }
+    
+    func calculate(qtInMsec: Double, rrInMsec: Double) -> Double {
+        return QTc.qtcConvert(baseFunction, qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+    }
+    
+}
+
 public class qtcBzt: NSObject, QTcCalculator {
     public let longName = "Bazett"
     public let shortName = "QTcBZT"
     public let formula = Formula.qtcBzt
-    public let reference =  "Bazett HC. An analysis of the time relations of electrocardiograms. Heart 1920; 7:353-367."
+    public let reference = "Bazett HC. An analysis of the time relations of electrocardiograms. Heart 1920; 7:353-367."
     
     public func calculate(qtInSec: Double, rate: Double) -> Double {
         return QTc.qtcBzt(qtInSec: qtInSec, rate: rate)
@@ -264,7 +287,7 @@ public class QTcCalculatorFactory: NSObject {
     
     // Convert from one set of units to another
     // Note that qtcFunction must have parameters of secs, e.g. qtcBzt(qtInSec:rrInSec)
-    private static func qtcConvert(_ qtcFunction: (Double, Double) -> Double,
+    public static func qtcConvert(_ qtcFunction: (Double, Double) -> Double,
                                     qtInMsec: Double, rrInMsec: Double) -> Double {
         return secToMsec(qtcFunction(msecToSec(qtInMsec), msecToSec(rrInMsec)))
     }
@@ -529,9 +552,19 @@ public class QTcCalculatorFactory: NSObject {
             return qtcArr(qtInMsec: qtInMsec, rate: rate)
         }
     }
-
-
-        
+    
+    private static func qtcBztAlt(qtInSec: Double, rrInSec: Double) -> Double {
+        return qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.5)    }
+    
+    public static func qtcAlt(qt: Double, rr: Double) -> Double {
+        let qtcBzt = qtcFunction(shortName: "qtcBztAlt", longName: "", reference: "", baseFunction: qtcBztAlt)
+        return qtcBzt.calculate(qt: qt, rr: rr)
+    }
+    
+    public static func qtcAlt(qtInMsec: Double, rrInMsec: Double) -> Double {
+        let qtcBzt = qtcFunction(shortName: "qtcBztAlt", longName: "", reference: "", baseFunction: qtcBztAlt)
+        return qtcBzt.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+    }
   
 }
 

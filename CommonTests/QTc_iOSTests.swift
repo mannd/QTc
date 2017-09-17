@@ -178,7 +178,7 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqualWithAccuracy(QTc.qtc(formula: .qtcFrm, qtInSec: 0.278, rate: 88), 0.327, accuracy: roughDelta)
 
     }
-    
+
     func testQTcCalculatorFactory() {
         let factory = QTcCalculatorFactory()
         var qtcCalculator = factory.getCalculator(formula: .qtcBzt)
@@ -188,6 +188,13 @@ class QTc_iOSTests: XCTestCase {
         XCTAssert(qtcCalculator.formula == .qtcBzt)
         qtcCalculator = factory.getCalculator(formula: .qtcFrd)
         XCTAssert(qtcCalculator.shortName == "QTcFRD")
+    }
+    
+    // MARK: alternative qtc classes
+    func testAlt() {
+        XCTAssertEqualWithAccuracy(QTc.qtcAlt(qt: 0.278, rr: 0.682), 0.3367, accuracy: roughDelta)
+        XCTAssertEqualWithAccuracy(QTc.qtcAlt(qtInMsec: 278, rrInMsec: 682), 336.7, accuracy: roughDelta)
+
     }
     
 }
