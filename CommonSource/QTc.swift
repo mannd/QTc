@@ -251,8 +251,15 @@ public class QTcCalculatorFactory: NSObject {
     }
     
     // Power QTc formula function
+    // These have form QTc = QT / pow(RR, exp)
     private static func qtcExp(qtInSec: Double, rrInSec: Double, exp: Double) -> Double {
         return qtInSec / pow(rrInSec, exp)
+    }
+    
+    // Linear QTc formula function
+    // These have form QTc = QT + α(1 - RR)
+    private static func qtcLinear(qtInSec: Double, rrInSec: Double, alpha: Double) -> Double {
+        return qtInSec + alpha * (1 - rrInSec)
     }
     
     // Convert from one set of units to another
@@ -353,7 +360,7 @@ public class QTcCalculatorFactory: NSObject {
     // Framingham (a.k.a. Sagie) (QTcFRM)
     // Base formula
     public static func qtcFrm(qtInSec: Double, rrInSec: Double) -> Double {
-        return qtInSec + 0.154 * (1.0 - rrInSec)
+        return qtcLinear(qtInSec: qtInSec, rrInSec: rrInSec, alpha: 0.154)
     }
     
     public static func qtcFrm(qtInMsec: Double, rrInMsec: Double) -> Double {
