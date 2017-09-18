@@ -27,12 +27,14 @@ public class BaseCalculator {
     public let longName: String
     public let shortName: String
     public let reference: String
+    public let equation: String
     
-    init(formula: Formula, longName: String, shortName: String, reference: String) {
+    init(formula: Formula, longName: String, shortName: String, reference: String, equation: String) {
         self.formula = formula
         self.longName = longName
         self.shortName = shortName
         self.reference = reference
+        self.equation = equation
     }
 }
 
@@ -42,9 +44,9 @@ typealias qtpEquation = (Double) -> Double
 public class QTcCalculator: BaseCalculator {
     let baseEquation: qtcEquation
     
-    init(formula: Formula, longName: String, shortName: String, reference: String, baseEquation: @escaping qtcEquation) {
+    init(formula: Formula, longName: String, shortName: String, reference: String, equation: String, baseEquation: @escaping qtcEquation) {
         self.baseEquation = baseEquation
-        super.init(formula: formula, longName: longName, shortName: shortName, reference: reference)
+        super.init(formula: formula, longName: longName, shortName: shortName, reference: reference, equation: equation)
         
     }
     
@@ -76,19 +78,40 @@ public class QTcCalculator: BaseCalculator {
         var calculator: QTcCalculator
         switch formula {
         case .qtcBzt:
-            calculator = QTcCalculator(formula: .qtcBzt, longName: "Bazett", shortName: "QTcBZT", reference: "Bazett HC. An analysis of the time relations of electrocardiograms. Heart 1920; 7:353-367.", baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.5)})
+            calculator = QTcCalculator(formula: .qtcBzt, longName: "Bazett", shortName: "QTcBZT",
+                                       reference: "Bazett HC. An analysis of the time relations of electrocardiograms. Heart 1920; 7:353-367.",
+                                       equation: "QT/RR^0.5",
+                                       baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.5)})
         case .qtcFrd:
-            calculator = QTcCalculator(formula: .qtcFrd, longName: "Fridericia", shortName: "QTcFRM", reference: "Fridericia L. Die sytolendauer in elektrokardiogramm bei normalen menschen und bei herzkranken. Acta Med Scand. 1920;53:469-486.", baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 1 / 3.0)})
+            calculator = QTcCalculator(formula: .qtcFrd, longName: "Fridericia", shortName: "QTcFRM",
+                                       reference: "Fridericia L. Die sytolendauer in elektrokardiogramm bei normalen menschen und bei herzkranken. Acta Med Scand. 1920;53:469-486.",
+                                       equation: "QT/RR^0.333",
+                                       baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 1 / 3.0)})
         case .qtcMyd:
-            calculator = QTcCalculator(formula: .qtcMyd, longName: "Mayeda", shortName: "QTcMYD", reference: "Mayeda I. On time relation between systolic duration of heart and pulse rate. Acta Sch Med Univ Imp. 1934;17:53-55.", baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.604)})
+            calculator = QTcCalculator(formula: .qtcMyd, longName: "Mayeda", shortName: "QTcMYD",
+                                       reference: "Mayeda I. On time relation between systolic duration of heart and pulse rate. Acta Sch Med Univ Imp. 1934;17:53-55.",
+                                       equation: "QT/RR^0.604",
+                                       baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.604)})
         case .qtcFrm:
-        calculator = QTcCalculator(formula: .qtcFrm, longName: "Framingham (Sagie)", shortName: "QTcFRM", reference: "Sagie A, Larson MG, Goldberg RJ, Bengtson JR, Levy D. An improved method for adjusting the QT interval for heart rate (the Framingham Heart Study). Am J Cardiol. 1992;70:797-801.", baseEquation: {qtInSec, rrInSec in qtcLinear(qtInSec: qtInSec, rrInSec: rrInSec, alpha: 0.154)})
+        calculator = QTcCalculator(formula: .qtcFrm, longName: "Framingham (Sagie)", shortName: "QTcFRM",
+                                   reference: "Sagie A, Larson MG, Goldberg RJ, Bengtson JR, Levy D. An improved method for adjusting the QT interval for heart rate (the Framingham Heart Study). Am J Cardiol. 1992;70:797-801.",
+                                   equation: "QT + 0.154*(1-RR)",
+                                   baseEquation: {qtInSec, rrInSec in qtcLinear(qtInSec: qtInSec, rrInSec: rrInSec, alpha: 0.154)})
         case .qtcHdg:
-            calculator = QTcCalculator(formula: .qtcHdg, longName: "Hodges", shortName: "QTcHDG", reference: "Hodges M, Salerno D, Erlien D. Bazett’s QT correction reviewed: Evidence that a linear QT correction for heart rate is better. J Am Coll Cardiol. 1983;1:1983.", baseEquation: {qtInSec, rrInSec in qtInSec + 0.00175 * (secToBpm(rrInSec) - 60)})
+            calculator = QTcCalculator(formula: .qtcHdg, longName: "Hodges", shortName: "QTcHDG",
+                                       reference: "Hodges M, Salerno D, Erlien D. Bazett’s QT correction reviewed: Evidence that a linear QT correction for heart rate is better. J Am Coll Cardiol. 1983;1:1983.",
+                                       equation: "QT + 1.75*(HR-60)",
+                                       baseEquation: {qtInSec, rrInSec in qtInSec + 0.00175 * (secToBpm(rrInSec) - 60)})
         case .qtcRtha:
-            calculator = QTcCalculator(formula: .qtcRtha, longName: "Rautaharju (2014)a", shortName: "QTcRTHa", reference: "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. Int J Cardiol. 2014;174:535-540.", baseEquation: {qtInSec, rrInSec in qtInSec * (120.0 + secToBpm(rrInSec)) / 180.0})
+            calculator = QTcCalculator(formula: .qtcRtha, longName: "Rautaharju (2014)a", shortName: "QTcRTHa",
+                                       reference: "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. Int J Cardiol. 2014;174:535-540.",
+                                       equation: "QT * (120 + HR)/180",
+                                       baseEquation: {qtInSec, rrInSec in qtInSec * (120.0 + secToBpm(rrInSec)) / 180.0})
         case .qtcArr:
-            calculator = QTcCalculator(formula: .qtcArr, longName: "Arrowood", shortName: "QTcARR", reference: "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohrnty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223.", baseEquation: {qtInSec, rrInSec in qtInSec + 0.304 - 0.492 * exp(-0.008 * secToBpm(rrInSec))})
+            calculator = QTcCalculator(formula: .qtcArr, longName: "Arrowood", shortName: "QTcARR",
+                                       reference: "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohrnty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223.",
+                                       equation: "QT + 0.304 - 0.492*e^(-0.008*HR)",
+                                       baseEquation: {qtInSec, rrInSec in qtInSec + 0.304 - 0.492 * exp(-0.008 * secToBpm(rrInSec))})
         }
         return calculator
     }
