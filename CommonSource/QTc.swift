@@ -17,6 +17,7 @@ public enum Formula {
     case qtcRtha // Rautaharju (2014)a
     case qtcMyd  // Mayeda
     case qtcArr  // Arrowood
+    case qtcKwt  // Kawataki
     // more coming
 }
 
@@ -44,9 +45,11 @@ typealias qtpEquation = (Double) -> Double
 public class QTcCalculator: BaseCalculator {
     let baseEquation: qtcEquation
     
-    init(formula: Formula, longName: String, shortName: String, reference: String, equation: String, baseEquation: @escaping qtcEquation) {
+    init(formula: Formula, longName: String, shortName: String,
+         reference: String, equation: String, baseEquation: @escaping qtcEquation) {
         self.baseEquation = baseEquation
-        super.init(formula: formula, longName: longName, shortName: shortName, reference: reference, equation: equation)
+        super.init(formula: formula, longName: longName, shortName: shortName,
+                   reference: reference, equation: equation)
         
     }
     
@@ -112,6 +115,11 @@ public class QTcCalculator: BaseCalculator {
                                        reference: "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohrnty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223.",
                                        equation: "QT + 0.304 - 0.492*e^(-0.008*HR)",
                                        baseEquation: {qtInSec, rrInSec in qtInSec + 0.304 - 0.492 * exp(-0.008 * secToBpm(rrInSec))})
+         case .qtcKwt:
+            calculator = QTcCalculator(formula: .qtcKwt, longName: "Kawataki", shortName: "QTcKWT",
+                                       reference: "Kawataki M, Kashima T, Toda H, Tanaka H. Relation between QT interval and heart rate. applications and limitations of Bazett’s formula. J Electrocardiol. 1984;17:371-375.",
+                                       equation: "QT/RR^0.25",
+                                       baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.25)})
         }
         return calculator
     }

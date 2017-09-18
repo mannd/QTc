@@ -48,17 +48,28 @@ class QTc_iOSTests: XCTestCase {
        (47, 1.2766, 1276.6, 402, 355.8, 370.6, 359.4, 379.3), (132, 0.4545, 454.5, 219, 324.8, 284.8, 303, 345)]
     // TODO: Add new formulae here
     let qtcRandomTable: [(qtInSec: Double, rrInSec: Double, qtcMyd: Double, qtcRtha: Double,
-                          qtcArr: Double)] = [(0.217, 1.228, 0.191683142324075, 0.20357003257329, 0.188180853891965),
-                                              (0.617, 1.873, 0.422349852160997, 0.521139348638548, 0.540226253226725),
-                                              (0.441, 0.024, 4.19557027148694, 6.419, 0.744999998985912),
-                                              (0.626, 1.938, 0.419771215123981, 0.525004471964224, 0.545939267391605),
-                                              (0.594, 1.693, 0.432192914133319, 0.512952155936208, 0.527461134835087),
-                                              (0.522, 0.670, 0.664846401046771, 0.607701492537313, 0.585658505426308),
-                                              (0.162, 0.238, 0.385533865286431, 0.334890756302521, 0.400524764066341),
-                                              (0.449, 0.738, 0.539436462235939, 0.50213369467028, 0.496257865770434),
-                                              (0.364, 0.720, 0.443887132523326, 0.411185185185185, 0.415398777435965),
-                                              (0.279, 0.013, 3.84399149834848, 7.33984615384616, 0.583),
-                                              (0.184, 0.384, 0.328005981451736, 0.282388888888889, 0.347039639944786)]
+                          qtcArr: Double, qtcKwt: Double)] = [(0.217, 1.228, 0.191683142324075,
+                                                               0.20357003257329, 0.188180853891965, 0.206138989195107),
+                                                              (0.617, 1.873, 0.422349852160997, 0.521139348638548,
+                                                               0.540226253226725,0.527412865616186 ),
+                                                              (0.441, 0.024, 4.19557027148694, 6.419, 0.744999998985912,
+                                                               1.12043270968093),
+                                                              (0.626, 1.938, 0.419771215123981, 0.525004471964224,
+                                                               0.545939267391605, 0.530561692609049),
+                                                              (0.594, 1.693, 0.432192914133319, 0.512952155936208,
+                                                               0.527461134835087, 0.520741518839723),
+                                                              (0.522, 0.670, 0.664846401046771, 0.607701492537313,
+                                                               0.585658505426308, 0.576968100296572),
+                                                              (0.162, 0.238, 0.385533865286431, 0.334890756302521,
+                                                               0.400524764066341, 0.231937395103792),
+                                                              (0.449, 0.738, 0.539436462235939, 0.50213369467028,
+                                                               0.496257865770434, 0.484431360905827),
+                                                              (0.364, 0.720, 0.443887132523326, 0.411185185185185,
+                                                               0.415398777435965, 0.395155707875796),
+                                                              (0.279, 0.013, 3.84399149834848, 7.33984615384616,
+                                                               0.583, 0.826263113547243),
+                                                              (0.184, 0.384, 0.328005981451736, 0.282388888888889,
+                                                               0.347039639944786, 0.233741064151123)]
     // Convenience array of QTc formulae, only including non-exponential formulas
     let formulas: [Formula] = [.qtcBzt, .qtcFrd, .qtcHdg, .qtcFrm, .qtcMyd, .qtcRtha]
  
@@ -190,10 +201,12 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqualWithAccuracy(qtcArr.calculate(qtInSec: 0.275, rate: 69), 0.295707844, accuracy: delta)
         
         // Run through more multiple QTcs
-        for (qtInSec, rrInSec, qtcMydResult, qtcRthaResult, qtcArrResult) in qtcRandomTable {
+        let qtcKwt = QTc.qtcCalculator(formula: .qtcKwt)
+        for (qtInSec, rrInSec, qtcMydResult, qtcRthaResult, qtcArrResult, qtcKwtResult) in qtcRandomTable {
             XCTAssertEqualWithAccuracy(qtcMyd.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcMydResult, accuracy: delta)
             XCTAssertEqualWithAccuracy(qtcRtha.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcRthaResult, accuracy: delta)
             XCTAssertEqualWithAccuracy(qtcArr.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcArrResult, accuracy: delta)
+            XCTAssertEqualWithAccuracy(qtcKwt.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcKwtResult, accuracy: delta)
         }
         
     }
