@@ -9,7 +9,7 @@
 import Foundation
 
 // Nomenclature from Rabkin and Cheng, 2015: https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B17
-public enum Formula {
+public enum QTcFormula {
     case qtcBzt  // Bazett
     case qtcFrd  // Fridericia
     case qtcFrm  // Framingham
@@ -21,17 +21,19 @@ public enum Formula {
     // more coming
 }
 
+public enum QTpFormula {
+    case qtpArr
+}
+
 // If Swift had "protected" access we would use it here.  We do want the properties of this class
 // to be accessible via QTcCalculator, but we don't want BaseCalculator to be instantialized by users.
 public class BaseCalculator {
-    public let formula: Formula
     public let longName: String
     public let shortName: String
     public let reference: String
     public let equation: String
     
-    init(formula: Formula, longName: String, shortName: String, reference: String, equation: String) {
-        self.formula = formula
+    init(longName: String, shortName: String, reference: String, equation: String) {
         self.longName = longName
         self.shortName = shortName
         self.reference = reference
@@ -43,12 +45,14 @@ typealias qtcEquation = (Double, Double) -> Double
 typealias qtpEquation = (Double) -> Double
 
 public class QTcCalculator: BaseCalculator {
+    let formula: QTcFormula
     let baseEquation: qtcEquation
     
-    init(formula: Formula, longName: String, shortName: String,
+    init(formula: QTcFormula, longName: String, shortName: String,
          reference: String, equation: String, baseEquation: @escaping qtcEquation) {
+        self.formula = formula
         self.baseEquation = baseEquation
-        super.init(formula: formula, longName: longName, shortName: shortName,
+        super.init(longName: longName, shortName: shortName,
                    reference: reference, equation: equation)
         
     }
@@ -75,54 +79,6 @@ public class QTcCalculator: BaseCalculator {
 
 /// TODO: is @objc tag needed if inheritance from NSObject?
 @objc public class QTc: NSObject {
-   
-    // Factory method that returns the calculator you ask for.
-    public static func qtcCalculator(formula: Formula) -> QTcCalculator {
-        var calculator: QTcCalculator
-        switch formula {
-        case .qtcBzt:
-            calculator = QTcCalculator(formula: .qtcBzt, longName: "Bazett", shortName: "QTcBZT",
-                                       reference: "Bazett HC. An analysis of the time relations of electrocardiograms. Heart 1920; 7:353-367.",
-                                       equation: "QT/RR^0.5",
-                                       baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.5)})
-        case .qtcFrd:
-            calculator = QTcCalculator(formula: .qtcFrd, longName: "Fridericia", shortName: "QTcFRM",
-                                       reference: "Fridericia L. Die sytolendauer in elektrokardiogramm bei normalen menschen und bei herzkranken. Acta Med Scand. 1920;53:469-486.",
-                                       equation: "QT/RR^0.333",
-                                       baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 1 / 3.0)})
-        case .qtcMyd:
-            calculator = QTcCalculator(formula: .qtcMyd, longName: "Mayeda", shortName: "QTcMYD",
-                                       reference: "Mayeda I. On time relation between systolic duration of heart and pulse rate. Acta Sch Med Univ Imp. 1934;17:53-55.",
-                                       equation: "QT/RR^0.604",
-                                       baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.604)})
-        case .qtcFrm:
-        calculator = QTcCalculator(formula: .qtcFrm, longName: "Framingham (Sagie)", shortName: "QTcFRM",
-                                   reference: "Sagie A, Larson MG, Goldberg RJ, Bengtson JR, Levy D. An improved method for adjusting the QT interval for heart rate (the Framingham Heart Study). Am J Cardiol. 1992;70:797-801.",
-                                   equation: "QT + 0.154*(1-RR)",
-                                   baseEquation: {qtInSec, rrInSec in qtcLinear(qtInSec: qtInSec, rrInSec: rrInSec, alpha: 0.154)})
-        case .qtcHdg:
-            calculator = QTcCalculator(formula: .qtcHdg, longName: "Hodges", shortName: "QTcHDG",
-                                       reference: "Hodges M, Salerno D, Erlien D. Bazett’s QT correction reviewed: Evidence that a linear QT correction for heart rate is better. J Am Coll Cardiol. 1983;1:1983.",
-                                       equation: "QT + 1.75*(HR-60)",
-                                       baseEquation: {qtInSec, rrInSec in qtInSec + 0.00175 * (secToBpm(rrInSec) - 60)})
-        case .qtcRtha:
-            calculator = QTcCalculator(formula: .qtcRtha, longName: "Rautaharju (2014)a", shortName: "QTcRTHa",
-                                       reference: "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. Int J Cardiol. 2014;174:535-540.",
-                                       equation: "QT * (120 + HR)/180",
-                                       baseEquation: {qtInSec, rrInSec in qtInSec * (120.0 + secToBpm(rrInSec)) / 180.0})
-        case .qtcArr:
-            calculator = QTcCalculator(formula: .qtcArr, longName: "Arrowood", shortName: "QTcARR",
-                                       reference: "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohrnty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223.",
-                                       equation: "QT + 0.304 - 0.492*e^(-0.008*HR)",
-                                       baseEquation: {qtInSec, rrInSec in qtInSec + 0.304 - 0.492 * exp(-0.008 * secToBpm(rrInSec))})
-         case .qtcKwt:
-            calculator = QTcCalculator(formula: .qtcKwt, longName: "Kawataki", shortName: "QTcKWT",
-                                       reference: "Kawataki M, Kashima T, Toda H, Tanaka H. Relation between QT interval and heart rate. applications and limitations of Bazett’s formula. J Electrocardiol. 1984;17:371-375.",
-                                       equation: "QT/RR^0.25",
-                                       baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.25)})
-        }
-        return calculator
-    }
   
     // Static conversion functions
     public static func secToMsec(_ sec: Double) -> Double {
@@ -149,17 +105,16 @@ public class QTcCalculator: BaseCalculator {
         return 60_000 / msec
     }
     
-    // Power QTc formula function
-    // These have form QTc = QT / pow(RR, exp)
-    private static func qtcExp(qtInSec: Double, rrInSec: Double, exp: Double) -> Double {
-        return qtInSec / pow(rrInSec, exp)
+    // Factory method that returns the calculator you ask for.
+    public static func qtcCalculator(formula: QTcFormula) -> QTcCalculator {
+        guard let calculator = Formulas.qtcDictionary[formula] else {
+            fatalError("Formula not found!")
+        }
+        return calculator
     }
     
-    // Linear QTc formula function
-    // These have form QTc = QT + α(1 - RR)
-    private static func qtcLinear(qtInSec: Double, rrInSec: Double, alpha: Double) -> Double {
-        return qtInSec + alpha * (1 - rrInSec)
-    }
+    // TODO: QTp factory
+    // public static func qtpCalculator(formula: Formula) -> QTpCalculator {}
     
     // Convert from one set of units to another
     // Note that qtcFunction must have parameters of secs, e.g. qtcBzt(qtInSec:rrInSec)
@@ -188,23 +143,6 @@ public class QTcCalculator: BaseCalculator {
         return qtpFunction(bpmToSec(rate))
     }
     
-    // Arrowood
-    public static func qtcArr(qtInSec: Double, rrInSec: Double) -> Double {
-        return qtInSec + 0.304 - 0.492 * exp(-0.008 * secToBpm(rrInSec))
-    }
-    
-    public static func qtcArr(qtInMsec: Double, rrInMsec: Double) -> Double  {
-        return qtcConvert(qtcArr(qtInSec:rrInSec:), qtInMsec: qtInMsec, rrInMsec: rrInMsec)
-    }
-    
-    public static func qtcArr(qtInSec: Double, rate: Double) -> Double {
-        return qtcConvert(qtcArr(qtInSec:rrInSec:), qtInSec: qtInSec, rate: rate)
-    }
-    
-    public static func qtcArr(qtInMsec: Double, rate: Double) -> Double {
-        return qtcConvert(qtcArr(qtInSec:rrInSec:), qtInMsec: qtInMsec, rate: rate)
-    }
-
    // MARK: QTp functions.  These functions calculate what the QT "should be" at a given rate
     // or interval.
     

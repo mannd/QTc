@@ -24,9 +24,9 @@ To use with an Objective C file add:
     #import <QTc/QTc-Swift.h>
 
 ## Using the framework
-QTc functions are labeled based on the proposed standard nomenclature of [Rabkin](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16).  Use the enum Formula to select the QTc function:
+QTc functions are labeled based on the proposed standard nomenclature of [Rabkin](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16).  Use the enum QTcFormula to select the QTc function:
 
-	public enum Formula {
+	public enum QTcFormula {
 		case qtcBzt  // Bazett
 		case qtcFrd  // Fridericia
 		case qtcFrm  // Framingham
@@ -34,14 +34,15 @@ QTc functions are labeled based on the proposed standard nomenclature of [Rabkin
 		case qtcRtha // Rautaharju (2014)a
 		case qtcMyd  // Mayeda
 		case qtcArr  // Arrowood
+		case qtcKwt  // Kawataki
 		// more coming
 	}
 
-Generate a qtcCalculator class using the static function QTc.qtcCalculator(formula: Formula) as shown below.
+Generate a qtcCalculator class using the static function QTc.qtcCalculator(formula: QTcFormula) as shown below.
 
 	let qtcBztCalculator = QTc.qtcCalculator(formula: .qtcBzt) // Swift
 
-	QTcCalculator qtcBztCalculator = [QTc qtcCalculatorWithFormula: Formula.qtcBzt]; // Objective C
+	QTcCalculator qtcBztCalculator = [QTc qtcCalculatorWithFormula: QTcFormula.qtcBzt]; // Objective C
 
 Then use the calculator to calculate the QTc:
 
@@ -83,7 +84,7 @@ Of course your other option is never to send these bad parameters to the formula
 	}
 
 ## Conversion functions
-The QTc framework includes static functions to do common conversions, e.g.:
+The QTc framework includes static functions to do common conversions, between seconds, milliseconds and heart rate, e.g.:
 
 	let intervalInSec = 0.890
 	let intervalInMsec = QTc.secToMsec(intervalInSec) // = 890
@@ -92,7 +93,7 @@ The QTc framework includes static functions to do common conversions, e.g.:
 etc.
 
 ## Tests
-The QTc framework includes numerous unit tests to confirm accuracy, with more coming.
+The QTc framework includes numerous unit tests to confirm accuracy.
 
 ## References (partial list)
 - Bazett HC. An analysis of the time relations of electrocardiograms. Heart 1920; 7:353-367.
@@ -102,6 +103,7 @@ The QTc framework includes numerous unit tests to confirm accuracy, with more co
 - Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. Int J Cardiol. 2014;174:535-540.
 - Mayeda I. On time relation between systolic duration of heart and pulse rate. Acta Sch Med Univ Imp. 1934;17:53-55.
 - Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohrnty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223.
+- Kawataki M, Kashima T, Toda H, Tanaka H. Relation between QT interval and heart rate. applications and limitations of Bazett’s formula. J Electrocardiol. 1984;17:371-375.
 
 More QTc formulas coming!
 

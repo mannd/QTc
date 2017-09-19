@@ -70,9 +70,7 @@ class QTc_iOSTests: XCTestCase {
                                                                0.583, 0.826263113547243),
                                                               (0.184, 0.384, 0.328005981451736, 0.282388888888889,
                                                                0.347039639944786, 0.233741064151123)]
-    // Convenience array of QTc formulae, only including non-exponential formulas
-    let formulas: [Formula] = [.qtcBzt, .qtcFrd, .qtcHdg, .qtcFrm, .qtcMyd, .qtcRtha]
- 
+    
  override func setUp() {
  super.setUp()
  // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -214,6 +212,9 @@ class QTc_iOSTests: XCTestCase {
     // Most QTc functions will have QTc == QT at HR 60 (RR 1000 msec)
     func testEquipose() {
         let sampleQTs = [0.345, 1.0, 0.555, 0.114, 0, 0.888]
+        // Subset of QTc formulae, only including non-exponential formulas
+        let formulas: [QTcFormula] = [.qtcBzt, .qtcFrd, .qtcHdg, .qtcFrm, .qtcMyd, .qtcRtha]
+        
         for formula in formulas {
             let qtc = QTc.qtcCalculator(formula: formula)
             for qt in sampleQTs {
@@ -232,6 +233,7 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(qtcRtha.calculate(qtInSec: 0.489, rate: 78.9), QTc.msecToSec(qtcRtha.calculate(qtInMsec: 489, rate: 78.9)))
         XCTAssertEqual(qtcFrm.calculate(qtInMsec: 843, rrInMsec: 300), qtcFrm.calculate(qtInMsec: 843, rate: 200))
     }
+    
     
 //    func testQTpConvert() {
 //        XCTAssertEqual(QTc.qtpArr(rrInSec: 0.253), QTc.msecToSec(QTc.qtpArr(rrInMsec: 253)))
