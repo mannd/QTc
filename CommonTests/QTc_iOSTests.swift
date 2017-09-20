@@ -102,7 +102,7 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(QTc.msecToSec(0), 0)
         XCTAssertEqual(QTc.secToMsec(0), 0)
         XCTAssertEqual(QTc.msecToSec(2000), 2)                
-        XCTAssertEqualWithAccuracy(QTc.msecToSec(1117), 1.117, accuracy: delta)
+        XCTAssertEqual(QTc.msecToSec(1117), 1.117, accuracy: delta)
         
         // bpm <-> sec conversions
         XCTAssertEqual(QTc.bpmToSec(1), 60)
@@ -110,41 +110,41 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertNoThrow(QTc.bpmToSec(0))
         XCTAssert(QTc.bpmToSec(0).isInfinite)
         XCTAssertEqual(QTc.bpmToSec(0), Double.infinity)
-        XCTAssertEqualWithAccuracy(QTc.bpmToSec(0.333), 180.18018018018, accuracy: delta)
+        XCTAssertEqual(QTc.bpmToSec(0.333), 180.18018018018, accuracy: delta)
         
         // bpm <-> msec conversions
         // we'll check published conversion table with rough accuracy
         // source: https://link.springer.com/content/pdf/bfm%3A978-3-642-58810-5%2F1.pdf
-        XCTAssertEqualWithAccuracy(QTc.bpmToMsec(215), 279, accuracy: veryRoughDelta)
+        XCTAssertEqual(QTc.bpmToMsec(215), 279, accuracy: veryRoughDelta)
         for (rate, interval) in rateIntervalTable {
-            XCTAssertEqualWithAccuracy(QTc.bpmToMsec(rate), interval, accuracy: veryRoughDelta)
-            XCTAssertEqualWithAccuracy(QTc.msecToBpm(interval), rate, accuracy: veryVeryRoughDelta)
+            XCTAssertEqual(QTc.bpmToMsec(rate), interval, accuracy: veryRoughDelta)
+            XCTAssertEqual(QTc.msecToBpm(interval), rate, accuracy: veryVeryRoughDelta)
         }
     }
     
     func testQTcFunctions() {
         // QTcBZT (Bazett)
         let qtcBzt = QTc.qtcCalculator(formula: .qtcBzt)
-        XCTAssertEqualWithAccuracy(qtcBzt.calculate(qtInSec:0.3, rrInSec:1.0), 0.3, accuracy: delta)
-        XCTAssertEqualWithAccuracy(qtcBzt.calculate(qtInMsec:300, rrInMsec:1000), 300, accuracy:delta)
-        XCTAssertEqualWithAccuracy(qtcBzt.calculate(qtInSec: 0.3, rate: 60), 0.3, accuracy: delta)
-        XCTAssertEqualWithAccuracy(qtcBzt.calculate(qtInMsec: 300, rate: 60), 300, accuracy: delta)
+        XCTAssertEqual(qtcBzt.calculate(qtInSec:0.3, rrInSec:1.0), 0.3, accuracy: delta)
+        XCTAssertEqual(qtcBzt.calculate(qtInMsec:300, rrInMsec:1000), 300, accuracy:delta)
+        XCTAssertEqual(qtcBzt.calculate(qtInSec: 0.3, rate: 60), 0.3, accuracy: delta)
+        XCTAssertEqual(qtcBzt.calculate(qtInMsec: 300, rate: 60), 300, accuracy: delta)
         for (qt, interval, qtc) in qtcBztTable {
-            XCTAssertEqualWithAccuracy(qtcBzt.calculate(qtInMsec: qt, rrInMsec: interval), qtc, accuracy: veryRoughDelta)
+            XCTAssertEqual(qtcBzt.calculate(qtInMsec: qt, rrInMsec: interval), qtc, accuracy: veryRoughDelta)
         }
-        XCTAssertEqualWithAccuracy(qtcBzt.calculate(qtInMsec: 456, rate: 77), 516.6, accuracy: roughDelta)
-        XCTAssertEqualWithAccuracy(qtcBzt.calculate(qtInMsec: 369, rrInMsec: 600), 476.4, accuracy: roughDelta)
-        XCTAssertEqualWithAccuracy(qtcBzt.calculate(qtInSec: 2.78, rate: 88), 3.3667, accuracy: roughDelta)
-        XCTAssertEqualWithAccuracy(qtcBzt.calculate(qtInSec: 2.78, rrInSec: QTc.bpmToSec(88)), 3.3667, accuracy: roughDelta)
+        XCTAssertEqual(qtcBzt.calculate(qtInMsec: 456, rate: 77), 516.6, accuracy: roughDelta)
+        XCTAssertEqual(qtcBzt.calculate(qtInMsec: 369, rrInMsec: 600), 476.4, accuracy: roughDelta)
+        XCTAssertEqual(qtcBzt.calculate(qtInSec: 2.78, rate: 88), 3.3667, accuracy: roughDelta)
+        XCTAssertEqual(qtcBzt.calculate(qtInSec: 2.78, rrInSec: QTc.bpmToSec(88)), 3.3667, accuracy: roughDelta)
         XCTAssertEqual(qtcBzt.calculate(qtInSec: 5.0, rrInSec: 0), Double.infinity)
         XCTAssertEqual(qtcBzt.calculate(qtInSec: 5.0, rrInSec: 0), Double.infinity)
 
         // QTcFRD (Fridericia)
         let qtcFrd = QTc.qtcCalculator(formula: .qtcFrd)
-        XCTAssertEqualWithAccuracy(qtcFrd.calculate(qtInMsec: 456, rate: 77), 495.5, accuracy: roughDelta)
-        XCTAssertEqualWithAccuracy(qtcFrd.calculate(qtInMsec: 369, rrInMsec: 600), 437.5, accuracy: roughDelta)
-        XCTAssertEqualWithAccuracy(qtcFrd.calculate(qtInSec: 2.78, rate: 88), 3.1586, accuracy: roughDelta)
-        XCTAssertEqualWithAccuracy(qtcFrd.calculate(qtInSec: 2.78, rrInSec: QTc.bpmToSec(88)), 3.1586, accuracy: roughDelta)
+        XCTAssertEqual(qtcFrd.calculate(qtInMsec: 456, rate: 77), 495.5, accuracy: roughDelta)
+        XCTAssertEqual(qtcFrd.calculate(qtInMsec: 369, rrInMsec: 600), 437.5, accuracy: roughDelta)
+        XCTAssertEqual(qtcFrd.calculate(qtInSec: 2.78, rate: 88), 3.1586, accuracy: roughDelta)
+        XCTAssertEqual(qtcFrd.calculate(qtInSec: 2.78, rrInSec: QTc.bpmToSec(88)), 3.1586, accuracy: roughDelta)
         
         // run through multiple QTcs
         let qtcFrm = QTc.qtcCalculator(formula: .qtcFrm)
@@ -152,29 +152,29 @@ class QTc_iOSTests: XCTestCase {
         for (rate, rrInSec, rrInMsec, qtInMsec, qtcBztResult, qtcFrdResult, qtcFrmResult, qtcHdgResult) in qtcMultipleTable {
             // all 4 forms of QTc calculation are tested for each calculation
             // QTcBZT
-            XCTAssertEqualWithAccuracy(qtcBzt.calculate(qtInMsec: qtInMsec, rate: rate), qtcBztResult, accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(qtcBzt.calculate(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcBztResult), accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(qtcBzt.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcBztResult, accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(qtcBzt.calculate(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcBztResult), accuracy: roughDelta)
+            XCTAssertEqual(qtcBzt.calculate(qtInMsec: qtInMsec, rate: rate), qtcBztResult, accuracy: roughDelta)
+            XCTAssertEqual(qtcBzt.calculate(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcBztResult), accuracy: roughDelta)
+            XCTAssertEqual(qtcBzt.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcBztResult, accuracy: roughDelta)
+            XCTAssertEqual(qtcBzt.calculate(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcBztResult), accuracy: roughDelta)
 
             // QTcFRD
-            XCTAssertEqualWithAccuracy(qtcFrd.calculate(qtInMsec: qtInMsec, rate: rate), qtcFrdResult, accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(qtcFrd.calculate(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcFrdResult), accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(qtcFrd.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcFrdResult, accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(qtcFrd.calculate(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcFrdResult), accuracy: roughDelta)
+            XCTAssertEqual(qtcFrd.calculate(qtInMsec: qtInMsec, rate: rate), qtcFrdResult, accuracy: roughDelta)
+            XCTAssertEqual(qtcFrd.calculate(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcFrdResult), accuracy: roughDelta)
+            XCTAssertEqual(qtcFrd.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcFrdResult, accuracy: roughDelta)
+            XCTAssertEqual(qtcFrd.calculate(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcFrdResult), accuracy: roughDelta)
             
    
          // QTcFRM
-            XCTAssertEqualWithAccuracy(qtcFrm.calculate(qtInMsec: qtInMsec, rate: rate), qtcFrmResult, accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(qtcFrm.calculate(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcFrmResult), accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(qtcFrm.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcFrmResult, accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(qtcFrm.calculate(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcFrmResult), accuracy: roughDelta)
+            XCTAssertEqual(qtcFrm.calculate(qtInMsec: qtInMsec, rate: rate), qtcFrmResult, accuracy: roughDelta)
+            XCTAssertEqual(qtcFrm.calculate(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcFrmResult), accuracy: roughDelta)
+            XCTAssertEqual(qtcFrm.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcFrmResult, accuracy: roughDelta)
+            XCTAssertEqual(qtcFrm.calculate(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcFrmResult), accuracy: roughDelta)
             
             // QTcHDG
-            XCTAssertEqualWithAccuracy(qtcHdg.calculate(qtInMsec: qtInMsec, rate: rate), qtcHdgResult, accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(qtcHdg.calculate(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcHdgResult), accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(qtcHdg.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcHdgResult, accuracy: roughDelta)
-            XCTAssertEqualWithAccuracy(qtcHdg.calculate(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcHdgResult), accuracy: roughDelta)
+            XCTAssertEqual(qtcHdg.calculate(qtInMsec: qtInMsec, rate: rate), qtcHdgResult, accuracy: roughDelta)
+            XCTAssertEqual(qtcHdg.calculate(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcHdgResult), accuracy: roughDelta)
+            XCTAssertEqual(qtcHdg.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcHdgResult, accuracy: roughDelta)
+            XCTAssertEqual(qtcHdg.calculate(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcHdgResult), accuracy: roughDelta)
 
         }
         
@@ -188,23 +188,23 @@ class QTc_iOSTests: XCTestCase {
         
         // QTcRHTa
         let qtcRtha = QTc.qtcCalculator(formula: .qtcRtha)
-        XCTAssertEqualWithAccuracy(qtcRtha.calculate(qtInSec: 0.444, rate: 58.123), 0.43937, accuracy: delta)
+        XCTAssertEqual(qtcRtha.calculate(qtInSec: 0.444, rate: 58.123), 0.43937, accuracy: delta)
 
         // QTcMyd
         let qtcMyd = QTc.qtcCalculator(formula: .qtcMyd)
-        XCTAssertEqualWithAccuracy(qtcMyd.calculate(qtInSec: 0.399, rrInSec: 0.788), 0.46075606, accuracy: delta)
+        XCTAssertEqual(qtcMyd.calculate(qtInSec: 0.399, rrInSec: 0.788), 0.46075606, accuracy: delta)
         
         // QTcArr
         let qtcArr = QTc.qtcCalculator(formula: .qtcArr)
-        XCTAssertEqualWithAccuracy(qtcArr.calculate(qtInSec: 0.275, rate: 69), 0.295707844, accuracy: delta)
+        XCTAssertEqual(qtcArr.calculate(qtInSec: 0.275, rate: 69), 0.295707844, accuracy: delta)
         
         // Run through more multiple QTcs
         let qtcKwt = QTc.qtcCalculator(formula: .qtcKwt)
         for (qtInSec, rrInSec, qtcMydResult, qtcRthaResult, qtcArrResult, qtcKwtResult) in qtcRandomTable {
-            XCTAssertEqualWithAccuracy(qtcMyd.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcMydResult, accuracy: delta)
-            XCTAssertEqualWithAccuracy(qtcRtha.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcRthaResult, accuracy: delta)
-            XCTAssertEqualWithAccuracy(qtcArr.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcArrResult, accuracy: delta)
-            XCTAssertEqualWithAccuracy(qtcKwt.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcKwtResult, accuracy: delta)
+            XCTAssertEqual(qtcMyd.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcMydResult, accuracy: delta)
+            XCTAssertEqual(qtcRtha.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcRthaResult, accuracy: delta)
+            XCTAssertEqual(qtcArr.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcArrResult, accuracy: delta)
+            XCTAssertEqual(qtcKwt.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcKwtResult, accuracy: delta)
         }
         
     }

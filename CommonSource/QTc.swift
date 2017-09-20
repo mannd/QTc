@@ -78,7 +78,7 @@ public class QTcCalculator: BaseCalculator {
 // class QTpCalculator {}
 
 /// TODO: is @objc tag needed if inheritance from NSObject?
-@objc public class QTc: NSObject {
+public class QTc: NSObject {
   
     // Static conversion functions
     public static func secToMsec(_ sec: Double) -> Double {
