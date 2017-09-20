@@ -70,6 +70,19 @@ class QTc_iOSTests: XCTestCase {
                                                                0.583, 0.826263113547243),
                                                               (0.184, 0.384, 0.328005981451736, 0.282388888888889,
                                                                0.347039639944786, 0.233741064151123)]
+
+    // mocks for testing formula sources
+    class TestQtcFormulas: QTcFormulaSource {
+        static func qtcCalculator(formula: QTcFormula) -> QTcCalculator {
+            return QTcCalculator(formula: formula, longName: "TestLongName", shortName: "TestShortName", reference: "TestReference", equation: "TestEquation", baseEquation: { x, y in x + y})
+        }
+     }
+    
+    class TestQtpFormulas: QTpFormulaSource {
+        static func qtpCalculator(formula: QTpFormula) -> QTpCalculator {
+            return QTpCalculator(formula: formula, longName: "TestLongName", shortName: "TestShortName", reference: "TestReference", equation: "TestEquation", baseEquation: { x in pow(x, 2.0)})
+        }
+    }
     
  override func setUp() {
  super.setUp()
@@ -235,9 +248,28 @@ class QTc_iOSTests: XCTestCase {
     }
     
     
-//    func testQTpConvert() {
-//        XCTAssertEqual(QTc.qtpArr(rrInSec: 0.253), QTc.msecToSec(QTc.qtpArr(rrInMsec: 253)))
-//        XCTAssertEqual(QTc.qtpArr(rrInSec: 0.500), QTc.qtpArr(rate: 120))
-//    }
+    func testQTpConvert() {
+        let qtpArr = QTc.qtpCalculator(formula: .qtpArr)
+        XCTAssertEqual(qtpArr.calculate(rrInSec: 0.253), QTc.msecToSec(qtpArr.calculate(rrInMsec: 253)))
+        XCTAssertEqual(qtpArr.calculate(rrInSec: 0.500), qtpArr.calculate(rate: 120))
+    }
+    
+    func testMockSourceFormulas() {
+        let qtcTest = QTc.qtcCalculator(formulaSource: TestQtcFormulas.self, formula: .qtcBzt)
+        XCTAssertEqual(qtcTest.formula, .qtcBzt)
+        XCTAssertEqual(qtcTest.longName, "TestLongName")
+        XCTAssertEqual(qtcTest.shortName, "TestShortName")
+        XCTAssertEqual(qtcTest.reference, "TestReference")
+        XCTAssertEqual(qtcTest.equation, "TestEquation")
+        XCTAssertEqual(qtcTest.baseEquation(5, 7), 12)
+        
+        let qtpTest = QTc.qtpCalculator(formulaSource: TestQtpFormulas.self, formula: .qtpArr)
+        XCTAssertEqual(qtpTest.formula, .qtpArr)
+        XCTAssertEqual(qtpTest.longName, "TestLongName")
+        XCTAssertEqual(qtpTest.shortName, "TestShortName")
+        XCTAssertEqual(qtpTest.reference, "TestReference")
+        XCTAssertEqual(qtpTest.equation, "TestEquation")
+        XCTAssertEqual(qtpTest.baseEquation(5), 25)
+    }
 
 }

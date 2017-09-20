@@ -74,8 +74,39 @@ public class QTcCalculator: BaseCalculator {
     }
 }
 
-// TODO:
-// class QTpCalculator {}
+public class QTpCalculator: BaseCalculator {
+    let formula: QTpFormula
+    let baseEquation: qtpEquation
+    
+    init(formula: QTpFormula, longName: String, shortName: String,
+                  reference: String, equation: String, baseEquation: @escaping qtpEquation) {
+        self.formula = formula
+        self.baseEquation = baseEquation
+        super.init(longName: longName, shortName: shortName,
+                   reference: reference, equation: equation)
+        
+    }
+    
+    func calculate(rrInSec: Double) -> Double {
+        return baseEquation(rrInSec)
+    }
+    
+    func calculate(rrInMsec: Double) -> Double {
+        return QTc.qtpConvert(baseEquation, rrInMsec: rrInMsec)
+    }
+    
+    func calculate(rate: Double) -> Double {
+        return QTc.qtpConvert(baseEquation, rate: rate)
+    }
+}
+
+protocol QTcFormulaSource {
+    static func qtcCalculator(formula: QTcFormula) -> QTcCalculator
+}
+
+protocol QTpFormulaSource {
+    static func qtpCalculator(formula: QTpFormula) -> QTpCalculator
+}
 
 /// TODO: is @objc tag needed if inheritance from NSObject?
 public class QTc: NSObject {
@@ -105,16 +136,26 @@ public class QTc: NSObject {
         return 60_000 / msec
     }
     
-    // Factory method that returns the calculator you ask for.
-    public static func qtcCalculator(formula: QTcFormula) -> QTcCalculator {
-        guard let calculator = Formulas.qtcDictionary[formula] else {
-            fatalError("Formula not found!")
-        }
-        return calculator
+    
+    // add seems here for unit testing
+    class func qtcCalculator<T: QTcFormulaSource>(formulaSource: T.Type, formula: QTcFormula) -> QTcCalculator {
+        return T.qtcCalculator(formula: formula)
     }
     
-    // TODO: QTp factory
-    // public static func qtpCalculator(formula: Formula) -> QTpCalculator {}
+    class func qtpCalculator<T: QTpFormulaSource>(formulaSource: T.Type, formula: QTpFormula) -> QTpCalculator {
+        return T.qtpCalculator(formula: formula)
+    }
+    
+    
+    // Factory method that returns the calculator you ask for.
+    public static func qtcCalculator(formula: QTcFormula) -> QTcCalculator {
+        return qtcCalculator(formulaSource: Formulas.self, formula: formula)
+    }
+    
+    // QTp factory
+    public static func qtpCalculator(formula: QTpFormula) -> QTpCalculator {
+        return qtpCalculator(formulaSource: Formulas.self, formula: formula)
+    }
     
     // Convert from one set of units to another
     // Note that qtcFunction must have parameters of secs, e.g. qtcBzt(qtInSec:rrInSec)
@@ -134,32 +175,13 @@ public class QTc: NSObject {
     }
    
     // QTp conversion
-    private static func qtpConvert(_ qtpFunction: (Double) -> Double, rrInMsec: Double) -> Double {
+    public static func qtpConvert(_ qtpFunction: (Double) -> Double, rrInMsec: Double) -> Double {
         return secToMsec(qtpFunction(msecToSec(rrInMsec)))
     }
     
     // returns QTp in seconds!
-    private static func qtpConvert(_ qtpFunction: (Double) -> Double, rate: Double) -> Double {
+    public static func qtpConvert(_ qtpFunction: (Double) -> Double, rate: Double) -> Double {
         return qtpFunction(bpmToSec(rate))
-    }
-    
-   // MARK: QTp functions.  These functions calculate what the QT "should be" at a given rate
-    // or interval.
-    
-    // QTpARR
-    public static func qtpArr(rrInSec: Double) -> Double {
-        return 0.12 + 0.492 * exp(-0.008 * secToBpm(rrInSec))
-    }
-   
-    public static func qtpArr(rrInMsec: Double) -> Double {
-        return qtpConvert(qtpArr(rrInSec:), rrInMsec: rrInMsec)
-    }
-    
-    // TODO: should functions like this return in msec, ie. make msec the default return value?
-    // or have qtp funcs named like qtpArrInMsec(), qtpArrInSec()??
-    // returns QTp in seconds
-    public static func qtpArr(rate: Double) -> Double {
-        return qtpConvert(qtpArr(rrInSec:), rate: rate)
     }
 
 }

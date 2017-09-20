@@ -8,7 +8,21 @@
 
 import Foundation
 
-class Formulas {
+class Formulas: QTcFormulaSource, QTpFormulaSource {
+    static func qtcCalculator(formula: QTcFormula) -> QTcCalculator {
+        guard let calculator = qtcDictionary[formula] else {
+            fatalError("Formula not found!")
+        }
+        return calculator
+    }
+    
+    static func qtpCalculator(formula: QTpFormula) -> QTpCalculator {
+        guard let calculator = qtpDictionary[formula] else {
+            fatalError("Formula not found!")
+        }
+        return calculator
+    }
+    
     // Power QTc formula function
     // These have form QTc = QT / pow(RR, exp)
     private static func qtcExp(qtInSec: Double, rrInSec: Double, exp: Double) -> Double {
@@ -60,5 +74,8 @@ class Formulas {
                                       reference: "Kawataki M, Kashima T, Toda H, Tanaka H. Relation between QT interval and heart rate. applications and limitations of Bazett’s formula. J Electrocardiol. 1984;17:371-375.",
                                       equation: "QT/RR^0.25",
                                       baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.25)})]
- 
+    
+    static let qtpDictionary: [QTpFormula : QTpCalculator] = [.qtpArr: QTpCalculator(formula: .qtpArr, longName: "Arrowood", shortName: "QTpARR", reference: "pending", equation: "pending",
+                                                                                     baseEquation: {rrInSec in 0.12 + 0.492 * exp(-0.008 * QTc.secToBpm(rrInSec))})]
+                                                                                        
 }
