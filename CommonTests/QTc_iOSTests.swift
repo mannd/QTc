@@ -46,30 +46,31 @@ class QTc_iOSTests: XCTestCase {
                             qtcBzt: Double, qtcFrd: Double, qtcFrm: Double, qtcHDG: Double)] =
       [(88, 0.682, 681.8, 278, 336.7, 315.9, 327.0, 327.0), (112, 0.536, 535.7, 334, 456.3, 411.2, 405.5, 425.0),
        (47, 1.2766, 1276.6, 402, 355.8, 370.6, 359.4, 379.3), (132, 0.4545, 454.5, 219, 324.8, 284.8, 303, 345)]
+
     // TODO: Add new formulae here
     let qtcRandomTable: [(qtInSec: Double, rrInSec: Double, qtcMyd: Double, qtcRtha: Double,
-                          qtcArr: Double, qtcKwt: Double)] = [(0.217, 1.228, 0.191683142324075,
-                                                               0.20357003257329, 0.188180853891965, 0.206138989195107),
+                          qtcArr: Double, qtcKwt: Double, qtcDmt: Double)] = [(0.217, 1.228, 0.191683142324075,
+                                                                               0.20357003257329, 0.188180853891965, 0.206138989195107, 0.199352096980993),
                                                               (0.617, 1.873, 0.422349852160997, 0.521139348638548,
-                                                               0.540226253226725,0.527412865616186 ),
+                                                               0.540226253226725,0.527412865616186 , 0.476131661614717),
                                                               (0.441, 0.024, 4.19557027148694, 6.419, 0.744999998985912,
-                                                               1.12043270968093),
+                                                               1.12043270968093, 2.05783877711859),
                                                               (0.626, 1.938, 0.419771215123981, 0.525004471964224,
-                                                               0.545939267391605, 0.530561692609049),
+                                                               0.545939267391605, 0.530561692609049, 0.47631825370458),
                                                               (0.594, 1.693, 0.432192914133319, 0.512952155936208,
-                                                               0.527461134835087, 0.520741518839723),
+                                                               0.527461134835087, 0.520741518839723, 0.477915505801712),
                                                               (0.522, 0.670, 0.664846401046771, 0.607701492537313,
-                                                               0.585658505426308, 0.576968100296572),
+                                                               0.585658505426308, 0.576968100296572, 0.615887811579245),
                                                               (0.162, 0.238, 0.385533865286431, 0.334890756302521,
-                                                               0.400524764066341, 0.231937395103792),
+                                                               0.400524764066341, 0.231937395103792, 0.29308171977912),
                                                               (0.449, 0.738, 0.539436462235939, 0.50213369467028,
-                                                               0.496257865770434, 0.484431360905827),
+                                                               0.496257865770434, 0.484431360905827, 0.509024942553452),
                                                               (0.364, 0.720, 0.443887132523326, 0.411185185185185,
-                                                               0.415398777435965, 0.395155707875796),
+                                                               0.415398777435965, 0.395155707875796, 0.416891521344714),
                                                               (0.279, 0.013, 3.84399149834848, 7.33984615384616,
-                                                               0.583, 0.826263113547243),
+                                                               0.583, 0.826263113547243, 1.67704840828666),
                                                               (0.184, 0.384, 0.328005981451736, 0.282388888888889,
-                                                               0.347039639944786, 0.233741064151123)]
+                                                               0.347039639944786, 0.233741064151123, 0.27320524164178)]
 
     // mocks for testing formula sources
     class TestQtcFormulas: QTcFormulaSource {
@@ -213,11 +214,13 @@ class QTc_iOSTests: XCTestCase {
         
         // Run through more multiple QTcs
         let qtcKwt = QTc.qtcCalculator(formula: .qtcKwt)
-        for (qtInSec, rrInSec, qtcMydResult, qtcRthaResult, qtcArrResult, qtcKwtResult) in qtcRandomTable {
+        let qtcDmt = QTc.qtcCalculator(formula: .qtcDmt)
+        for (qtInSec, rrInSec, qtcMydResult, qtcRthaResult, qtcArrResult, qtcKwtResult, qtcDmtResult) in qtcRandomTable {
             XCTAssertEqual(qtcMyd.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcMydResult, accuracy: delta)
             XCTAssertEqual(qtcRtha.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcRthaResult, accuracy: delta)
             XCTAssertEqual(qtcArr.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcArrResult, accuracy: delta)
             XCTAssertEqual(qtcKwt.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcKwtResult, accuracy: delta)
+            XCTAssertEqual(qtcDmt.calculate(qtInSec: qtInSec, rrInSec: rrInSec), qtcDmtResult, accuracy: delta)
         }
         
     }

@@ -18,6 +18,7 @@ public enum QTcFormula {
     case qtcMyd  // Mayeda
     case qtcArr  // Arrowood
     case qtcKwt  // Kawataki
+    case qtcDmt  // Dimitrienko
     // more coming
 }
 
@@ -137,12 +138,12 @@ public class QTc: NSObject {
     }
     
     
-    // add seems here for unit testing
-    class func qtcCalculator<T: QTcFormulaSource>(formulaSource: T.Type, formula: QTcFormula) -> QTcCalculator {
+    // add seams here for unit testing
+    static func qtcCalculator<T: QTcFormulaSource>(formulaSource: T.Type, formula: QTcFormula) -> QTcCalculator {
         return T.qtcCalculator(formula: formula)
     }
     
-    class func qtpCalculator<T: QTpFormulaSource>(formulaSource: T.Type, formula: QTpFormula) -> QTpCalculator {
+    static func qtpCalculator<T: QTpFormulaSource>(formulaSource: T.Type, formula: QTpFormula) -> QTpCalculator {
         return T.qtpCalculator(formula: formula)
     }
     
