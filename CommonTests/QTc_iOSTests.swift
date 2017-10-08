@@ -78,13 +78,13 @@ class QTc_iOSTests: XCTestCase {
     // mocks for testing formula sources
     class TestQtcFormulas: QTcFormulaSource {
         static func qtcCalculator(formula: QTcFormula) -> QTcCalculator {
-            return QTcCalculator(formula: formula, longName: "TestLongName", shortName: "TestShortName", reference: "TestReference", equation: "TestEquation", baseEquation: { x, y in x + y})
+            return QTcCalculator(formula: formula, longName: "TestLongName", shortName: "TestShortName", reference: "TestReference", equation: "TestEquation", baseEquation: { x, y in x + y}, classification: .other)
         }
      }
     
     class TestQtpFormulas: QTpFormulaSource {
         static func qtpCalculator(formula: QTpFormula) -> QTpCalculator {
-            return QTpCalculator(formula: formula, longName: "TestLongName", shortName: "TestShortName", reference: "TestReference", equation: "TestEquation", baseEquation: { x in pow(x, 2.0)})
+            return QTpCalculator(formula: formula, longName: "TestLongName", shortName: "TestShortName", reference: "TestReference", equation: "TestEquation", baseEquation: { x in pow(x, 2.0)}, classification: .other)
         }
     }
     
@@ -302,6 +302,13 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(calculator.notes, "Oldest, most common formula, but inaccurate at extremes of heart rate")
         let calculator2 = QTc.qtcCalculator(formula: .qtcFrd)
         XCTAssertEqual(calculator2.notes, "")
+    }
+    
+    func testClassification() {
+        let qtcBzt = QTc.qtcCalculator(formula: .qtcBzt)
+        XCTAssertEqual(qtcBzt.classification, .power)
+        let qtcFrm = QTc.qtcCalculator(formula: .qtcFrm)
+        XCTAssertEqual(qtcFrm.classification, .linear)
     }
 
 }
