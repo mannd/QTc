@@ -26,6 +26,9 @@ public enum QTpFormula {
     case qtpArr
 }
 
+fileprivate let qtcNames: [QTcFormula: String] = [.qtcBzt: "QTcBZT"]
+fileprivate let qtpNames: [QTpFormula: String] = [.qtpArr: "QTpArr"]
+
 // If Swift had "protected" access we would use it here.  We do want the properties of this class
 // to be accessible via QTcCalculator, but we don't want BaseCalculator to be instantialized by users.
 public class BaseCalculator {
@@ -33,12 +36,19 @@ public class BaseCalculator {
     public let shortName: String
     public let reference: String
     public let equation: String
+    // true is adult or general equations, few pediatric ones will set this false
+    public let forAdults: Bool
+    // potentially add notes to certain formulas
+    public let notes: String
     
-    init(longName: String, shortName: String, reference: String, equation: String) {
+    init(longName: String, shortName: String, reference: String, equation: String,
+         forAdults: Bool, notes: String) {
         self.longName = longName
         self.shortName = shortName
         self.reference = reference
         self.equation = equation
+        self.forAdults = forAdults
+        self.notes = notes
     }
 }
 
@@ -50,12 +60,13 @@ public class QTcCalculator: BaseCalculator {
     let baseEquation: qtcEquation
     
     init(formula: QTcFormula, longName: String, shortName: String,
-         reference: String, equation: String, baseEquation: @escaping qtcEquation) {
+         reference: String, equation: String, baseEquation: @escaping qtcEquation,
+         forAdults: Bool = true, notes: String = "") {
         self.formula = formula
         self.baseEquation = baseEquation
         super.init(longName: longName, shortName: shortName,
-                   reference: reference, equation: equation)
-        
+                   reference: reference, equation: equation,
+                   forAdults: forAdults, notes: notes)
     }
     
     func calculate(qtInSec: Double, rrInSec: Double) -> Double {
@@ -80,12 +91,13 @@ public class QTpCalculator: BaseCalculator {
     let baseEquation: qtpEquation
     
     init(formula: QTpFormula, longName: String, shortName: String,
-                  reference: String, equation: String, baseEquation: @escaping qtpEquation) {
+                  reference: String, equation: String, baseEquation: @escaping qtpEquation,
+                  forAdults: Bool = true, notes: String = "") {
         self.formula = formula
         self.baseEquation = baseEquation
         super.init(longName: longName, shortName: shortName,
-                   reference: reference, equation: equation)
-        
+                   reference: reference, equation: equation,
+                   forAdults: forAdults, notes: notes)
     }
     
     func calculate(rrInSec: Double) -> Double {

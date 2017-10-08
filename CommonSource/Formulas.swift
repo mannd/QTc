@@ -40,7 +40,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
     static let qtcDictionary: [QTcFormula : QTcCalculator] = [.qtcBzt: QTcCalculator(formula: .qtcBzt, longName: "Bazett", shortName: "QTcBZT",
                                                                                      reference: "Bazett HC. An analysis of the time relations of electrocardiograms. Heart 1920; 7:353-367.",
                                                                                      equation: "QT/RR^0.5",
-                                                                                     baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.5)}),
+                                                                                     baseEquation: {qtInSec, rrInSec in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.5)}, notes: "Oldest, most common formula, but inaccurate at extremes of heart rate"),
                                                               .qtcFrd:
                                                                 QTcCalculator(formula: .qtcFrd, longName: "Fridericia", shortName: "QTcFRM",
                                                                               reference: "Fridericia L. Die sytolendauer in elektrokardiogramm bei normalen menschen und bei herzkranken. Acta Med Scand. 1920;53:469-486.",

@@ -10,6 +10,9 @@ import XCTest
 @testable import QTc
 
 class QTc_iOSTests: XCTestCase {
+    // Add formulas to these arrays as they are created
+    let qtcFormulas: [QTcFormula] = [.qtcBzt, .qtcArr, .qtcDmt, .qtcFrd, .qtcFrm, .qtcHdg, .qtcKwt, .qtcMyd]
+    let qtpFormulas: [QTpFormula] = [.qtpArr]
     // Accuracy for all non-integral measurements
     let delta = 0.0000001
     let roughDelta = 0.1
@@ -273,6 +276,32 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(qtpTest.reference, "TestReference")
         XCTAssertEqual(qtpTest.equation, "TestEquation")
         XCTAssertEqual(qtpTest.baseEquation(5), 25)
+    }
+    
+    func testShortNames() {
+        let qtcBzt = QTc.qtcCalculator(formula: .qtcBzt)
+        let qtpArr = QTc.qtpCalculator(formula: .qtpArr)
+        XCTAssertEqual(qtcBzt.shortName, "QTcBZT")
+        XCTAssertEqual(qtpArr.shortName, "QTpARR")
+    }
+    
+    // Note, need to change this when nonadult formulas added
+    func testAdultFormulas() {
+        for qtcFormula in qtcFormulas {
+            let calculator = QTc.qtcCalculator(formula: qtcFormula)
+            XCTAssertTrue(calculator.forAdults)
+        }
+        for qtpFormula in qtpFormulas {
+            let calculator = QTc.qtpCalculator(formula: qtpFormula)
+            XCTAssertTrue(calculator.forAdults)
+        }
+    }
+    
+    func testNotes() {
+        let calculator = QTc.qtcCalculator(formula: .qtcBzt)
+        XCTAssertEqual(calculator.notes, "Oldest, most common formula, but inaccurate at extremes of heart rate")
+        let calculator2 = QTc.qtcCalculator(formula: .qtcFrd)
+        XCTAssertEqual(calculator2.notes, "")
     }
 
 }
