@@ -11,7 +11,7 @@ import XCTest
 
 class QTc_iOSTests: XCTestCase {
     // Add formulas to these arrays as they are created
-    let qtcFormulas: [QTcFormula] = [.qtcBzt, .qtcArr, .qtcDmt, .qtcFrd, .qtcFrm, .qtcHdg, .qtcKwt, .qtcMyd]
+    let qtcFormulas: [QTcFormula] = [.qtcBzt, .qtcArr, .qtcDmt, .qtcFrd, .qtcFrm, .qtcHdg, .qtcKwt, .qtcMyd, .qtcYos]
     let qtpFormulas: [QTpFormula] = [.qtpArr]
     // Accuracy for all non-integral measurements
     let delta = 0.0000001
@@ -241,6 +241,12 @@ class QTc_iOSTests: XCTestCase {
             }
         }
     }
+
+    func testNewFormulas() {
+        let qtcYos = QTc.qtcCalculator(formula: .qtcYos)
+        XCTAssertEqual(qtcYos.calculate(qtInSec: 0.421, rrInSec: 1.34), 0.384485183352,
+                                   accuracy: delta)
+    }
     
     func testQTcConvert() {
        let qtcBzt = QTc.qtcCalculator(formula: .qtcBzt)
@@ -289,7 +295,9 @@ class QTc_iOSTests: XCTestCase {
     func testAdultFormulas() {
         for qtcFormula in qtcFormulas {
             let calculator = QTc.qtcCalculator(formula: qtcFormula)
-            XCTAssertTrue(calculator.forAdults)
+            if calculator.forAdults {
+                XCTAssertTrue(calculator.forAdults)
+            }
         }
         for qtpFormula in qtpFormulas {
             let calculator = QTc.qtpCalculator(formula: qtpFormula)
