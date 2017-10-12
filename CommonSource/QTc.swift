@@ -20,24 +20,24 @@ public enum QTcFormula {
     case qtcKwt  // Kawataki
     case qtcDmt  // Dimitrienko
     case qtcYos  // Yoshinaga
-    case qtcBou  // Boudoulas
+    case qtcBdl  // Boudoulas (note Rabkin has qtcBRL -- typo?)
     // more coming
     case qtcTest // for testing only
 }
 
 public enum QTcComplexFormula {
     // these require age and/or sex for calculating QTc
-    case qtcComplex
+    case qtcComplex // placeholder
 }
 
 public enum QTpFormula {
     case qtpArr
-    case qtpBdl
 }
 
 public enum QTpComplexFormula {
     // these require age and/or sex for calculating QTp
-    case qtpComplex
+    case qtpBdl
+    case qtpComplex // placeholder
 }
 
 public enum FormulaClassification {
@@ -49,7 +49,6 @@ public enum FormulaClassification {
     case other
 }
 
-// Need these for "complex" formulas that include sex and/or age as parameters.
 public enum Sex {
     case mixed
     case male
@@ -58,13 +57,18 @@ public enum Sex {
 }
 
 typealias Age = Int
+
 // These are just to clarify return types of certain functions.
 // They only used when the units aren't clear in the function prototypes.
 typealias Msec = Double
 typealias Sec = Double
 
-// If Swift had "protected" access we would use it here.  We do want the properties of this class
-// to be accessible via QTcCalculator, but we don't want BaseCalculator to be instantialized by users.
+typealias QTcEquation = (_ qt: Double, _ rr: Double) -> Double
+typealias QTpEquation = (_ rr: Double) -> Double
+typealias QTcComplexEquation = (_ qt: Double, _ rr: Double, Sex, Age) -> Double
+typealias QTpComplexEquation = (_ rr: Double, Sex, Age) -> Double
+
+// This would be an abstract class if Swift had them.
 public class BaseCalculator {
     public let longName: String
     public let shortName: String
@@ -87,12 +91,6 @@ public class BaseCalculator {
         self.notes = notes
     }
 }
-
-typealias QTcEquation = (_ qt: Double, _ rr: Double) -> Double
-typealias QTpEquation = (_ rr: Double) -> Double
-// These calculators use age and/or sex in addition to QT and RR intervals.
-typealias QTcComplexEquation = (_ qt: Double, _ rr: Double, Sex, Age) -> Double
-typealias QTpComplexEquation = (_ rr: Double, Sex, Age) -> Double
 
 public class QTcCalculator: BaseCalculator {
     let formula: QTcFormula
@@ -122,6 +120,33 @@ public class QTcCalculator: BaseCalculator {
     
     func calculate(qtInMsec: Double, rate: Double) -> Msec {
         return QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rate: rate)
+    }
+}
+
+public class QTpCalculator: BaseCalculator {
+    let formula: QTpFormula
+    let baseEquation: QTpEquation
+    
+    init(formula: QTpFormula, longName: String, shortName: String,
+                  reference: String, equation: String, baseEquation: @escaping QTpEquation,
+                  classification: FormulaClassification, forAdults: Bool = true, notes: String = "") {
+        self.formula = formula
+        self.baseEquation = baseEquation
+        super.init(longName: longName, shortName: shortName,
+                   reference: reference, equation: equation,
+                   classification: classification, forAdults: forAdults, notes: notes)
+    }
+    
+    func calculate(rrInSec: Double) -> Sec {
+        return baseEquation(rrInSec)
+    }
+    
+    func calculate(rrInMsec: Double) -> Msec {
+        return QTc.qtpConvert(baseEquation, rrInMsec: rrInMsec)
+    }
+    
+    func calculate(rate: Double) -> Sec {
+        return QTc.qtpConvert(baseEquation, rate: rate)
     }
 }
 
@@ -156,33 +181,6 @@ public class QTcComplexCalculator: BaseCalculator {
     }
 }
 
-public class QTpCalculator: BaseCalculator {
-    let formula: QTpFormula
-    let baseEquation: QTpEquation
-    
-    init(formula: QTpFormula, longName: String, shortName: String,
-                  reference: String, equation: String, baseEquation: @escaping QTpEquation,
-                  classification: FormulaClassification, forAdults: Bool = true, notes: String = "") {
-        self.formula = formula
-        self.baseEquation = baseEquation
-        super.init(longName: longName, shortName: shortName,
-                   reference: reference, equation: equation,
-                   classification: classification, forAdults: forAdults, notes: notes)
-    }
-    
-    func calculate(rrInSec: Double) -> Sec {
-        return baseEquation(rrInSec)
-    }
-    
-    func calculate(rrInMsec: Double) -> Msec {
-        return QTc.qtpConvert(baseEquation, rrInMsec: rrInMsec)
-    }
-    
-    func calculate(rate: Double) -> Sec {
-        return QTc.qtpConvert(baseEquation, rate: rate)
-    }
-}
-
 public class QTpComplexCalculator: BaseCalculator {
     let formula: QTpComplexFormula
     let baseEquation: QTpComplexEquation
@@ -210,8 +208,7 @@ public class QTpComplexCalculator: BaseCalculator {
     }
 }
 
-
-// These are protocols that the formula source must adhere to
+// These are protocols that the formula source must adhere to.
 protocol QTcFormulaSource {
     static func qtcCalculator(formula: QTcFormula) -> QTcCalculator
 }
@@ -229,6 +226,9 @@ protocol QTpComplexFormulaSource {
 }
 
 /// TODO: is @objc tag needed if inheritance from NSObject?
+// The QTc class is not instantiated, rather it provides static functions:
+//     conversion functions such as secToMsec(sec:) and factory
+//     methods to generate QTc and QTp calculator classes
 public class QTc: NSObject {
   
     // Static conversion functions
@@ -257,7 +257,7 @@ public class QTc: NSObject {
     }
     
     
-    // add seams here for unit testing
+    // These functions allow mocking the Formula source
     static func qtcCalculator<T: QTcFormulaSource>(formulaSource: T.Type, formula: QTcFormula) -> QTcCalculator {
         return T.qtcCalculator(formula: formula)
     }
@@ -276,6 +276,12 @@ public class QTc: NSObject {
         return T.qtpComplexCalculator(formula: formula)
     }
     
+    // The factories: these are called like:
+    //
+    //     let qtcBztCalculator = QTc.qtcCalculator(formula: .qtcBzt)
+    //     let qtc = qtcBztCalculator.calculate(qtInSec: qt, rrInSec: rr)
+    //     (etc.)
+    //
     
     // QTc Factory
     public static func qtcCalculator(formula: QTcFormula) -> QTcCalculator {
@@ -298,7 +304,7 @@ public class QTc: NSObject {
     }
     
     // Convert from one set of units to another
-    // Note that qtcFunction must have parameters of secs, e.g. qtcBzt(qtInSec:rrInSec)
+    // QTc conversion
     fileprivate static func qtcConvert(_ qtcEquation: QTcEquation,
                                     qtInMsec: Double, rrInMsec: Double) -> Msec {
         return secToMsec(qtcEquation(msecToSec(qtInMsec), msecToSec(rrInMsec)))

@@ -248,6 +248,12 @@ class QTc_iOSTests: XCTestCase {
                                    accuracy: delta)
     }
     
+    func testQTpComplexFormulas() {
+        let qtpBdl = QTc.qtpComplexCalculator(formula: .qtpBdl)
+        XCTAssertEqual(qtpBdl.calculate(rate: 60, sex: .male, age: 0), 0.401, accuracy: delta)
+        XCTAssertEqual(qtpBdl.calculate(rate: 99, sex: .female, age: 0), 0.3328, accuracy: delta)
+    }
+    
     func testQTcConvert() {
        let qtcBzt = QTc.qtcCalculator(formula: .qtcBzt)
         let qtcHdg = QTc.qtcCalculator(formula: .qtcHdg)
@@ -291,7 +297,6 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(qtpArr.shortName, "QTpARR")
     }
     
-    // Note, need to change this when nonadult formulas added
     func testAdultFormulas() {
         for qtcFormula in qtcFormulas {
             let calculator = QTc.qtcCalculator(formula: qtcFormula)

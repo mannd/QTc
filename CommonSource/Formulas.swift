@@ -13,6 +13,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource, QTcComplexFormulaSource, QT
     
     static let errorMessage = "Formula not found!"
     
+    // These 4 functions are required by the protocols used by this class
     static func qtcCalculator(formula: QTcFormula) -> QTcCalculator {
         guard let calculator = qtcDictionary[formula] else {
             fatalError(errorMessage)
@@ -53,6 +54,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource, QTcComplexFormulaSource, QT
         return qtInSec + alpha * (1 - rrInSec)
     }
     
+    // This is the data source for the formulas.  Potentially this could be a database, but there
+    // aren't that many formulas, so for now the formulas are inlined here.
     static let qtcDictionary: [QTcFormula : QTcCalculator] =
         [.qtcBzt:
             QTcCalculator(formula: .qtcBzt,
@@ -164,7 +167,15 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource, QTcComplexFormulaSource, QT
             QTcComplexCalculator(formula: .qtcComplex, longName: "Test", shortName: "Test", reference: "Test", equation: "Test'", baseEquation: {qtInSec, rrInSec, sex, age in return 1.0 }, classification: .power)]
     
     static let qtpComplexDictionary: [QTpComplexFormula: QTpComplexCalculator] =
-        [.qtpComplex:
+        [.qtpBdl:
+            QTpComplexCalculator(formula: .qtpBdl,
+                                 longName: "Boudoulas",
+                                 shortName: "QTpBDL",
+                                 reference: "Boudoulas H, Geleris P, Lewis RP, Rittgers SE.  Linear relationship between electrical systole, mechanical systole, and heart rate.  Chest 1981;80:613-617.",
+                                 equation: "Males: QT = 0.521 - 2.0*HR; Females: QT = 0.511 - 1.8*HR'",
+                                 baseEquation: {rrInSec, sex, age  in sex == .male ? QTc.msecToSec(521.0 - 2.0 * QTc.secToBpm(rrInSec)) : QTc.msecToSec(511.0 - 1.8 * QTc.secToBpm(rrInSec))},
+                                 classification: .linear),
+         .qtpComplex:
             QTpComplexCalculator(formula: .qtpComplex, longName: "Test", shortName: "Test", reference: "Test", equation: "Test'", baseEquation: {rrInSec, sex, age in return 1.0 }, classification: .power)]
     
 }
