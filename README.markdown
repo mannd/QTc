@@ -62,6 +62,17 @@ You can get other information from the calculator instance, for example:
     let qtcCalculatorLongName = qtcCalculator.longName // longName = "Bazett"
     let qtcCalculatorShorName = qtcCalculator.shortName // shortName = "QTcBZT"
 	let qtcCalculatorReference = qtcCalculator.reference // reference = full literature reference of the formula
+	let qtcCalculatorNotes = qtcCalculator.notes // notes = "Oldest, most common formula, but inaccurate at extremes of heart rate"
+	let qtcCalculatorClassification = qtcCalculator.classification // classification = .power
+	// "this is the type of mathematical equation: .power, .linear, .exponential, etc.
+
+## Other formulas
+Predictive formulas (i.e. formulas that predict the QT based on the RR interval) are also included.  These formulas have a /qtp/ prefix, e.g. .qtpBdl for the Boudoulas formula (QTpBDL).  More complex QTc and QTp formulas that use sex and age in addition to the usual QT and RR parameters are also included.  For example:
+
+	let qtpBdl = QTc.qtpCalculator(formula: .qtpBdl)
+	let qtpInSec = qtpBdl.calculate(rrInSec: 77, sex: .male, age: 0)
+
+Note that in this case the formula uses sex but not age.  However both age and sex are included as parameters for all these "complex" QTc or QTp formulas.
 
 ## Errors
 None of the functions throw exceptions.  However, some QTc formulas have the potential for division by zero or performing fractional power operations on negative numbers.  Parameters are not checked for these problematic inputs.  Division by zero (generally if the RR interval is zero) will result in the value Double.infinity, and zero divided by itself (generally if the QT and RR are both zero) or a fractional root of a negative number (if the RR is negative) will result in Double.nan.  Thus if input parameters are not checked for sanity, it is necessary to check results as follows:
@@ -98,12 +109,15 @@ The QTc framework includes numerous unit tests to confirm accuracy.
 ## References (partial list)
 - Bazett HC. An analysis of the time relations of electrocardiograms. Heart 1920; 7:353-367.
 - Fridericia L. Die sytolendauer in elektrokardiogramm bei normalen menschen und bei herzkranken. Acta Med Scand. 1920;53:469-486.
- - Sagie A, Larson MG, Goldberg RJ, Bengtson JR, Levy D. An improved method for adjusting the QT interval for heart rate (the Framingham Heart Study). Am J Cardiol. 1992;70:797-801.
+- Sagie A, Larson MG, Goldberg RJ, Bengtson JR, Levy D. An improved method for adjusting the QT interval for heart rate (the Framingham Heart Study). Am J Cardiol. 1992;70:797-801.
 - Hodges M, Salerno D, Erlien D. Bazett\’s QT correction reviewed: Evidence that a linear QT correction for heart rate is better. J Am Coll Cardiol. 1983;1:1983.
 - Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. Int J Cardiol. 2014;174:535-540.
 - Mayeda I. On time relation between systolic duration of heart and pulse rate. Acta Sch Med Univ Imp. 1934;17:53-55.
 - Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohrnty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223.
 - Kawataki M, Kashima T, Toda H, Tanaka H. Relation between QT interval and heart rate. applications and limitations of Bazett’s formula. J Electrocardiol. 1984;17:371-375.
+- Dmitrienko AA, Sides GD, Winters KJ, et al. Electrocardiogram reference ranges derived from a standardized clinical trial population. Drug Inf J. 2005;39:395–405.
+- Yoshinaga M, Tomari T, Aihoshi S, et al.  Exponential correction of QT interval to minimize the effect of the heart rate in children.  Jpn Circ J.  1993;57:102-108. 
+- Boudoulas H, Geleris P, Lewis RP, Rittgers SE.  Linear relationship between electrical systole, mechanical systole, and heart rate.  Chest 1981;80:613-617.
 
 More QTc formulas coming!
 
