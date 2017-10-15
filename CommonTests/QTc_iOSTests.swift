@@ -78,13 +78,13 @@ class QTc_iOSTests: XCTestCase {
     // mocks for testing formula sources
     class TestQtcFormulas: QTcFormulaSource {
         static func qtcCalculator(formula: QTcFormula) -> QTcCalculator {
-            return QTcCalculator(formula: formula, longName: "TestLongName", shortName: "TestShortName", reference: "TestReference", equation: "TestEquation", baseEquation: { x, y in x + y}, classification: .other)
+            return QTcCalculator(formula: formula, longName: "TestLongName", shortName: "TestShortName", reference: "TestReference", equation: "TestEquation", baseEquation: { x, y, sex, age in x + y}, classification: .other)
         }
      }
     
     class TestQtpFormulas: QTpFormulaSource {
         static func qtpCalculator(formula: QTpFormula) -> QTpCalculator {
-            return QTpCalculator(formula: formula, longName: "TestLongName", shortName: "TestShortName", reference: "TestReference", equation: "TestEquation", baseEquation: { x in pow(x, 2.0)}, classification: .other)
+            return QTpCalculator(formula: formula, longName: "TestLongName", shortName: "TestShortName", reference: "TestReference", equation: "TestEquation", baseEquation: {x, sex, age in pow(x, 2.0)}, classification: .other)
         }
     }
     
@@ -248,11 +248,11 @@ class QTc_iOSTests: XCTestCase {
                                    accuracy: delta)
     }
     
-    func testQTpComplexFormulas() {
-        let qtpBdl = QTc.qtpComplexCalculator(formula: .qtpBdl)
+    func testNewQTpFormulas() {
+        let qtpBdl = QTc.qtpCalculator(formula: .qtpBdl)
         XCTAssertEqual(qtpBdl.calculate(rate: 60, sex: .male, age: 0), 0.401, accuracy: delta)
         XCTAssertEqual(qtpBdl.calculate(rate: 99, sex: .female, age: 0), 0.3328, accuracy: delta)
-        let qtpAsh = QTc.qtpComplexCalculator(formula: .qtpAsh)
+        let qtpAsh = QTc.qtpCalculator(formula: .qtpAsh)
         XCTAssertEqual(qtpAsh.calculate(rate: 60, sex: .female, age: 20), 0.396312754411, accuracy: delta)
     }
     
@@ -281,7 +281,7 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(qtcTest.shortName, "TestShortName")
         XCTAssertEqual(qtcTest.reference, "TestReference")
         XCTAssertEqual(qtcTest.equation, "TestEquation")
-        XCTAssertEqual(qtcTest.baseEquation(5, 7), 12)
+        XCTAssertEqual(qtcTest.calculate(qtInSec: 5, rrInSec: 7), 12)
         
         let qtpTest = QTc.qtpCalculator(formulaSource: TestQtpFormulas.self, formula: .qtpArr)
         XCTAssertEqual(qtpTest.formula, .qtpArr)
@@ -289,7 +289,7 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(qtpTest.shortName, "TestShortName")
         XCTAssertEqual(qtpTest.reference, "TestReference")
         XCTAssertEqual(qtpTest.equation, "TestEquation")
-        XCTAssertEqual(qtpTest.baseEquation(5), 25)
+        XCTAssertEqual(qtpTest.calculate(rrInSec: 5), 25)
     }
     
     func testShortNames() {

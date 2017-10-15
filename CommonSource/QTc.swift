@@ -25,20 +25,10 @@ public enum QTcFormula {
     case qtcTest // for testing only
 }
 
-public enum QTcComplexFormula {
-    // these require age and/or sex for calculating QTc
-    case qtcComplex // placeholder
-}
-
 public enum QTpFormula {
-    case qtpArr
-}
-
-public enum QTpComplexFormula {
-    // these require age and/or sex for calculating QTp
-    case qtpBdl
-    case qtpAsh
-    case qtpComplex // placeholder
+    case qtpArr  // Arrowood
+    case qtpBdl  // Boudoulas
+    case qtpAsh  // Ashman
 }
 
 public enum FormulaClassification {
@@ -51,26 +41,26 @@ public enum FormulaClassification {
 }
 
 public enum Sex {
-    case mixed
     case male
     case female
-    case unknown
+    case unspecified
 }
 
 typealias Age = Int
+
 
 // These are just to clarify return types of certain functions.
 // They only used when the units aren't clear in the function prototypes.
 typealias Msec = Double
 typealias Sec = Double
 
-typealias QTcEquation = (_ qt: Double, _ rr: Double) -> Double
-typealias QTpEquation = (_ rr: Double) -> Double
-typealias QTcComplexEquation = (_ qt: Double, _ rr: Double, Sex, Age) -> Double
-typealias QTpComplexEquation = (_ rr: Double, Sex, Age) -> Double
+typealias QTcEquation = (_ qt: Double, _ rr: Double, _ sex: Sex, _ age: Age) -> Double
+typealias QTpEquation = (_ rr: Double, Sex, Age) -> Double
 
 // This would be an abstract class if Swift had them.
 public class BaseCalculator {
+    public static let unspecified = -1  // use when Age is unspecified
+    
     public let longName: String
     public let shortName: String
     public let reference: String
@@ -123,20 +113,20 @@ public class QTcCalculator: BaseCalculator {
                    classification: classification, forAdults: forAdults, notes: notes)
     }
     
-    func calculate(qtInSec: Double, rrInSec: Double) -> Sec {
-        return baseEquation(qtInSec, rrInSec)
+    func calculate(qtInSec: Double, rrInSec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {
+        return baseEquation(qtInSec, rrInSec, sex, age)
     }
     
-    func calculate(qtInMsec: Double, rrInMsec: Double) -> Msec {
-        return QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rrInMsec: rrInMsec)
+    func calculate(qtInMsec: Double, rrInMsec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Msec {
+        return QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rrInMsec: rrInMsec, sex: sex, age: age)
     }
     
-    func calculate(qtInSec: Double, rate: Double) -> Sec {
-        return QTc.qtcConvert(baseEquation, qtInSec: qtInSec, rate: rate)
+    func calculate(qtInSec: Double, rate: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {
+        return QTc.qtcConvert(baseEquation, qtInSec: qtInSec, rate: rate, sex: sex, age: age)
     }
     
-    func calculate(qtInMsec: Double, rate: Double) -> Msec {
-        return QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rate: rate)
+    func calculate(qtInMsec: Double, rate: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Msec {
+        return QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rate: rate, sex: sex, age: age)
     }
 }
 
@@ -154,74 +144,16 @@ public class QTpCalculator: BaseCalculator {
                    classification: classification, forAdults: forAdults, notes: notes)
     }
     
-    func calculate(rrInSec: Double) -> Sec {
-        return baseEquation(rrInSec)
-    }
-    
-    func calculate(rrInMsec: Double) -> Msec {
-        return QTc.qtpConvert(baseEquation, rrInMsec: rrInMsec)
-    }
-    
-    func calculate(rate: Double) -> Sec {
-        return QTc.qtpConvert(baseEquation, rate: rate)
-    }
-}
-
-public class QTcComplexCalculator: BaseCalculator {
-    let formula: QTcComplexFormula
-    let baseEquation: QTcComplexEquation
-    
-    init(formula: QTcComplexFormula, longName: String, shortName: String,
-         reference: String, equation: String, baseEquation: @escaping QTcComplexEquation,
-         classification: FormulaClassification, forAdults: Bool = true, notes: String = "") {
-        self.formula = formula
-        self.baseEquation = baseEquation
-        super.init(longName: longName, shortName: shortName,
-                   reference: reference, equation: equation,
-                   classification: classification, forAdults: forAdults, notes: notes)
-    }
-    
-    func calculate(qtInSec: Double, rrInSec: Double, sex: Sex, age: Age) -> Sec {
-        return baseEquation(qtInSec, rrInSec, sex, age)
-    }
-    
-    func calculate(qtInMsec: Double, rrInMsec: Double, sex: Sex, age: Age) -> Msec {
-        return QTc.qtcComplexConvert(baseEquation, qtInMsec: qtInMsec, rrInMsec: rrInMsec, sex: sex, age: age)
-    }
-    
-    func calculate(qtInSec: Double, rate: Double, sex: Sex, age: Age) -> Sec {
-        return QTc.qtcComplexConvert(baseEquation, qtInSec: qtInSec, rate: rate, sex: sex, age: age)
-    }
-    
-    func calculate(qtInMsec: Double, rate: Double, sex: Sex, age: Age) -> Msec {
-        return QTc.qtcComplexConvert(baseEquation, qtInMsec: qtInMsec, rate: rate, sex: sex, age: age)
-    }
-}
-
-public class QTpComplexCalculator: BaseCalculator {
-    let formula: QTpComplexFormula
-    let baseEquation: QTpComplexEquation
-
-    init(formula: QTpComplexFormula, longName: String, shortName: String,
-         reference: String, equation: String, baseEquation: @escaping QTpComplexEquation,
-         classification: FormulaClassification, forAdults: Bool = true, notes: String = "") {
-        self.formula = formula
-        self.baseEquation = baseEquation
-        super.init(longName: longName, shortName: shortName,
-                   reference: reference, equation: equation,
-                   classification: classification, forAdults: forAdults, notes: notes)
-    }
-
-    func calculate(rrInSec: Double, sex: Sex, age: Age) -> Sec {
+    func calculate(rrInSec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {
         return baseEquation(rrInSec, sex, age)
     }
     
-    func calculate(rrInMsec: Double, sex: Sex, age: Age) -> Msec {
-        return QTc.qtpComplexConvert(baseEquation, rrInMsec: rrInMsec, sex: sex, age: age)
+    func calculate(rrInMsec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Msec {
+        return QTc.qtpConvert(baseEquation, rrInMsec: rrInMsec, sex: sex, age: age)
     }
     
-    func calculate(rate: Double, sex: Sex, age: Age) -> Sec {
-        return QTc.qtpComplexConvert(baseEquation, rate: rate, sex: sex, age: age)
+    func calculate(rate: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {
+        return QTc.qtpConvert(baseEquation, rate: rate, sex: sex, age: age)
     }
 }
 
@@ -232,14 +164,6 @@ protocol QTcFormulaSource {
 
 protocol QTpFormulaSource {
     static func qtpCalculator(formula: QTpFormula) -> QTpCalculator
-}
-
-protocol QTcComplexFormulaSource {
-    static func qtcComplexCalculator(formula: QTcComplexFormula) -> QTcComplexCalculator
-}
-
-protocol QTpComplexFormulaSource {
-    static func qtpComplexCalculator(formula: QTpComplexFormula) -> QTpComplexCalculator
 }
 
 /// TODO: is @objc tag needed if inheritance from NSObject?
@@ -283,16 +207,6 @@ public class QTc: NSObject {
         return T.qtpCalculator(formula: formula)
     }
     
-    static func qtcComplexCalculator<T: QTcComplexFormulaSource>(formulaSource: T.Type,
-                                                                 formula: QTcComplexFormula) -> QTcComplexCalculator {
-        return T.qtcComplexCalculator(formula: formula)
-    }
-    
-    static func qtpComplexCalculator<T: QTpComplexFormulaSource>(formulaSource: T.Type,
-                                                                 formula: QTpComplexFormula) -> QTpComplexCalculator {
-        return T.qtpComplexCalculator(formula: formula)
-    }
-    
     // The factories: these are called like:
     //
     //     let qtcBztCalculator = QTc.qtcCalculator(formula: .qtcBzt)
@@ -310,67 +224,30 @@ public class QTc: NSObject {
         return qtpCalculator(formulaSource: Formulas.self, formula: formula)
     }
     
-    // QTc Complex factory
-    public static func qtcComplexCalculator(formula: QTcComplexFormula) -> QTcComplexCalculator {
-        return qtcComplexCalculator(formulaSource: Formulas.self, formula: formula)
-    }
-    
-    // QTp Complex factory
-    public static func qtpComplexCalculator(formula: QTpComplexFormula) -> QTpComplexCalculator {
-        return qtpComplexCalculator(formulaSource: Formulas.self, formula: formula)
-    }
-    
     // Convert from one set of units to another
     // QTc conversion
     fileprivate static func qtcConvert(_ qtcEquation: QTcEquation,
-                                    qtInMsec: Double, rrInMsec: Double) -> Msec {
-        return secToMsec(qtcEquation(msecToSec(qtInMsec), msecToSec(rrInMsec)))
+                                       qtInMsec: Double, rrInMsec: Double, sex: Sex, age: Age) -> Msec {
+        return secToMsec(qtcEquation(msecToSec(qtInMsec), msecToSec(rrInMsec), sex, age))
     }
     
     fileprivate static func qtcConvert(_ qtcEquation: QTcEquation,
-                                     qtInSec: Double, rate: Double) -> Sec {
-        return qtcEquation(qtInSec, bpmToSec(rate))
+                                       qtInSec: Double, rate: Double, sex: Sex, age: Age) -> Sec {
+        return qtcEquation(qtInSec, bpmToSec(rate), sex, age)
     }
     
     fileprivate static func qtcConvert(_ qtcEquation: QTcEquation,
-                                              qtInMsec: Double, rate: Double) -> Msec {
-        return secToMsec(qtcEquation(msecToSec(qtInMsec), bpmToSec(rate)))
+                                       qtInMsec: Double, rate: Double, sex: Sex, age: Age) -> Msec {
+        return secToMsec(qtcEquation(msecToSec(qtInMsec), bpmToSec(rate), sex, age))
     }
    
     // QTp conversion
-    fileprivate static func qtpConvert(_ qtpEquation: QTpEquation, rrInMsec: Double) -> Msec {
-        return secToMsec(qtpEquation(msecToSec(rrInMsec)))
+    fileprivate static func qtpConvert(_ qtpEquation: QTpEquation, rrInMsec: Double, sex: Sex, age: Age) -> Msec {
+        return secToMsec(qtpEquation(msecToSec(rrInMsec), sex, age))
     }
     
-    fileprivate static func qtpConvert(_ qtpEquation: QTpEquation, rate: Double) -> Sec {
-        return qtpEquation(bpmToSec(rate))
+    fileprivate static func qtpConvert(_ qtpEquation: QTpEquation, rate: Double, sex: Sex, age: Age) -> Sec {
+        return qtpEquation(bpmToSec(rate), sex, age)
     }
-    
-    // QTc complex formula conversion
-    fileprivate static func qtcComplexConvert(_ qtcComplexEquation: QTcComplexEquation, qtInMsec: Double,
-                                              rrInMsec: Double, sex: Sex, age: Age) -> Msec {
-        return secToMsec(qtcComplexEquation(msecToSec(qtInMsec), msecToSec(rrInMsec), sex, age))
-    }
-    
-    fileprivate static func qtcComplexConvert(_ qtcComplexEquation: QTcComplexEquation, qtInSec: Double,
-                                              rate: Double, sex: Sex, age: Age) -> Sec {
-        return qtcComplexEquation(qtInSec, bpmToSec(rate), sex, age)
-    }
-    
-    fileprivate static func qtcComplexConvert(_ qtcComplexEquation: QTcComplexEquation, qtInMsec: Double,
-                                              rate: Double, sex: Sex, age: Age) -> Msec {
-        return secToMsec(qtcComplexEquation(msecToSec(qtInMsec), bpmToSec(rate), sex, age))
-    }
-    
-    
-    // QTp complex formula conversion
-    fileprivate static func qtpComplexConvert(_ qtpComplexEquation: QTpComplexEquation, rrInMsec: Double, sex: Sex, age: Age) -> Msec {
-        return secToMsec(qtpComplexEquation(msecToSec(rrInMsec), sex, age))
-    }
-    
-    fileprivate static func qtpComplexConvert(_ qtpComplexEquation: QTpComplexEquation, rate: Double, sex: Sex, age: Age) -> Sec {
-        return qtpComplexEquation(bpmToSec(rate), sex, age)
-    }
-
 }
 

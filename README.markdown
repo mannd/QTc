@@ -1,5 +1,13 @@
 ## Description
-This QTc framework includes formulas for QTc calculation, both common and obscure.  It is intended for universal use on both iOS and MacOs devices.  This framework is free to use in your own apps and programs.  NB: This is a work in progress!
+This QTc framework includes formulas for QTc calculation, both common and obscure.  It is intended for universal use on both iOS and MacOs devices.  This framework is free to use in your own apps and programs.  *NB: This is a work in progress!  I cannot guarantee backward compatibility of subsequent versions, regardless of version numbers, until things settle down!*
+
+## You can help
+No I am **not** asking for money!  No Patreon or Kickstarter!  If you are an academic electrophysiologist or cardiologist and have access to an online medical digital library, you can help.  Most of the journal articles that are sources here are shamelessly paywalled and difficult if not impossible for a retired EP like myself without an academic affiliation to obtain.  Even Bazett’s almost 100 year old original QT article is behind a paywall!  If you are willing to download and forward articles to me, that would be wonderful.  Your name will be added to this README, and you get the satisfaction of knowing you have contributed to the open sourcing of scientific knowledge, which should be freely available to all.  Please email me at [mannd@epstudiossoftware.com](mannd@epstudiossoftware.com) if you are interested in contributing and I can provide you with a list of articles.
+
+Additionally, if you know of QTc or QTp formulas which are omitted here and need to be included, please email me or contact me on Twitter (@manndmd).
+
+## Demo program
+**QTsea** (a *sea* of QT formulas, get it?) is a demo program that I am writing and that will be freely available for download on the Apple App Store in the near future.  With it, you can calculate all the QTc formulas at once, see a graph of QTc intervals, calculate the QTu (ultimate QTc -- an average of all these formulas), investigate each formula individually, and just generally have a bunch of good clean EP QT fun.  
 
 ## License
 This QTc framework is open source, and licensed under the 
@@ -38,6 +46,15 @@ QTc functions are labeled based on the proposed standard nomenclature of [Rabkin
 		// more coming
 	}
 
+QTp functions predict the QT based on the RR interval.  They are listed in the QTpFormula enum:
+
+	public enum QTpFormula {
+		case qtpArr  // Arrowood
+		case qtpBdl  // Boudoulas
+		case qtpAsh  // Ashman
+		// etc.
+	}
+
 Generate a qtcCalculator class using the static function QTc.qtcCalculator(formula: QTcFormula) as shown below.
 
 	let qtcBztCalculator = QTc.qtcCalculator(formula: .qtcBzt) // Swift
@@ -66,13 +83,15 @@ You can get other information from the calculator instance, for example:
 	let qtcCalculatorClassification = qtcCalculator.classification // classification = .power
 	// this is the type of mathematical equation: .power, .linear, .exponential, etc.
 
-## Other formulas
-Predictive formulas (i.e. formulas that predict the QT based on the RR interval) are also included.  These formulas have a *qtp* prefix, e.g. .qtpBdl for the Boudoulas formula (QTpBDL).  More complex QTc and QTp formulas that use sex and age in addition to the usual QT and RR parameters are also included.  For example:
+## QTp formulas and formulas depending on sex and/or age
+QTp formulas are similar to the QTc formulas, except there is no QT parameter.  Only rate or RR interval is needed to calculate the QTp.
+
+Some QTc and QTp formulas are age and or sex dependent.  In this case add a sex: and/or age: parameter to the calling function.  For example:
 
 	let qtpBdl = QTc.qtpCalculator(formula: .qtpBdl)
-	let qtpInSec = qtpBdl.calculate(rrInSec: 77, sex: .male, age: 0)
+	let qtpInSec = qtpBdl.calculate(rrInSec: 77, sex: .male)
 
-Note that in this case the formula uses sex but not age.  However both age and sex are included as parameters for all these "complex" QTc or QTp formulas.
+Note that in this case the formula uses sex but not age.  If you include extra age or sex parameters that are not used by the formula they will be ignored.  However failure to include a necessary parameter will result in the return of an error (Double.nan, see next section).
 
 ## Errors
 None of the functions throw exceptions.  However, some QTc formulas have the potential for division by zero or performing fractional power operations on negative numbers.  Parameters are not checked for these problematic inputs.  Division by zero (generally if the RR interval is zero) will result in the value Double.infinity, and zero divided by itself (generally if the QT and RR are both zero) or a fractional root of a negative number (if the RR is negative) will result in Double.nan.  Thus if input parameters are not checked for sanity, it is necessary to check results as follows:
@@ -118,6 +137,7 @@ The QTc framework includes numerous unit tests to confirm accuracy.
 - Dmitrienko AA, Sides GD, Winters KJ, et al. Electrocardiogram reference ranges derived from a standardized clinical trial population. Drug Inf J. 2005;39:395–405.
 - Yoshinaga M, Tomari T, Aihoshi S, et al.  Exponential correction of QT interval to minimize the effect of the heart rate in children.  Jpn Circ J.  1993;57:102-108. 
 - Boudoulas H, Geleris P, Lewis RP, Rittgers SE.  Linear relationship between electrical systole, mechanical systole, and heart rate.  Chest 1981;80:613-617.
+- Ashman r.  The normal duration of the Q-T interval.  Am Heart J 1942;23:522-534. 
 
 More QTc formulas coming!
 
