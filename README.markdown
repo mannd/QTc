@@ -64,10 +64,10 @@ You can get other information from the calculator instance, for example:
 	let qtcCalculatorReference = qtcCalculator.reference // reference = full literature reference of the formula
 	let qtcCalculatorNotes = qtcCalculator.notes // notes = "Oldest, most common formula, but inaccurate at extremes of heart rate"
 	let qtcCalculatorClassification = qtcCalculator.classification // classification = .power
-	// "this is the type of mathematical equation: .power, .linear, .exponential, etc.
+	// this is the type of mathematical equation: .power, .linear, .exponential, etc.
 
 ## Other formulas
-Predictive formulas (i.e. formulas that predict the QT based on the RR interval) are also included.  These formulas have a /qtp/ prefix, e.g. .qtpBdl for the Boudoulas formula (QTpBDL).  More complex QTc and QTp formulas that use sex and age in addition to the usual QT and RR parameters are also included.  For example:
+Predictive formulas (i.e. formulas that predict the QT based on the RR interval) are also included.  These formulas have a *qtp* prefix, e.g. .qtpBdl for the Boudoulas formula (QTpBDL).  More complex QTc and QTp formulas that use sex and age in addition to the usual QT and RR parameters are also included.  For example:
 
 	let qtpBdl = QTc.qtpCalculator(formula: .qtpBdl)
 	let qtpInSec = qtpBdl.calculate(rrInSec: 77, sex: .male, age: 0)

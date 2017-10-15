@@ -252,6 +252,8 @@ class QTc_iOSTests: XCTestCase {
         let qtpBdl = QTc.qtpComplexCalculator(formula: .qtpBdl)
         XCTAssertEqual(qtpBdl.calculate(rate: 60, sex: .male, age: 0), 0.401, accuracy: delta)
         XCTAssertEqual(qtpBdl.calculate(rate: 99, sex: .female, age: 0), 0.3328, accuracy: delta)
+        let qtpAsh = QTc.qtpComplexCalculator(formula: .qtpAsh)
+        XCTAssertEqual(qtpAsh.calculate(rate: 60, sex: .female, age: 20), 0.396312754411, accuracy: delta)
     }
     
     func testQTcConvert() {
@@ -295,6 +297,13 @@ class QTc_iOSTests: XCTestCase {
         let qtpArr = QTc.qtpCalculator(formula: .qtpArr)
         XCTAssertEqual(qtcBzt.shortName, "QTcBZT")
         XCTAssertEqual(qtpArr.shortName, "QTpARR")
+    }
+    
+    func testClassificationNames() {
+        let qtcTest = QTc.qtcCalculator(formulaSource: TestQtcFormulas.self, formula: .qtcBzt)
+        XCTAssertEqual(qtcTest.classificationName, "other")
+        let qtcBzt = QTc.qtcCalculator(formula: .qtcBzt)
+        XCTAssertEqual(qtcBzt.classificationName, "power")
     }
     
     func testAdultFormulas() {

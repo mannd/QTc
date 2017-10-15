@@ -37,6 +37,7 @@ public enum QTpFormula {
 public enum QTpComplexFormula {
     // these require age and/or sex for calculating QTp
     case qtpBdl
+    case qtpAsh
     case qtpComplex // placeholder
 }
 
@@ -79,6 +80,22 @@ public class BaseCalculator {
     public let forAdults: Bool
     // potentially add notes to certain formulas
     public let notes: String
+    public var classificationName: String { get {
+        switch classification {
+        case .exponential:
+            return "exponential"
+        case .linear:
+            return "linear"
+        case .logarithmic:
+            return "logarithmic"
+        case .other:
+            return "other"
+        case .power:
+            return "power"
+        case .rational:
+            return "rational"
+        }
+    }}
     
     init(longName: String, shortName: String, reference: String, equation: String,
          classification: FormulaClassification, forAdults: Bool, notes: String) {

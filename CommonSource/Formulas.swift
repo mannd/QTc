@@ -44,14 +44,43 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource, QTcComplexFormulaSource, QT
     
     // Power QTc formula function
     // These have form QTc = QT / pow(RR, exp)
-    private static func qtcExp(qtInSec: Double, rrInSec: Double, exp: Double) -> Double {
+    private static func qtcExp(qtInSec: Double, rrInSec: Double, exp: Double) -> Sec {
         return qtInSec / pow(rrInSec, exp)
     }
     
     // Linear QTc formula function
     // These have form QTc = QT + α(1 - RR)
-    private static func qtcLinear(qtInSec: Double, rrInSec: Double, alpha: Double) -> Double {
+    private static func qtcLinear(qtInSec: Double, rrInSec: Double, alpha: Double) -> Sec {
         return qtInSec + alpha * (1 - rrInSec)
+    }
+
+    // Some complex formulae easier to present here than as closure
+    private static func qtpAsh(rrInSec: Double, sex: Sex, age: Age) -> Sec {
+        // TODO: This formula has gaps in the paper's abstract, need full text of reference!
+        // These gaps are "papered over" here.
+        let k = 0.07
+        var K: Double = 0
+        if sex == .male {
+            if age < 45 {
+                K = 0.375
+            }
+            else {
+                K = 0.380
+            }
+        }
+        else {  // female
+            if age < 15 {
+                K = 0.375
+            }
+            else if age <= 32 {
+                K = 0.385
+            }
+            else {
+                K = 0.390
+            }
+        }
+        return K * log10(10 * (rrInSec + k))
+
     }
     
     // This is the data source for the formulas.  Potentially this could be a database, but there
@@ -174,8 +203,10 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource, QTcComplexFormulaSource, QT
                                  reference: "Boudoulas H, Geleris P, Lewis RP, Rittgers SE.  Linear relationship between electrical systole, mechanical systole, and heart rate.  Chest 1981;80:613-617.",
                                  equation: "Males: QT = 0.521 - 2.0*HR; Females: QT = 0.511 - 1.8*HR'",
                                  baseEquation: {rrInSec, sex, age  in sex == .male ? QTc.msecToSec(521.0 - 2.0 * QTc.secToBpm(rrInSec)) : QTc.msecToSec(511.0 - 1.8 * QTc.secToBpm(rrInSec))},
-                                 classification: .linear),
-         .qtpComplex:
-            QTpComplexCalculator(formula: .qtpComplex, longName: "Test", shortName: "Test", reference: "Test", equation: "Test'", baseEquation: {rrInSec, sex, age in return 1.0 }, classification: .power)]
+                                 classification: .rational),
+         .qtpAsh:
+           QTpComplexCalculator(formula: .qtpAsh,
+                                longName: "Ashman", shortName: "QTpASH", reference: "Ashman r.  The normal duration of the Q-T interval.  Am Heart J 1942;23:522-534.", equation: "QT = K log[10(RR + k)], K and k sex and age dependent'", baseEquation: qtpAsh,
+                                classification: .logarithmic)]
     
 }
