@@ -7,12 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8E61A2321F984E5F00625288 /* Formulas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE50CB31F70C850001F6530 /* Formulas.swift */; };
+		8E61A2361F984F8700625288 /* QTc_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE367221F5B58420003E5DA /* QTc_iOSTests.swift */; };
 		8EE366F11F5B566A0003E5DA /* QTc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EE366E71F5B566A0003E5DA /* QTc.framework */; };
-		8EE3670F1F5B56AB0003E5DA /* QTc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EE367061F5B56AA0003E5DA /* QTc.framework */; };
 		8EE367231F5B58C50003E5DA /* QTc.h in Headers */ = {isa = PBXBuildFile; fileRef = 8EE3671F1F5B57B20003E5DA /* QTc.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8EE367241F5B58C60003E5DA /* QTc.h in Headers */ = {isa = PBXBuildFile; fileRef = 8EE3671F1F5B57B20003E5DA /* QTc.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		8EE367251F5B58EC0003E5DA /* QTc_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE367221F5B58420003E5DA /* QTc_iOSTests.swift */; };
-		8EE367261F5B58ED0003E5DA /* QTc_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE367221F5B58420003E5DA /* QTc_iOSTests.swift */; };
 		8EE367281F5B5B330003E5DA /* QTc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE367271F5B5B330003E5DA /* QTc.swift */; };
 		8EE367291F5B5B330003E5DA /* QTc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE367271F5B5B330003E5DA /* QTc.swift */; };
 		8EE50CB41F70C850001F6530 /* Formulas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE50CB31F70C850001F6530 /* Formulas.swift */; };
@@ -26,20 +25,12 @@
 			remoteGlobalIDString = 8EE366E61F5B566A0003E5DA;
 			remoteInfo = QTc_iOS;
 		};
-		8EE367101F5B56AB0003E5DA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8EE366DE1F5B566A0003E5DA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 8EE367051F5B56AA0003E5DA;
-			remoteInfo = QTc_Mac;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		8EE366E71F5B566A0003E5DA /* QTc.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = QTc.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8EE366F01F5B566A0003E5DA /* QTc_iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QTc_iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8EE367061F5B56AA0003E5DA /* QTc.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = QTc.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8EE3670E1F5B56AA0003E5DA /* QTc_MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QTc_MacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8EE3671E1F5B57B20003E5DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8EE3671F1F5B57B20003E5DA /* QTc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QTc.h; sourceTree = "<group>"; };
 		8EE367211F5B58420003E5DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -71,14 +62,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8EE3670B1F5B56AA0003E5DA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8EE3670F1F5B56AB0003E5DA /* QTc.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -97,7 +80,6 @@
 				8EE366E71F5B566A0003E5DA /* QTc.framework */,
 				8EE366F01F5B566A0003E5DA /* QTc_iOSTests.xctest */,
 				8EE367061F5B56AA0003E5DA /* QTc.framework */,
-				8EE3670E1F5B56AA0003E5DA /* QTc_MacTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -198,24 +180,6 @@
 			productReference = 8EE367061F5B56AA0003E5DA /* QTc.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		8EE3670D1F5B56AA0003E5DA /* QTc_MacTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8EE3671A1F5B56AB0003E5DA /* Build configuration list for PBXNativeTarget "QTc_MacTests" */;
-			buildPhases = (
-				8EE3670A1F5B56AA0003E5DA /* Sources */,
-				8EE3670B1F5B56AA0003E5DA /* Frameworks */,
-				8EE3670C1F5B56AA0003E5DA /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				8EE367111F5B56AB0003E5DA /* PBXTargetDependency */,
-			);
-			name = QTc_MacTests;
-			productName = QTc_MacTests;
-			productReference = 8EE3670E1F5B56AA0003E5DA /* QTc_MacTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -241,12 +205,7 @@
 					8EE367051F5B56AA0003E5DA = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = W74NPJXYEG;
-						LastSwiftMigration = 0830;
-						ProvisioningStyle = Automatic;
-					};
-					8EE3670D1F5B56AA0003E5DA = {
-						CreatedOnToolsVersion = 8.3.3;
-						DevelopmentTeam = W74NPJXYEG;
+						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -266,7 +225,6 @@
 				8EE366E61F5B566A0003E5DA /* QTc_iOS */,
 				8EE366EF1F5B566A0003E5DA /* QTc_iOSTests */,
 				8EE367051F5B56AA0003E5DA /* QTc_Mac */,
-				8EE3670D1F5B56AA0003E5DA /* QTc_MacTests */,
 			);
 		};
 /* End PBXProject section */
@@ -293,13 +251,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8EE3670C1F5B56AA0003E5DA /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -316,7 +267,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8EE367261F5B58ED0003E5DA /* QTc_iOSTests.swift in Sources */,
+				8E61A2361F984F8700625288 /* QTc_iOSTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -324,15 +275,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E61A2321F984E5F00625288 /* Formulas.swift in Sources */,
 				8EE367291F5B5B330003E5DA /* QTc.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8EE3670A1F5B56AA0003E5DA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8EE367251F5B58EC0003E5DA /* QTc_iOSTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,11 +287,6 @@
 			isa = PBXTargetDependency;
 			target = 8EE366E61F5B566A0003E5DA /* QTc_iOS */;
 			targetProxy = 8EE366F21F5B566A0003E5DA /* PBXContainerItemProxy */;
-		};
-		8EE367111F5B56AB0003E5DA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 8EE367051F5B56AA0003E5DA /* QTc_Mac */;
-			targetProxy = 8EE367101F5B56AB0003E5DA /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -559,7 +498,8 @@
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -583,41 +523,8 @@
 				PRODUCT_NAME = QTc;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-			};
-			name = Release;
-		};
-		8EE3671B1F5B56AB0003E5DA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = W74NPJXYEG;
-				INFOPLIST_FILE = CommonTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				PRODUCT_BUNDLE_IDENTIFIER = "org.epstudios.QTc-MacTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SWIFT_VERSION = 3.0;
-			};
-			name = Debug;
-		};
-		8EE3671C1F5B56AB0003E5DA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = W74NPJXYEG;
-				INFOPLIST_FILE = CommonTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				PRODUCT_BUNDLE_IDENTIFIER = "org.epstudios.QTc-MacTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -656,15 +563,6 @@
 			buildConfigurations = (
 				8EE367181F5B56AB0003E5DA /* Debug */,
 				8EE367191F5B56AB0003E5DA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		8EE3671A1F5B56AB0003E5DA /* Build configuration list for PBXNativeTarget "QTc_MacTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8EE3671B1F5B56AB0003E5DA /* Debug */,
-				8EE3671C1F5B56AB0003E5DA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
