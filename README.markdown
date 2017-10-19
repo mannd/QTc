@@ -110,7 +110,7 @@ Of course your other option is never to send these bad parameters to the formula
 		Error("QT and RR can’t be less than or equal to zero!")
 		return
 	} else {
-		let qtc = QTc.qtcCalculator(formate: .qtcBzt).calculate(qtInMsec: qt, rrInMsec: rr)
+		let qtc = QTc.qtcCalculator(formula: .qtcBzt).calculate(qtInMsec: qt, rrInMsec: rr)
 	}
 
 ## Conversion functions
@@ -119,8 +119,6 @@ The QTc framework includes static functions to do common conversions, between se
 	let intervalInSec = 0.890
 	let intervalInMsec = QTc.secToMsec(intervalInSec) // = 890
 	let rate = QTc.msecToBpm(intervalInMsec) // = 67.41573
-
-etc.
 
 ## Tests
 The QTc framework includes numerous unit tests to confirm accuracy.

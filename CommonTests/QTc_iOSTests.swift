@@ -250,8 +250,8 @@ class QTc_iOSTests: XCTestCase {
     
     func testNewQTpFormulas() {
         let qtpBdl = QTc.qtpCalculator(formula: .qtpBdl)
-        XCTAssertEqual(qtpBdl.calculate(rate: 60, sex: .male, age: 0), 0.401, accuracy: delta)
-        XCTAssertEqual(qtpBdl.calculate(rate: 99, sex: .female, age: 0), 0.3328, accuracy: delta)
+        XCTAssertEqual(qtpBdl.calculate(rate: 60, sex: .male), 0.401, accuracy: delta)
+        XCTAssertEqual(qtpBdl.calculate(rate: 99, sex: .female), 0.3328, accuracy: delta)
         let qtpAsh = QTc.qtpCalculator(formula: .qtpAsh)
         XCTAssertEqual(qtpAsh.calculate(rate: 60, sex: .female, age: 20), 0.396312754411, accuracy: delta)
     }

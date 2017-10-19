@@ -47,7 +47,9 @@ public enum Sex {
 }
 
 typealias Age = Int
-
+// TODO: may want to expand scope or put in QTc class,
+// as formulas may need to test for unspecified age to generate error result.
+fileprivate let unspecified = -1  // default value for unspecified age
 
 // These are just to clarify return types of certain functions.
 // They only used when the units aren't clear in the function prototypes.
@@ -59,7 +61,7 @@ typealias QTpEquation = (_ rr: Double, Sex, Age) -> Double
 
 // This would be an abstract class if Swift had them.
 public class BaseCalculator {
-    public static let unspecified = -1  // use when Age is unspecified
+   // public static let unspecified = -1  // use when Age is unspecified
     
     public let longName: String
     public let shortName: String
@@ -171,6 +173,7 @@ protocol QTpFormulaSource {
 //     conversion functions such as secToMsec(sec:) and factory
 //     methods to generate QTc and QTp calculator classes
 public class QTc: NSObject {
+//    public static let unspecified = -1   // for unspecified age
   
     // Static conversion functions
     public static func secToMsec(_ sec: Double) -> Double {

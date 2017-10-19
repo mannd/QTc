@@ -9,7 +9,7 @@
 import Foundation
 
 struct Formulas: QTcFormulaSource, QTpFormulaSource {
-  
+    
     
     static let errorMessage = "Formula not found!"
     
@@ -39,7 +39,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
     private static func qtcLinear(qtInSec: Double, rrInSec: Double, alpha: Double) -> Sec {
         return qtInSec + alpha * (1 - rrInSec)
     }
-
+    
     // Some complex formulae easier to present here than as closure
     private static func qtpAsh(rrInSec: Double, sex: Sex, age: Age) -> Sec {
         // TODO: This formula has gaps in the paper's abstract, need full text of reference!
@@ -66,11 +66,11 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
             }
         }
         return K * log10(10 * (rrInSec + k))
-
+        
     }
-  
+    
     // From http://www.sciencedirect.com/sdfe/pdf/download/eid/1-s2.0-0002870349908534/first-page-pdf
-//    One of the simplest is that devised by Bazett, namely, Q-T= k d/R-R, where k is a constant and R-R is the interval between two suc- cessive R waves.3 Bazett pointed out that k is the same in men and children, but longer in women, and described the constant as 0.37 for men and children and 0.40 for women.
+    //    One of the simplest is that devised by Bazett, namely, Q-T= k d/R-R, where k is a constant and R-R is the interval between two suc- cessive R waves.3 Bazett pointed out that k is the same in men and children, but longer in women, and described the constant as 0.37 for men and children and 0.40 for women.
     private static func qtpBzt(rrInSec: Double, sex: Sex, age: Age) -> Sec {
         // TODO: fill in with above info
         return 1.0
@@ -153,15 +153,15 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.413)},
                           classification: .power),
          .qtcYos:
-           QTcCalculator(formula: .qtcYos,
-                         longName: "Yoshinaga",
-                         shortName: "QTcYOS",
-                         reference: "Yoshinaga M, Tomari T, Aihoshi S, et al.  Exponential correction of QT interval to minimize the effect of the heart rate in children.  Jpn Circ J.  1993;57:102-108.",
-                         equation: "QT/RR^0.31",
-                         baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.31)},
-                         classification: .power,
-                         forAdults: false,
-                         notes: "Children"),
+            QTcCalculator(formula: .qtcYos,
+                          longName: "Yoshinaga",
+                          shortName: "QTcYOS",
+                          reference: "Yoshinaga M, Tomari T, Aihoshi S, et al.  Exponential correction of QT interval to minimize the effect of the heart rate in children.  Jpn Circ J.  1993;57:102-108.",
+                          equation: "QT/RR^0.31",
+                          baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.31)},
+                          classification: .power,
+                          forAdults: false,
+                          notes: "Children"),
          .qtcTest:
             QTcCalculator(formula: .qtcTest,
                           longName: "Test",
@@ -172,7 +172,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           classification: .power,
                           forAdults: false,
                           notes: "Children")
-         ]
+    ]
     
     static let qtpDictionary: [QTpFormula: QTpCalculator] =
         [.qtpArr:
@@ -185,15 +185,15 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           classification: .exponential),
          .qtpBdl:
             QTpCalculator(formula: .qtpBdl,
-                                 longName: "Boudoulas",
-                                 shortName: "QTpBDL",
-                                 reference: "Boudoulas H, Geleris P, Lewis RP, Rittgers SE.  Linear relationship between electrical systole, mechanical systole, and heart rate.  Chest 1981;80:613-617.",
-                                 equation: "Males: QT = 0.521 - 2.0*HR; Females: QT = 0.511 - 1.8*HR'",
-                                 baseEquation: {rrInSec, sex, age  in sex == .male ? QTc.msecToSec(521.0 - 2.0 * QTc.secToBpm(rrInSec)) : QTc.msecToSec(511.0 - 1.8 * QTc.secToBpm(rrInSec))},
-                                 classification: .rational),
+                          longName: "Boudoulas",
+                          shortName: "QTpBDL",
+                          reference: "Boudoulas H, Geleris P, Lewis RP, Rittgers SE.  Linear relationship between electrical systole, mechanical systole, and heart rate.  Chest 1981;80:613-617.",
+                          equation: "Males: QT = 0.521 - 2.0*HR; Females: QT = 0.511 - 1.8*HR'",
+                          baseEquation: {rrInSec, sex, age  in sex == .male ? QTc.msecToSec(521.0 - 2.0 * QTc.secToBpm(rrInSec)) : QTc.msecToSec(511.0 - 1.8 * QTc.secToBpm(rrInSec))},
+                          classification: .rational),
          .qtpAsh:
             QTpCalculator(formula: .qtpAsh,
-                                 longName: "Ashman", shortName: "QTpASH", reference: "Ashman r.  The normal duration of the Q-T interval.  Am Heart J 1942;23:522-534.", equation: "QT = K log[10(RR + k)], K and k sex and age dependent'", baseEquation: qtpAsh,
-                                 classification: .logarithmic)
-         ]
+                          longName: "Ashman", shortName: "QTpASH", reference: "Ashman r.  The normal duration of the Q-T interval.  Am Heart J 1942;23:522-534.", equation: "QT = K log[10(RR + k)], K and k sex and age dependent'", baseEquation: qtpAsh,
+                          classification: .logarithmic)
+    ]
 }
