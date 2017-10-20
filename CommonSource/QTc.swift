@@ -6,6 +6,7 @@
 //  Copyright © 2017 EP Studios. All rights reserved.
 //
 
+// TODO: Change target version back down to 10.10 for QTc and EP Calipers for Mac
 import Foundation
 
 // Nomenclature from Rabkin and Cheng, 2015: https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B17

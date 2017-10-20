@@ -106,12 +106,13 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           classification: .power),
          .qtcFrm:
             QTcCalculator(formula: .qtcFrm,
-                          longName: "Framingham (Sagie)",
+                          longName: "Framingham",
                           shortName: "QTcFRM",
                           reference: "Sagie A, Larson MG, Goldberg RJ, Bengtson JR, Levy D. An improved method for adjusting the QT interval for heart rate (the Framingham Heart Study),. Am J Cardiol. 1992;70:797-801.",
                           equation: "QT + 0.154*(1-RR)",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcLinear(qtInSec: qtInSec, rrInSec: rrInSec, alpha: 0.154)},
-                          classification: .linear),
+                          classification: .linear,
+                          notes: "aka Sagie formula"),
          .qtcHdg:
             QTcCalculator(formula: .qtcHdg,
                           longName: "Hodges",
