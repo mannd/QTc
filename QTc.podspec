@@ -80,7 +80,7 @@ The goal is to provide an exhaustive set of documented and tested corrected QT (
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/mannd/QTc", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/mannd/QTc.git", :tag => "#{s.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -91,8 +91,8 @@ The goal is to provide an exhaustive set of documented and tested corrected QT (
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "Classes", "Classes/**/*.{h,m}"
-  s.exclude_files = "Classes/Exclude"
+  s.source_files  = "CommonSource", "CommonSource/**/*.{h,m}"
+  s.exclude_files = "CommonTests"
 
   # s.public_header_files = "Classes/**/*.h"
 
