@@ -1,19 +1,29 @@
 ## Description
 This QTc framework includes formulas for QTc calculation, both common and obscure.  It is intended for universal use on both iOS and MacOs devices.  This framework is free to use in your own apps and programs.  *NB: This is a work in progress!  I cannot guarantee backward compatibility of subsequent versions, regardless of version numbers, until things settle down!*
 
-## You can help
-No I am **not** asking for money!  No Patreon or Kickstarter!  If you are an academic electrophysiologist or cardiologist and have access to an online medical digital library, you can help.  Most of the journal articles that are sources here are shamelessly paywalled and difficult if not impossible for a retired EP like myself without an academic affiliation to obtain.  Even Bazett’s almost 100 year old original QT article is behind a paywall!  If you are willing to download and forward articles to me, that would be wonderful.  Your name will be added to this README, and you get the satisfaction of knowing you have contributed to the open sourcing of scientific knowledge, which should be freely available to all.  Please email me at [mannd@epstudiossoftware.com](mannd@epstudiossoftware.com) if you are interested in contributing and I can provide you with a list of articles.
-
-Additionally, if you know of QTc or QTp formulas which are omitted here and need to be included, please email me or contact me on Twitter (@manndmd).
-
-## Demo program
-**QTsea** (a *sea* of QT formulas, get it?) is a demo program that I am writing and that will be freely available for download on the Apple App Store in the near future.  With it, you can calculate all the QTc formulas at once, see a graph of QTc intervals, calculate the QTu (ultimate QTc -- an average of all these formulas), investigate each formula individually, and just generally have a bunch of good clean EP QT fun.  
-
-## License
-This QTc framework is open source, and licensed under the 
-[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).  When used with Apple devices via the iTunes App Store, it is subject to the [standard Apple iOS license agreement](http://images.apple.com/legal/sla/docs/AppleStoreApp.pdf).
-
 ## Installation
+### The easy way
+Use Cocoapods to install the framwork.  After installing Cocoapods (see the [Cocoapods site](https://cocoapods.org) for how to do that), add a Podfile like this:
+
+	# Set your target platform
+	platform :ios, '11.1'
+
+	target '<MyApp>' do
+		# Comment the next line if you're not using Swift and don't want to use dynamic frameworks
+		use_frameworks!
+
+		pod 'QTc', :git => 'https://github.com/mannd/QTc.git', :branch => 'master'
+	end
+
+At this point in development it is probably just best to use the master branch.  Note that the QTc framework uses Swift 4.
+
+Install the pod from running from the command line withing your project directory:
+
+	$ pod install
+
+From then on open the project by from the .xcworkspace file, not the .xcodeproj file.
+
+### The hard way
 Download or clone the project and then drag the QTc.xcodeproj into your project in Xcode.
 ![figure 1](images/capture1.gif)
 
@@ -23,6 +33,9 @@ In the General tab of the target of your project click the Plus (+) under Linked
 Switch the target for your build to the appropriate Framework (QTc\_iOS or QTc\_Mac) and build the framework.  Afterwards switch the target back to your project.
 ![figure 3](images/capture3.gif)
 
+You can then if you wish, make the library a git submodule withing your app.  This is non-trivial, but [this Medium post](https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407) covers it well.
+
+## Using the framework
 Add this import statement to any Swift file using the framework:
 
     import QTc
@@ -31,7 +44,6 @@ To use with an Objective C file add:
 
     #import <QTc/QTc-Swift.h>
 
-## Using the framework
 QTc functions are labeled based on the proposed standard nomenclature of [Rabkin](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16).  Use the enum QTcFormula to select the QTc function:
 
 	public enum QTcFormula {
@@ -123,6 +135,14 @@ The QTc framework includes static functions to do common conversions, between se
 ## Tests
 The QTc framework includes numerous unit tests to confirm accuracy.
 
+## You can help
+No I am **not** asking for money!  No Patreon or Kickstarter!  If you are an academic electrophysiologist or cardiologist and have access to an online medical digital library, you can help.  Most of the journal articles that are sources here are shamelessly paywalled and difficult if not impossible for a retired EP like myself without an academic affiliation to obtain.  Even Bazett’s almost 100 year old original QT article is behind a paywall!  If you are willing to download and forward articles to me, that would be wonderful.  Your name will be added to this README, and you get the satisfaction of knowing you have contributed to the open sourcing of scientific knowledge, which should be freely available to all.  Please email me at [mannd@epstudiossoftware.com](mannd@epstudiossoftware.com) if you are interested in contributing and I can provide you with a list of articles.
+
+Additionally, if you know of QTc or QTp formulas which are omitted here and need to be included, please email me or contact me on Twitter (@manndmd).
+
+## Demo program
+**EP QTc** is a demo program that I am writing and that will be available for download on the Apple App Store in the near future.  With it, you can calculate all the QTc formulas at once, see a graph of QTc intervals, calculate the QTu (ultimate QTc -- an average of all these formulas), investigate each formula individually, and just generally have a bunch of good clean EP QT fun.
+
 ## References (partial list)
 - Bazett HC. An analysis of the time relations of electrocardiograms. Heart 1920; 7:353-367.
 - Fridericia L. Die sytolendauer in elektrokardiogramm bei normalen menschen und bei herzkranken. Acta Med Scand. 1920;53:469-486.
@@ -139,6 +159,9 @@ The QTc framework includes numerous unit tests to confirm accuracy.
 
 More QTc formulas coming!
 
+## License
+This QTc framework is open source, and licensed under the 
+[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).  When used with Apple devices via the iTunes App Store, it is subject to the [standard Apple iOS license agreement](http://images.apple.com/legal/sla/docs/AppleStoreApp.pdf).
 ## Copyright
 Copyright © 2017 [EP Studios, Inc.](http://www.epstudiossoftware.com)
 
@@ -148,6 +171,6 @@ The universal framework template was created based on this helpful [Medium post]
 ## Author
 David Mann, MD
 
-Email: [mannd@epstudiossoftware.com](mailto:mannd@epstudiossoftware.com)  
-Website: [https://www.epstudiossoftware.com](https://www.epstudiossoftware.com)   
+Email: [mannd@epstudiossoftware.com](mailto:mannd@epstudiossoftware.com) 
+Website: [https://www.epstudiossoftware.com](https://www.epstudiossoftware.com) 
 
