@@ -1,3 +1,4 @@
+# coding: utf-8
 #
 #  Be sure to run `pod spec lint QTc.podspec' to ensure this is a
 #  valid spec and to remove all comments including this before submitting the spec.
@@ -56,7 +57,7 @@ The goal is to provide an exhaustive set of documented and tested corrected QT (
   s.author             = { "David Mann" => "mannd@epstudiossoftware.com" }
   # Or just: s.author    = "David Mann"
   # s.authors            = { "David Mann" => "mannd@epstudiossoftware.com" }
-  # s.social_media_url   = "http://twitter.com/manndmd"
+  s.social_media_url   = "http://twitter.com/manndmd"
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
