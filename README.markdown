@@ -3,7 +3,7 @@ This QTc framework includes formulas for QTc calculation, both common and obscur
 
 ## Installation
 ### The easy way
-Use Cocoapods to install the framwork.  After installing Cocoapods (see the [Cocoapods site](https://cocoapods.org) for how to do that), add a Podfile like this:
+Use Cocoapods to install the framwork.  After installing Cocoapods (see the [Cocoapods site](https://cocoapods.org) for how to do that), add a Podfile like this to the top level directory of your project:
 
 	# Set your target platform
 	platform :ios, '11.1'
@@ -15,13 +15,13 @@ Use Cocoapods to install the framwork.  After installing Cocoapods (see the [Coc
 		pod 'QTc', :git => 'https://github.com/mannd/QTc.git', :branch => 'master'
 	end
 
-At this point in development it is probably just best to use the master branch.  Note that the QTc framework uses Swift 4.
+At this point in development it is probably best to use the master branch.  Note that the QTc framework uses Swift 4.
 
-Install the pod from running from the command line withing your project directory:
+Install the pod by running from the command line within your project directory:
 
 	$ pod install
 
-From then on open the project by from the .xcworkspace file, not the .xcodeproj file.
+From then on open the project using the .xcworkspace file, not the .xcodeproj file.
 
 ### The hard way
 Download or clone the project and then drag the QTc.xcodeproj into your project in Xcode.
@@ -33,7 +33,7 @@ In the General tab of the target of your project click the Plus (+) under Linked
 Switch the target for your build to the appropriate Framework (QTc\_iOS or QTc\_Mac) and build the framework.  Afterwards switch the target back to your project.
 ![figure 3](images/capture3.gif)
 
-You can then if you wish, make the library a git submodule withing your app.  This is non-trivial, but [this Medium post](https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407) covers it well.
+You can then if you wish, make the library a git submodule within your app.  This is non-trivial, but [this Medium post](https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407) covers it well.
 
 ## Using the framework
 Add this import statement to any Swift file using the framework:
