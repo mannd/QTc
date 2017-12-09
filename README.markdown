@@ -2,7 +2,6 @@
 This QTc framework includes formulas for QTc calculation, both common and obscure.  It is intended for universal use on both iOS and MacOs devices.  This framework is free to use in your own apps and programs.  *NB: This is a work in progress!  I cannot guarantee backward compatibility of subsequent versions, regardless of version numbers, until things settle down!*
 
 ## Installation
-### The easy way
 Use Cocoapods to install the framwork.  After installing Cocoapods (see the [Cocoapods site](https://cocoapods.org) for how to do that), add a Podfile like this to the top level directory of your project:
 
 	# Set your target platform
@@ -22,18 +21,6 @@ Install the pod by running from the command line within your project directory:
 	$ pod install
 
 From then on open the project using the .xcworkspace file, not the .xcodeproj file.
-
-### The hard way
-Download or clone the project and then drag the QTc.xcodeproj into your project in Xcode.
-![figure 1](images/capture1.gif)
-
-In the General tab of the target of your project click the Plus (+) under Linked Frameworks and Libraries and then select the QTc.framework from the dialog box.
-![figure 2](images/capture2.gif)
-
-Switch the target for your build to the appropriate Framework (QTc\_iOS or QTc\_Mac) and build the framework.  Afterwards switch the target back to your project.
-![figure 3](images/capture3.gif)
-
-You can then if you wish, make the library a git submodule within your app.  This is non-trivial, but [this Medium post](https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407) covers it well.
 
 ## Using the framework
 Add this import statement to any Swift file using the framework:
