@@ -22,6 +22,7 @@ public enum QTcFormula {
     case qtcDmt  // Dimitrienko
     case qtcYos  // Yoshinaga
     case qtcBdl  // Boudoulas (note Rabkin has qtcBRL -- typo?)
+    case qtcAdm
     // more coming
     case qtcTest // for testing only
 }

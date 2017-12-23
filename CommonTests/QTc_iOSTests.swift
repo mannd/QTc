@@ -319,6 +319,19 @@ class QTc_iOSTests: XCTestCase {
         }
     }
     
+    func testSexFormulas() {
+        let calculator = QTc.qtcCalculator(formula: .qtcAdm)
+        let qt = 0.888
+        let rr = 0.678
+        let qtcUnspecifiedSex = calculator.calculate(qtInSec: qt, rrInSec: rr, sex: .unspecified, age: 55)
+        let qtcMale = calculator.calculate(qtInSec: qt, rrInSec: rr, sex: .male, age: 60)
+        let qtcFemale = calculator.calculate(qtInSec: 0.888, rrInSec: rr, sex: .female, age: 99)
+        XCTAssertEqual(qtcUnspecifiedSex, 0.9351408, accuracy: delta)
+        XCTAssertEqual(qtcMale, 0.9374592, accuracy: delta)
+        XCTAssertEqual(qtcFemale, 0.9285398, accuracy: delta)
+        
+    }
+    
     func testNotes() {
         let calculator = QTc.qtcCalculator(formula: .qtcBzt)
         XCTAssertEqual(calculator.notes, "Oldest, most common formula, but inaccurate at extremes of heart rate")

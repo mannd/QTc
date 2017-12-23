@@ -41,6 +41,19 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
     }
     
     // Some complex formulae easier to present here than as closure
+    private static func qtcAdm(qtInSec: Double, rrInSec: Double, sex: Sex, age: Age) -> Sec {
+        var alpha: Double
+        switch sex {
+        case .unspecified:
+            alpha = 0.1464
+        case .male:
+            alpha = 0.1536
+        case .female:
+            alpha = 0.1259
+        }
+        return qtcLinear(qtInSec: qtInSec, rrInSec: rrInSec, alpha: alpha)
+    }
+    
     private static func qtpAsh(rrInSec: Double, sex: Sex, age: Age) -> Sec {
         // TODO: This formula has gaps in the paper's abstract, need full text of reference!
         // These gaps are "papered over" here.
@@ -66,7 +79,6 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
             }
         }
         return K * log10(10 * (rrInSec + k))
-        
     }
     
     // From http://www.sciencedirect.com/sdfe/pdf/download/eid/1-s2.0-0002870349908534/first-page-pdf
@@ -163,6 +175,16 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           classification: .power,
                           forAdults: false,
                           notes: "Children"),
+         .qtcAdm:
+            QTcCalculator(formula: .qtcAdm,
+                          longName: "Adams",
+                          shortName: "QTcADM",
+                          reference: "Adams W. The normal duration of the electrocardiographic ventricular complex. J Clin Invest. 1936;15:335-342.",
+                          equation: "QT + 0.1464(1-RR) (all subjects)\nQT + 0.1536(1-RR) (males)\nQT + 0.1259(1-RR) (females)",
+                          baseEquation: qtcAdm,
+                          classification: .linear,
+                          notes: "Gender-based formula"),
+         // Add new equations above
          .qtcTest:
             QTcCalculator(formula: .qtcTest,
                           longName: "Test",
