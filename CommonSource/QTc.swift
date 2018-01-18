@@ -86,9 +86,18 @@ public class BaseCalculator {
             return "rational"
         }
     }}
+    public var publicationDate: String? { get {
+        if let date = date {
+            return formatter.string(from: date)
+        }
+        return nil
+        }}
+    private let date: Date?
+    private let formatter = DateFormatter()
     
     init(longName: String, shortName: String, reference: String, equation: String,
-         classification: FormulaClassification, forAdults: Bool, notes: String) {
+         classification: FormulaClassification, forAdults: Bool, notes: String,
+         publicationDate: String?) {
         self.longName = longName
         self.shortName = shortName
         self.reference = reference
@@ -96,6 +105,14 @@ public class BaseCalculator {
         self.classification = classification
         self.forAdults = forAdults
         self.notes = notes
+        formatter.dateFormat = "yyyy"
+        if let publicationDate = publicationDate {
+            date = formatter.date(from: publicationDate)
+        }
+        else {
+            date = nil
+        }
+        
     }
 }
 
@@ -105,12 +122,14 @@ public class QTcCalculator: BaseCalculator {
     
     init(formula: QTcFormula, longName: String, shortName: String,
          reference: String, equation: String, baseEquation: @escaping QTcEquation,
-         classification: FormulaClassification, forAdults: Bool = true, notes: String = "") {
+         classification: FormulaClassification, forAdults: Bool = true, notes: String = "",
+         publicationDate: String? = nil) {
         self.formula = formula
         self.baseEquation = baseEquation
         super.init(longName: longName, shortName: shortName,
                    reference: reference, equation: equation,
-                   classification: classification, forAdults: forAdults, notes: notes)
+                   classification: classification, forAdults: forAdults,
+                   notes: notes, publicationDate: publicationDate)
     }
     
     public func calculate(qtInSec: Double, rrInSec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {
@@ -136,12 +155,13 @@ public class QTpCalculator: BaseCalculator {
     
     init(formula: QTpFormula, longName: String, shortName: String,
                   reference: String, equation: String, baseEquation: @escaping QTpEquation,
-                  classification: FormulaClassification, forAdults: Bool = true, notes: String = "") {
+                  classification: FormulaClassification, forAdults: Bool = true, notes: String = "", publicationDate: String?  = nil) {
         self.formula = formula
         self.baseEquation = baseEquation
         super.init(longName: longName, shortName: shortName,
                    reference: reference, equation: equation,
-                   classification: classification, forAdults: forAdults, notes: notes)
+                   classification: classification, forAdults: forAdults,
+                   notes: notes, publicationDate: publicationDate)
     }
     
     public func calculate(rrInSec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {

@@ -10,7 +10,6 @@ import Foundation
 
 struct Formulas: QTcFormulaSource, QTpFormulaSource {
     
-    
     static let errorMessage = "Formula not found!"
     
     // These 4 functions are required by the protocols used by this class
@@ -88,6 +87,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
         return 1.0
     }
     
+    
     // This is the data source for the formulas.  Potentially this could be a database, but there
     // aren't that many formulas, so for now the formulas are inlined here.
     static let qtcDictionary: [QTcFormula : QTcCalculator] =
@@ -99,7 +99,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           equation: "QT/RR^0.5",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.5)},
                           classification: .power,
-                          notes: "Oldest, most common formula, but inaccurate at extremes of heart rate"),
+                          notes: "Oldest, most common formula, but inaccurate at extremes of heart rate",
+                          publicationDate: "1920"),
          .qtcFrd:
             QTcCalculator(formula: .qtcFrd,
                           longName: "Fridericia",
@@ -107,7 +108,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           reference: "Fridericia L. Die sytolendauer in elektrokardiogramm bei normalen menschen und bei herzkranken. Acta Med Scand. 1920;53:469-486.",
                           equation: "QT/RR^0.333",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 1 / 3.0)},
-                          classification: .power),
+                          classification: .power,
+                          publicationDate: "1920"),
          .qtcMyd:
             QTcCalculator(formula: .qtcMyd,
                           longName: "Mayeda",
@@ -115,7 +117,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           reference: "Mayeda I. On time relation between systolic duration of heart and pulse rate. Acta Sch Med Univ Imp. 1934;17:53-55.",
                           equation: "QT/RR^0.604",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.604)},
-                          classification: .power),
+                          classification: .power,
+                          publicationDate: "1934"),
          .qtcFrm:
             QTcCalculator(formula: .qtcFrm,
                           longName: "Framingham",
@@ -124,7 +127,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           equation: "QT + 0.154*(1-RR)",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcLinear(qtInSec: qtInSec, rrInSec: rrInSec, alpha: 0.154)},
                           classification: .linear,
-                          notes: "aka Sagie formula"),
+                          notes: "aka Sagie formula",
+                          publicationDate: "1992"),
          .qtcHdg:
             QTcCalculator(formula: .qtcHdg,
                           longName: "Hodges",
@@ -132,7 +136,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           reference: "Hodges M, Salerno D, Erlien D. Bazett’s QT correction reviewed: Evidence that a linear QT correction for heart rate is better. J Am Coll Cardiol. 1983;1:1983.",
                           equation: "QT + 1.75*(HR-60)",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtInSec + 0.00175 * (QTc.secToBpm(rrInSec) - 60)},
-                          classification: .rational),
+                          classification: .rational,
+                          publicationDate: "1983"),
          .qtcRtha:
             QTcCalculator(formula: .qtcRtha,
                           longName: "Rautaharju (2014)a",
@@ -140,7 +145,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           reference: "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. Int J Cardiol. 2014;174:535-540.",
                           equation: "QT * (120 + HR),/180",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtInSec * (120.0 + QTc.secToBpm(rrInSec)) / 180.0},
-                          classification: .rational),
+                          classification: .rational,
+                          publicationDate: "2014"),
          .qtcArr:
             QTcCalculator(formula: .qtcArr,
                           longName: "Arrowood",
@@ -148,7 +154,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           reference: "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohrnty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223.",
                           equation: "QT + 0.304 - 0.492*e^(-0.008*HR)",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtInSec + 0.304 - 0.492 * exp(-0.008 * QTc.secToBpm(rrInSec))},
-                          classification: .other),
+                          classification: .other,
+                          publicationDate: "1993"),
          .qtcKwt:
             QTcCalculator(formula: .qtcKwt,
                           longName: "Kawataki",
@@ -156,7 +163,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           reference: "Kawataki M, Kashima T, Toda H, Tanaka H. Relation between QT interval and heart rate. applications and limitations of Bazett’s formula. J Electrocardiol. 1984;17:371-375.",
                           equation: "QT/RR^0.25",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.25)},
-                          classification: .power),
+                          classification: .power,
+                          publicationDate: "1984"),
          .qtcDmt:
             QTcCalculator(formula: .qtcDmt,
                           longName: "Dimitrienko",
@@ -164,7 +172,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           reference: "Dmitrienko AA, Sides GD, Winters KJ, et al. Electrocardiogram reference ranges derived from a standardized clinical trial population. Drug Inf J. 2005;39:395–405.",
                           equation: "QT/RR^0.413",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.413)},
-                          classification: .power),
+                          classification: .power,
+                          publicationDate: "2005"),
          .qtcYos:
             QTcCalculator(formula: .qtcYos,
                           longName: "Yoshinaga",
@@ -174,7 +183,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.31)},
                           classification: .power,
                           forAdults: false,
-                          notes: "Children"),
+                          notes: "Children",
+                          publicationDate: "1993"),
          .qtcAdm:
             QTcCalculator(formula: .qtcAdm,
                           longName: "Adams",
@@ -183,7 +193,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           equation: "QT + 0.1464(1-RR) (all subjects)\nQT + 0.1536(1-RR) (males)\nQT + 0.1259(1-RR) (females)",
                           baseEquation: qtcAdm,
                           classification: .linear,
-                          notes: "Gender-based formula"),
+                          notes: "Gender-based formula",
+                          publicationDate: "1936"),
          // Add new equations above
          .qtcTest:
             QTcCalculator(formula: .qtcTest,
@@ -194,7 +205,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           baseEquation: {qtInSec, rrInSec, sex, age in qtInSec + rrInSec},
                           classification: .power,
                           forAdults: false,
-                          notes: "Children")
+                          notes: "Children",
+                          publicationDate: "1800")
     ]
     
     static let qtpDictionary: [QTpFormula: QTpCalculator] =
@@ -205,7 +217,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           reference: "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohanty PK. Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation. J Appl Physiol (1985). 1993;75:2217-2223.",
                           equation: "0.12 + 0.492e^(-0.008*HR)",
                           baseEquation: {rrInSec,sex,age  in 0.12 + 0.492 * exp(-0.008 * QTc.secToBpm(rrInSec))},
-                          classification: .exponential),
+                          classification: .exponential,
+                          publicationDate: "1993"),
          .qtpBdl:
             QTpCalculator(formula: .qtpBdl,
                           longName: "Boudoulas",
@@ -213,10 +226,12 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           reference: "Boudoulas H, Geleris P, Lewis RP, Rittgers SE.  Linear relationship between electrical systole, mechanical systole, and heart rate.  Chest 1981;80:613-617.",
                           equation: "Males: QT = 0.521 - 2.0*HR; Females: QT = 0.511 - 1.8*HR'",
                           baseEquation: {rrInSec, sex, age  in sex == .male ? QTc.msecToSec(521.0 - 2.0 * QTc.secToBpm(rrInSec)) : QTc.msecToSec(511.0 - 1.8 * QTc.secToBpm(rrInSec))},
-                          classification: .rational),
+                          classification: .rational,
+                          publicationDate: "1981"),
          .qtpAsh:
             QTpCalculator(formula: .qtpAsh,
                           longName: "Ashman", shortName: "QTpASH", reference: "Ashman r.  The normal duration of the Q-T interval.  Am Heart J 1942;23:522-534.", equation: "QT = K log[10(RR + k)], K and k sex and age dependent'", baseEquation: qtpAsh,
-                          classification: .logarithmic)
+                          classification: .logarithmic,
+                          publicationDate: "1942")
     ]
 }
