@@ -62,8 +62,8 @@ public typealias Age = Int
 public typealias Msec = Double
 public typealias Sec = Double
 
-typealias QTcEquation = (_ qt: Double, _ rr: Double, _ sex: Sex, _ age: Age) -> Double
-typealias QTpEquation = (_ rr: Double, Sex, Age) -> Double
+typealias QTcEquation = (_ qt: Double, _ rr: Double, _ sex: Sex, _ age: Age) throws -> Double
+typealias QTpEquation = (_ rr: Double, Sex, Age) throws -> Double
 
 // This would be an abstract class if Swift had them.
 public class BaseCalculator {
@@ -140,20 +140,20 @@ public class QTcCalculator: BaseCalculator {
                    notes: notes, publicationDate: publicationDate)
     }
     
-    public func calculate(qtInSec: Double, rrInSec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {
-        return baseEquation(qtInSec, rrInSec, sex, age)
+    public func calculate(qtInSec: Double, rrInSec: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Sec {
+        return try baseEquation(qtInSec, rrInSec, sex, age)
     }
     
-    public func calculate(qtInMsec: Double, rrInMsec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Msec {
-        return QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rrInMsec: rrInMsec, sex: sex, age: age)
+    public func calculate(qtInMsec: Double, rrInMsec: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Msec {
+        return try QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rrInMsec: rrInMsec, sex: sex, age: age)
     }
     
-    public func calculate(qtInSec: Double, rate: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {
-        return QTc.qtcConvert(baseEquation, qtInSec: qtInSec, rate: rate, sex: sex, age: age)
+    public func calculate(qtInSec: Double, rate: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Sec {
+        return try QTc.qtcConvert(baseEquation, qtInSec: qtInSec, rate: rate, sex: sex, age: age)
     }
     
-    public func calculate(qtInMsec: Double, rate: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Msec {
-        return QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rate: rate, sex: sex, age: age)
+    public func calculate(qtInMsec: Double, rate: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Msec {
+        return try QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rate: rate, sex: sex, age: age)
     }
 }
 
@@ -172,16 +172,16 @@ public class QTpCalculator: BaseCalculator {
                    notes: notes, publicationDate: publicationDate)
     }
     
-    public func calculate(rrInSec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {
-        return baseEquation(rrInSec, sex, age)
+    public func calculate(rrInSec: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Sec {
+        return try baseEquation(rrInSec, sex, age)
     }
     
-    public func calculate(rrInMsec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Msec {
-        return QTc.qtpConvert(baseEquation, rrInMsec: rrInMsec, sex: sex, age: age)
+    public func calculate(rrInMsec: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Msec {
+        return try QTc.qtpConvert(baseEquation, rrInMsec: rrInMsec, sex: sex, age: age)
     }
     
-    public func calculate(rate: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {
-        return QTc.qtpConvert(baseEquation, rate: rate, sex: sex, age: age)
+    public func calculate(rate: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Sec {
+        return try QTc.qtpConvert(baseEquation, rate: rate, sex: sex, age: age)
     }
 }
 
@@ -256,27 +256,27 @@ public class QTc: NSObject {
     // Convert from one set of units to another
     // QTc conversion
     fileprivate static func qtcConvert(_ qtcEquation: QTcEquation,
-                                       qtInMsec: Double, rrInMsec: Double, sex: Sex, age: Age) -> Msec {
-        return secToMsec(qtcEquation(msecToSec(qtInMsec), msecToSec(rrInMsec), sex, age))
+                                       qtInMsec: Double, rrInMsec: Double, sex: Sex, age: Age) throws -> Msec {
+        return secToMsec(try qtcEquation(msecToSec(qtInMsec), msecToSec(rrInMsec), sex, age))
     }
     
     fileprivate static func qtcConvert(_ qtcEquation: QTcEquation,
-                                       qtInSec: Double, rate: Double, sex: Sex, age: Age) -> Sec {
-        return qtcEquation(qtInSec, bpmToSec(rate), sex, age)
+                                       qtInSec: Double, rate: Double, sex: Sex, age: Age) throws -> Sec {
+        return try qtcEquation(qtInSec, bpmToSec(rate), sex, age)
     }
     
     fileprivate static func qtcConvert(_ qtcEquation: QTcEquation,
-                                       qtInMsec: Double, rate: Double, sex: Sex, age: Age) -> Msec {
-        return secToMsec(qtcEquation(msecToSec(qtInMsec), bpmToSec(rate), sex, age))
+                                       qtInMsec: Double, rate: Double, sex: Sex, age: Age) throws -> Msec {
+        return secToMsec(try qtcEquation(msecToSec(qtInMsec), bpmToSec(rate), sex, age))
     }
    
     // QTp conversion
-    fileprivate static func qtpConvert(_ qtpEquation: QTpEquation, rrInMsec: Double, sex: Sex, age: Age) -> Msec {
-        return secToMsec(qtpEquation(msecToSec(rrInMsec), sex, age))
+    fileprivate static func qtpConvert(_ qtpEquation: QTpEquation, rrInMsec: Double, sex: Sex, age: Age) throws -> Msec {
+        return secToMsec(try qtpEquation(msecToSec(rrInMsec), sex, age))
     }
     
-    fileprivate static func qtpConvert(_ qtpEquation: QTpEquation, rate: Double, sex: Sex, age: Age) -> Sec {
-        return qtpEquation(bpmToSec(rate), sex, age)
+    fileprivate static func qtpConvert(_ qtpEquation: QTpEquation, rate: Double, sex: Sex, age: Age) throws -> Sec {
+        return try qtpEquation(bpmToSec(rate), sex, age)
     }
 }
 

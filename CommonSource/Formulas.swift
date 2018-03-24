@@ -180,7 +180,9 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           shortName: "QTcYOS",
                           reference: "Yoshinaga M, Tomari T, Aihoshi S, et al.  Exponential correction of QT interval to minimize the effect of the heart rate in children.  Jpn Circ J.  1993;57:102-108.",
                           equation: "QT/RR^0.31",
-                          baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.31)},
+                          baseEquation: {qtInSec, rrInSec, sex, age in
+                            guard age <= 18 else { throw CalculationError.ageOutOfRange }
+                            return qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.31)},
                           classification: .power,
                           forAdults: false,
                           notes: "Children",
