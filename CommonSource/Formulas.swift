@@ -53,9 +53,10 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
         return qtcLinear(qtInSec: qtInSec, rrInSec: rrInSec, alpha: alpha)
     }
     
-    private static func qtpAsh(rrInSec: Double, sex: Sex, age: Age) -> Sec {
+    private static func qtpAsh(rrInSec: Double, sex: Sex, age: Age) throws -> Sec {
         // TODO: This formula has gaps in the paper's abstract, need full text of reference!
         // These gaps are "papered over" here.
+        guard let age = age else { throw CalculationError.ageRequired }
         let k = 0.07
         var K: Double = 0
         if sex == .male {
@@ -181,6 +182,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           reference: "Yoshinaga M, Tomari T, Aihoshi S, et al.  Exponential correction of QT interval to minimize the effect of the heart rate in children.  Jpn Circ J.  1993;57:102-108.",
                           equation: "QT/RR^0.31",
                           baseEquation: {qtInSec, rrInSec, sex, age in
+                            guard let age = age else { throw CalculationError.ageRequired }
                             guard age <= 18 else { throw CalculationError.ageOutOfRange }
                             return qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.31)},
                           classification: .power,

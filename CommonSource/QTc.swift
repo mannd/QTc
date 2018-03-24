@@ -52,11 +52,13 @@ public enum Sex {
 public enum CalculationError: Error {
     case heartRateOutOfRange
     case ageOutOfRange
+    case ageRequired
+    case sexRequired
     case wrongSex
     case unspecified
 }
 
-public typealias Age = Int
+public typealias Age = Int?
 // These are just to clarify return types of certain functions.
 // They only used when the units aren't clear in the function prototypes.
 public typealias Msec = Double
@@ -67,8 +69,6 @@ typealias QTpEquation = (_ rr: Double, Sex, Age) throws -> Double
 
 // This would be an abstract class if Swift had them.
 public class BaseCalculator {
-    public static let unspecified = -1  // use when Age is unspecified
-    
     public let longName: String
     public let shortName: String
     public let reference: String
@@ -140,19 +140,19 @@ public class QTcCalculator: BaseCalculator {
                    notes: notes, publicationDate: publicationDate)
     }
     
-    public func calculate(qtInSec: Double, rrInSec: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Sec {
+    public func calculate(qtInSec: Double, rrInSec: Double, sex: Sex = .unspecified, age: Age) throws -> Sec {
         return try baseEquation(qtInSec, rrInSec, sex, age)
     }
     
-    public func calculate(qtInMsec: Double, rrInMsec: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Msec {
+    public func calculate(qtInMsec: Double, rrInMsec: Double, sex: Sex = .unspecified, age: Age) throws -> Msec {
         return try QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rrInMsec: rrInMsec, sex: sex, age: age)
     }
     
-    public func calculate(qtInSec: Double, rate: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Sec {
+    public func calculate(qtInSec: Double, rate: Double, sex: Sex = .unspecified, age: Age) throws -> Sec {
         return try QTc.qtcConvert(baseEquation, qtInSec: qtInSec, rate: rate, sex: sex, age: age)
     }
     
-    public func calculate(qtInMsec: Double, rate: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Msec {
+    public func calculate(qtInMsec: Double, rate: Double, sex: Sex = .unspecified, age: Age) throws -> Msec {
         return try QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rate: rate, sex: sex, age: age)
     }
 }
@@ -172,15 +172,15 @@ public class QTpCalculator: BaseCalculator {
                    notes: notes, publicationDate: publicationDate)
     }
     
-    public func calculate(rrInSec: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Sec {
+    public func calculate(rrInSec: Double, sex: Sex = .unspecified, age: Age) throws -> Sec {
         return try baseEquation(rrInSec, sex, age)
     }
     
-    public func calculate(rrInMsec: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Msec {
+    public func calculate(rrInMsec: Double, sex: Sex = .unspecified, age: Age) throws -> Msec {
         return try QTc.qtpConvert(baseEquation, rrInMsec: rrInMsec, sex: sex, age: age)
     }
     
-    public func calculate(rate: Double, sex: Sex = .unspecified, age: Age = unspecified) throws -> Sec {
+    public func calculate(rate: Double, sex: Sex = .unspecified, age: Age) throws -> Sec {
         return try QTc.qtpConvert(baseEquation, rate: rate, sex: sex, age: age)
     }
 }
