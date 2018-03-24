@@ -48,6 +48,14 @@ public enum Sex {
     case unspecified
 }
 
+// These error codes can be thrown by certain formulas when parameters don't apply
+public enum CalculationError: Error {
+    case heartRateOutOfRange
+    case ageOutOfRange
+    case wrongSex
+    case unspecified
+}
+
 public typealias Age = Int
 // These are just to clarify return types of certain functions.
 // They only used when the units aren't clear in the function prototypes.
