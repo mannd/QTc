@@ -28,6 +28,7 @@ public enum QTcFormula {
 }
 
 public enum QTpFormula {
+    case qtpBzt  // Bazett
     case qtpArr  // Arrowood
     case qtpBdl  // Boudoulas
     case qtpAsh  // Ashman
@@ -55,6 +56,7 @@ public enum CalculationError: Error {
     case ageRequired
     case sexRequired
     case wrongSex
+    case qtOutOfRange
     case unspecified
 }
 
@@ -74,8 +76,6 @@ public class BaseCalculator {
     public let reference: String
     public let equation: String
     public let classification: FormulaClassification
-    // true is adult or general equations, few pediatric ones will set this false
-    public let forAdults: Bool
     // potentially add notes to certain formulas
     public let notes: String
     public var classificationName: String { get {
@@ -94,6 +94,7 @@ public class BaseCalculator {
             return "rational"
         }
     }}
+    public var numberOfSubjects: Int?
     public var publicationDate: String? { get {
         if let date = date {
             return formatter.string(from: date)
@@ -104,14 +105,13 @@ public class BaseCalculator {
     private let formatter = DateFormatter()
     
     init(longName: String, shortName: String, reference: String, equation: String,
-         classification: FormulaClassification, forAdults: Bool, notes: String,
-         publicationDate: String?) {
+         classification: FormulaClassification, notes: String,
+         publicationDate: String?, numberOfSubjects: Int?) {
         self.longName = longName
         self.shortName = shortName
         self.reference = reference
         self.equation = equation
         self.classification = classification
-        self.forAdults = forAdults
         self.notes = notes
         formatter.dateFormat = "yyyy"
         if let publicationDate = publicationDate {
@@ -120,7 +120,7 @@ public class BaseCalculator {
         else {
             date = nil
         }
-        
+        self.numberOfSubjects = numberOfSubjects
     }
 }
 
@@ -131,28 +131,29 @@ public class QTcCalculator: BaseCalculator {
     init(formula: QTcFormula, longName: String, shortName: String,
          reference: String, equation: String, baseEquation: @escaping QTcEquation,
          classification: FormulaClassification, forAdults: Bool = true, notes: String = "",
-         publicationDate: String? = nil) {
+         publicationDate: String? = nil, numberOfSubjects: Int? = nil) {
         self.formula = formula
         self.baseEquation = baseEquation
         super.init(longName: longName, shortName: shortName,
                    reference: reference, equation: equation,
-                   classification: classification, forAdults: forAdults,
-                   notes: notes, publicationDate: publicationDate)
+                   classification: classification,
+                   notes: notes, publicationDate: publicationDate,
+                   numberOfSubjects: numberOfSubjects)
     }
     
-    public func calculate(qtInSec: Double, rrInSec: Double, sex: Sex = .unspecified, age: Age) throws -> Sec {
+    public func calculate(qtInSec: Double, rrInSec: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Sec {
         return try baseEquation(qtInSec, rrInSec, sex, age)
     }
     
-    public func calculate(qtInMsec: Double, rrInMsec: Double, sex: Sex = .unspecified, age: Age) throws -> Msec {
+    public func calculate(qtInMsec: Double, rrInMsec: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Msec {
         return try QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rrInMsec: rrInMsec, sex: sex, age: age)
     }
     
-    public func calculate(qtInSec: Double, rate: Double, sex: Sex = .unspecified, age: Age) throws -> Sec {
+    public func calculate(qtInSec: Double, rate: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Sec {
         return try QTc.qtcConvert(baseEquation, qtInSec: qtInSec, rate: rate, sex: sex, age: age)
     }
     
-    public func calculate(qtInMsec: Double, rate: Double, sex: Sex = .unspecified, age: Age) throws -> Msec {
+    public func calculate(qtInMsec: Double, rate: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Msec {
         return try QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rate: rate, sex: sex, age: age)
     }
 }
@@ -163,24 +164,25 @@ public class QTpCalculator: BaseCalculator {
     
     init(formula: QTpFormula, longName: String, shortName: String,
                   reference: String, equation: String, baseEquation: @escaping QTpEquation,
-                  classification: FormulaClassification, forAdults: Bool = true, notes: String = "", publicationDate: String?  = nil) {
+                  classification: FormulaClassification, forAdults: Bool = true, notes: String = "", publicationDate: String?  = nil, numberOfSubjects: Int? = nil) {
         self.formula = formula
         self.baseEquation = baseEquation
         super.init(longName: longName, shortName: shortName,
                    reference: reference, equation: equation,
-                   classification: classification, forAdults: forAdults,
-                   notes: notes, publicationDate: publicationDate)
+                   classification: classification,
+                   notes: notes, publicationDate: publicationDate,
+                   numberOfSubjects: numberOfSubjects)
     }
     
-    public func calculate(rrInSec: Double, sex: Sex = .unspecified, age: Age) throws -> Sec {
+    public func calculate(rrInSec: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Sec {
         return try baseEquation(rrInSec, sex, age)
     }
     
-    public func calculate(rrInMsec: Double, sex: Sex = .unspecified, age: Age) throws -> Msec {
+    public func calculate(rrInMsec: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Msec {
         return try QTc.qtpConvert(baseEquation, rrInMsec: rrInMsec, sex: sex, age: age)
     }
     
-    public func calculate(rate: Double, sex: Sex = .unspecified, age: Age) throws -> Sec {
+    public func calculate(rate: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Sec {
         return try QTc.qtpConvert(baseEquation, rate: rate, sex: sex, age: age)
     }
 }

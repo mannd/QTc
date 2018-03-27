@@ -96,12 +96,13 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
             QTcCalculator(formula: .qtcBzt,
                           longName: "Bazett",
                           shortName: "QTcBZT",
-                          reference: "Bazett HC. An analysis of the time relations of electrocardiograms. Heart 1920; 7:353-367.",
+                          reference: "original: Bazett HC. An analysis of the time-relations of electrocardiograms. Heart 1920;7:353–370.\nreprint: Bazett H. C. An analysis of the time‐relations of electrocardiograms. Annals of Noninvasive Electrocardiology. 2006;2(2):177-194. doi:10.1111/j.1542-474X.1997.tb00325.x",
                           equation: "QT/RR^0.5",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.5)},
                           classification: .power,
                           notes: "Oldest, most common formula, but inaccurate at extremes of heart rate",
-                          publicationDate: "1920"),
+                          publicationDate: "1920",
+                          numberOfSubjects: 39),
          .qtcFrd:
             QTcCalculator(formula: .qtcFrd,
                           longName: "Fridericia",
@@ -186,7 +187,6 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                             guard age <= 18 else { throw CalculationError.ageOutOfRange }
                             return qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.31)},
                           classification: .power,
-                          forAdults: false,
                           notes: "Children",
                           publicationDate: "1993"),
          .qtcAdm:
@@ -208,13 +208,32 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           equation: "uses sex",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtInSec + rrInSec},
                           classification: .power,
-                          forAdults: false,
                           notes: "Children",
                           publicationDate: "1800")
     ]
     
     static let qtpDictionary: [QTpFormula: QTpCalculator] =
-        [.qtpArr:
+        [.qtpBzt:
+            QTpCalculator(formula: .qtpBzt,
+                          longName: "Bazett",
+                          shortName: "QTpBZT",
+                          reference: "original: Bazett HC. An analysis of the time-relations of electrocardiograms. Heart 1920;7:353–370.\nreprint: Bazett H. C. An analysis of the time‐relations of electrocardiograms. Annals of Noninvasive Electrocardiology. 2006;2(2):177-194. doi:10.1111/j.1542-474X.1997.tb00325.x",
+                          equation: "K * RR^0.5, where K = 0.37 for men and 0.40 for women",
+                          baseEquation: { rrInSec,sex,age  in
+                            let k: Double
+                            switch(sex) {
+                            case .male:
+                                k = 0.37
+                            case .female:
+                                k = 0.4
+                            case .unspecified:
+                                throw CalculationError.sexRequired
+                            }
+                            return k * pow(rrInSec, 0.5) },
+                          classification: .exponential,
+                          publicationDate: "1920",
+                          numberOfSubjects: 39),
+         .qtpArr:
             QTpCalculator(formula: .qtpArr,
                           longName: "Arrowood",
                           shortName: "QTpARR",
