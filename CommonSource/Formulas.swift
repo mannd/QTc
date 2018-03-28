@@ -100,7 +100,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           equation: "QT/RR^0.5",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.5)},
                           classification: .power,
-                          notes: "Oldest, most common formula, but inaccurate at extremes of heart rate",
+                          notes: "Oldest, most commonly used formula, but inaccurate at extremes of heart rate.  Healthy subjects: 20 men, age 14 - 40 (including one with age labeled \"Boy\"), 19 women, age 20 - 53.  Majority of subjects in their 20s.",
                           publicationDate: "1920",
                           numberOfSubjects: 39),
          .qtcFrd:
@@ -231,6 +231,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                             }
                             return k * pow(rrInSec, 0.5) },
                           classification: .exponential,
+                          notes: "Oldest, most commonly used formula, but inaccurate at extremes of heart rate.  Healthy subjects: 20 men, age 14 - 40 (including one with age labeled \"Boy\"), 19 women, age 20 - 53.  Majority of subjects in their 20s.",
                           publicationDate: "1920",
                           numberOfSubjects: 39),
          .qtpArr:

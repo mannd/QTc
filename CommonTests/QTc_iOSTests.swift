@@ -324,13 +324,6 @@ class QTc_iOSTests: XCTestCase {
         
     }
     
-    func testNotes() {
-        let calculator = QTc.qtcCalculator(formula: .qtcBzt)
-        XCTAssertEqual(calculator.notes, "Oldest, most common formula, but inaccurate at extremes of heart rate")
-        let calculator2 = QTc.qtcCalculator(formula: .qtcFrd)
-        XCTAssertEqual(calculator2.notes, "")
-    }
-    
     func testClassification() {
         let qtcBzt = QTc.qtcCalculator(formula: .qtcBzt)
         XCTAssertEqual(qtcBzt.classification, .power)

@@ -34,6 +34,9 @@ public enum QTpFormula {
     case qtpAsh  // Ashman
 }
 
+// TODO: localize strings, and ensure localization works when used as a Pod
+// See https://medium.com/@shenghuawu/localization-cocoapods-5d1e9f34f6e6 and
+// http://yannickloriot.com/2014/02/cocoapods-and-the-localized-string-files/
 public enum FormulaClassification {
     case linear
     case rational
@@ -41,6 +44,23 @@ public enum FormulaClassification {
     case logarithmic
     case exponential
     case other
+    
+    var label: String {
+        switch self {
+        case .linear:
+            return "linear"
+        case .rational:
+            return "rational"
+        case .power:
+            return "power"
+        case .logarithmic:
+            return "logarithmic"
+        case .exponential:
+            return "exponential"
+        case .other:
+            return "other"
+        }
+    }
 }
 
 public enum Sex {
@@ -78,21 +98,9 @@ public class BaseCalculator {
     public let classification: FormulaClassification
     // potentially add notes to certain formulas
     public let notes: String
-    public var classificationName: String { get {
-        switch classification {
-        case .exponential:
-            return "exponential"
-        case .linear:
-            return "linear"
-        case .logarithmic:
-            return "logarithmic"
-        case .other:
-            return "other"
-        case .power:
-            return "power"
-        case .rational:
-            return "rational"
-        }
+    public var classificationName: String { get
+    {
+        return classification.label
     }}
     public var numberOfSubjects: Int?
     public var publicationDate: String? { get {
@@ -107,6 +115,8 @@ public class BaseCalculator {
     init(longName: String, shortName: String, reference: String, equation: String,
          classification: FormulaClassification, notes: String,
          publicationDate: String?, numberOfSubjects: Int?) {
+        
+        
         self.longName = longName
         self.shortName = shortName
         self.reference = reference

@@ -153,6 +153,8 @@ This QTc framework is open source, and licensed under the
 Copyright © 2017 [EP Studios, Inc.](http://www.epstudiossoftware.com)
 
 ## Acknowledgments
+Thanks to Marian Stiehler for help in acquiring the original literature that forms the basis of these QTc and QTp formulas!
+
 The universal framework template was created based on this helpful [Medium post](https://medium.com/@ataibarkai/create-a-universal-swift-framework-for-ios-os-x-watchos-and-tvos-2aa26a8190dc) by Atai Barkai.
 
 ## Author
