@@ -212,12 +212,13 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           publicationDate: "1800")
     ]
     
+    // We avoid duplicate fields in the QTp formulas by reusing some of the QTc equivalent fields
     static let qtpDictionary: [QTpFormula: QTpCalculator] =
         [.qtpBzt:
             QTpCalculator(formula: .qtpBzt,
-                          longName: "Bazett",
+                          longName: QTc.qtcCalculator(formula: .qtcBzt).longName,
                           shortName: "QTpBZT",
-                          reference: "original: Bazett HC. An analysis of the time-relations of electrocardiograms. Heart 1920;7:353–370.\nreprint: Bazett H. C. An analysis of the time‐relations of electrocardiograms. Annals of Noninvasive Electrocardiology. 2006;2(2):177-194. doi:10.1111/j.1542-474X.1997.tb00325.x",
+                          reference: QTc.qtcCalculator(formula: .qtcBzt).reference,
                           equation: "K * RR^0.5, where K = 0.37 for men and 0.40 for women",
                           baseEquation: { rrInSec,sex,age  in
                             let k: Double
@@ -230,19 +231,19 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                                 throw CalculationError.sexRequired
                             }
                             return k * pow(rrInSec, 0.5) },
-                          classification: .exponential,
-                          notes: "Oldest, most commonly used formula, but inaccurate at extremes of heart rate.  Healthy subjects: 20 men, age 14 - 40 (including one with age labeled \"Boy\"), 19 women, age 20 - 53.  Majority of subjects in their 20s.",
-                          publicationDate: "1920",
-                          numberOfSubjects: 39),
+                          classification: QTc.qtcCalculator(formula: .qtcBzt).classification,
+                          notes: QTc.qtcCalculator(formula: .qtcBzt).notes,
+                          publicationDate: QTc.qtcCalculator(formula: .qtcBzt).publicationDate,
+                          numberOfSubjects: QTc.qtcCalculator(formula: .qtcBzt).numberOfSubjects),
          .qtpArr:
             QTpCalculator(formula: .qtpArr,
-                          longName: "Arrowood",
+                          longName: QTc.qtcCalculator(formula: .qtcArr).longName,
                           shortName: "QTpARR",
-                          reference: "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohanty PK. Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation. J Appl Physiol (1985). 1993;75:2217-2223.",
+                          reference: QTc.qtcCalculator(formula: .qtcArr).reference,
                           equation: "0.12 + 0.492e^(-0.008*HR)",
                           baseEquation: {rrInSec,sex,age  in 0.12 + 0.492 * exp(-0.008 * QTc.secToBpm(rrInSec))},
-                          classification: .exponential,
-                          publicationDate: "1993"),
+                          classification: QTc.qtcCalculator(formula: .qtcArr).classification,
+                          publicationDate: QTc.qtcCalculator(formula: .qtcArr).publicationDate),
          .qtpBdl:
             QTpCalculator(formula: .qtpBdl,
                           longName: "Boudoulas",
