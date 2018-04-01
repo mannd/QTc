@@ -81,13 +81,13 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
         return K * log10(10 * (rrInSec + k))
     }
     
-    // From http://www.sciencedirect.com/sdfe/pdf/download/eid/1-s2.0-0002870349908534/first-page-pdf
-    //    One of the simplest is that devised by Bazett, namely, Q-T= k d/R-R, where k is a constant and R-R is the interval between two suc- cessive R waves.3 Bazett pointed out that k is the same in men and children, but longer in women, and described the constant as 0.37 for men and children and 0.40 for women.
-    private static func qtpBzt(rrInSec: Double, sex: Sex, age: Age) -> Sec {
-        // TODO: fill in with above info
-        return 1.0
-    }
-    
+//    // From http://www.sciencedirect.com/sdfe/pdf/download/eid/1-s2.0-0002870349908534/first-page-pdf
+//    //    One of the simplest is that devised by Bazett, namely, Q-T= k d/R-R, where k is a constant and R-R is the interval between two suc- cessive R waves.3 Bazett pointed out that k is the same in men and children, but longer in women, and described the constant as 0.37 for men and children and 0.40 for women.
+//    private static func qtpBzt(rrInSec: Double, sex: Sex, age: Age) -> Sec {
+//        // TODO: fill in with above info
+//        return 1.0
+//    }
+//
     
     // This is the data source for the formulas.  Potentially this could be a database, but there
     // aren't that many formulas, so for now the formulas are inlined here.
@@ -142,12 +142,38 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           publicationDate: "1983"),
          .qtcRtha:
             QTcCalculator(formula: .qtcRtha,
-                          longName: "Rautaharju (2014)a",
+                          longName: "Rautaharju QTcMod",
                           shortName: "QTcRTHa",
-                          reference: "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. Int J Cardiol. 2014;174:535-540.",
-                          equation: "QT * (120 + HR),/180",
+                          reference: "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. International Journal of Cardiology. 2014;174(3):535-540. doi:10.1016/j.ijcard.2014.04.133",
+                          equation: "QT * (120 + HR) /180",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtInSec * (120.0 + QTc.secToBpm(rrInSec)) / 180.0},
                           classification: .rational,
+                          notes: "Healthy subjects: 57,595, aged 5-89 years, 54% women.\nAbnormal QTc: age < 40: 430 ms for men, 440 ms for women; age 40-69: 440 ms for men, 450 ms for women, age ≥ 70: 455 ms for men, 460 ms for women.",
+                          publicationDate: "2014"),
+         // TODO: Add tests for .qtcRthb
+         .qtcRthb:
+            QTcCalculator(formula: .qtcRthb,
+                          longName: "Rautaharju QTcLogLin",
+                          shortName: "QTcRTHb",
+                          // TODO: extract common strings like references
+                          reference: "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. International Journal of Cardiology. 2014;174(3):535-540. doi:10.1016/j.ijcard.2014.04.133",
+                          equation: "QTc = QT + 387 * (1 - RR^0.37) for men\nQTc = QT + 409 * (1 - RR^0.39) for women",
+                          baseEquation: {qtInSec, rrInSec, sex, age in
+                            let C: Double
+                            let k: Double
+                            switch(sex) {
+                            case .male:
+                                C = 387.0
+                                k = 0.37
+                            case .female:
+                                C = 409.0
+                                k = 0.39
+                            case .unspecified:
+                                throw CalculationError.sexRequired
+                            }
+                            return QTc.msecToSec(QTc.secToMsec(qtInSec) + C * (1 - pow(rrInSec, k)))},
+                          classification: .power,
+                          notes: "Healthy subjects: 57,595, aged 5-89 years, 54% women.\nAbnormal QTc: age < 40: 430 ms for men, 440 ms for women; age 40-69: 440 ms for men, 450 ms for women, age ≥ 70: 455 ms for men, 460 ms for women.",
                           publicationDate: "2014"),
          .qtcArr:
             QTcCalculator(formula: .qtcArr,

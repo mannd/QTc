@@ -15,7 +15,8 @@ public enum QTcFormula {
     case qtcFrd  // Fridericia
     case qtcFrm  // Framingham
     case qtcHdg  // Hodges
-    case qtcRtha // Rautaharju (2014)a
+    case qtcRtha // Rautaharju (2014) QTcMod
+    case qtcRthb // Rautaharju (2014) QTcLogLin
     case qtcMyd  // Mayeda
     case qtcArr  // Arrowood
     case qtcKwt  // Kawataki
