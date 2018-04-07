@@ -81,14 +81,6 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
         return K * log10(10 * (rrInSec + k))
     }
     
-//    // From http://www.sciencedirect.com/sdfe/pdf/download/eid/1-s2.0-0002870349908534/first-page-pdf
-//    //    One of the simplest is that devised by Bazett, namely, Q-T= k d/R-R, where k is a constant and R-R is the interval between two suc- cessive R waves.3 Bazett pointed out that k is the same in men and children, but longer in women, and described the constant as 0.37 for men and children and 0.40 for women.
-//    private static func qtpBzt(rrInSec: Double, sex: Sex, age: Age) -> Sec {
-//        // TODO: fill in with above info
-//        return 1.0
-//    }
-//
-    
     // This is the data source for the formulas.  Potentially this could be a database, but there
     // aren't that many formulas, so for now the formulas are inlined here.
     static let qtcDictionary: [QTcFormula : QTcCalculator] =
@@ -107,11 +99,13 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
             QTcCalculator(formula: .qtcFrd,
                           longName: "Fridericia",
                           shortName: "QTcFRM",
-                          reference: "Fridericia L. Die sytolendauer in elektrokardiogramm bei normalen menschen und bei herzkranken. Acta Med Scand. 1920;53:469-486.",
-                          equation: "QT/RR^0.333",
+                          reference: "Fridericia LS. Die Systolendauer im Elektrokardiogramm bei normalen Menschen und bei Herzkranken. Acta Medica Scandinavica. 1920;53(1):469-486. doi:10.1111/j.0954-6820.1920.tb18266.x",
+                          equation: "QT/RR^(1/3)",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 1 / 3.0)},
                           classification: .power,
-                          publicationDate: "1920"),
+                          notes: "50 normal subjects, 28 men, 22 women, ages 2 to 81, most (35) age 20 to 40.  HR range 51-135.",
+                          publicationDate: "1920",
+                          numberOfSubjects: 50),
          .qtcMyd:
             QTcCalculator(formula: .qtcMyd,
                           longName: "Mayeda",
@@ -125,12 +119,13 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
             QTcCalculator(formula: .qtcFrm,
                           longName: "Framingham",
                           shortName: "QTcFRM",
-                          reference: "Sagie A, Larson MG, Goldberg RJ, Bengtson JR, Levy D. An improved method for adjusting the QT interval for heart rate (the Framingham Heart Study),. Am J Cardiol. 1992;70:797-801.",
+                          reference: "Sagie A, Larson MG, Goldberg RJ, Bengtson JR, Levy D. An improved method for adjusting the QT interval for heart rate (the Framingham Heart Study). American Journal of Cardiology. 1992;70(7):797-801. doi:10.1016/0002-9149(92)90562-D",
                           equation: "QT + 0.154*(1-RR)",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcLinear(qtInSec: qtInSec, rrInSec: rrInSec, alpha: 0.154)},
                           classification: .linear,
-                          notes: "aka Sagie formula",
-                          publicationDate: "1992"),
+                          notes: "5,018 subjects, 2,239 men and 2,779 women, from Framingham Heart Study.  Mean age 44 years (28-62). CAD, subjects on AADs or tricyclics or with extremes of HR excluded.",
+                          publicationDate: "1992",
+                          numberOfSubjects: 5018),
          .qtcHdg:
             QTcCalculator(formula: .qtcHdg,
                           longName: "Hodges",
@@ -139,7 +134,9 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           equation: "QT + 1.75*(HR-60)",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtInSec + 0.00175 * (QTc.secToBpm(rrInSec) - 60)},
                           classification: .rational,
-                          publicationDate: "1983"),
+                          notes: "607 normal subjects, 303 men, 304 women, ages from 20s to 80s.",
+                          publicationDate: "1983",
+                          numberOfSubjects: 607),
          .qtcRtha:
             QTcCalculator(formula: .qtcRtha,
                           longName: "Rautaharju QTcMod",
@@ -197,11 +194,13 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
             QTcCalculator(formula: .qtcDmt,
                           longName: "Dimitrienko",
                           shortName: "QTcDMT",
-                          reference: "Dmitrienko AA, Sides GD, Winters KJ, et al. Electrocardiogram reference ranges derived from a standardized clinical trial population. Drug Inf J. 2005;39:395–405.",
+                          reference: "Dmitrienke AA, Sides GD, Winters KJ, et al. Electrocardiogram Reference Ranges Derived from a Standardized Clinical Trial Population. Drug Information Journal. 2005;39(4):395-405. doi:10.1177/009286150503900408",
                           equation: "QT/RR^0.413",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.413)},
                           classification: .power,
-                          publicationDate: "2005"),
+                          notes: "Healthy subjects: 13,039, aged 4-99 years, 51% women.",
+                          publicationDate: "2005",
+                          numberOfSubjects: 13039),
          .qtcYos:
             QTcCalculator(formula: .qtcYos,
                           longName: "Yoshinaga",
@@ -283,6 +282,27 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
             QTpCalculator(formula: .qtpAsh,
                           longName: "Ashman", shortName: "QTpASH", reference: "Ashman r.  The normal duration of the Q-T interval.  Am Heart J 1942;23:522-534.", equation: "QT = K log[10(RR + k)], K and k sex and age dependent'", baseEquation: qtpAsh,
                           classification: .logarithmic,
-                          publicationDate: "1942")
+                          publicationDate: "1942"),
+         .qtpHdg:
+            QTpCalculator(formula: .qtpHdg,
+                          longName: QTc.qtcCalculator(formula: .qtcHdg).longName,
+                          shortName: "QTpHDG",
+                          reference: QTc.qtcCalculator(formula: .qtcHdg).reference,
+                          equation: "QT = 496 - (1.75 * HR)",
+                          baseEquation: {rrInSec,sex,age in 0.496 - (0.00175 * QTc.secToBpm(rrInSec))},
+                          classification: QTc.qtcCalculator(formula: .qtcHdg).classification,
+                          publicationDate: QTc.qtcCalculator(formula: .qtcHdg).publicationDate,
+                          numberOfSubjects: QTc.qtcCalculator(formula: .qtcHdg).numberOfSubjects),
+         .qtpFrd:
+           QTpCalculator(formula: .qtpFrd,
+                         longName: QTc.qtcCalculator(formula: .qtcFrd).longName,
+                         shortName: "QTpFRD",
+                         reference: QTc.qtcCalculator(formula: .qtcFrd).reference,
+                         equation: "QT = 177.1 * RR^(1/3)",
+                         baseEquation: {rrInSec, sex, age in 177.1 * pow(rrInSec, 1/3)},
+                         classification: .power,
+                         notes: "test",
+                         publicationDate: "1920",
+                         numberOfSubjects: QTc.qtcCalculator(formula: .qtcFrd).numberOfSubjects)
     ]
 }

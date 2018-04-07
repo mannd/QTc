@@ -30,9 +30,11 @@ public enum QTcFormula {
 
 public enum QTpFormula {
     case qtpBzt  // Bazett
+    case qtpFrd  // Fridericia
     case qtpArr  // Arrowood
     case qtpBdl  // Boudoulas
     case qtpAsh  // Ashman
+    case qtpHdg  // Hodges
 }
 
 // TODO: localize strings, and ensure localization works when used as a Pod

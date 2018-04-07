@@ -331,4 +331,6 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(qtcFrm.classification, .linear)
     }
 
+    // TODO: test new QTc and QTp formulas
+
 }
