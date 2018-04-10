@@ -11,8 +11,8 @@ import XCTest
 
 class QTc_iOSTests: XCTestCase {
     // Add formulas to these arrays as they are created
-    let qtcFormulas: [QTcFormula] = [.qtcBzt, .qtcArr, .qtcDmt, .qtcFrd, .qtcFrm, .qtcHdg, .qtcKwt, .qtcMyd, .qtcYos]
-    let qtpFormulas: [QTpFormula] = [.qtpArr]
+    let qtcFormulas: [Formula] = [.qtcBzt, .qtcArr, .qtcDmt, .qtcFrd, .qtcFrm, .qtcHdg, .qtcKwt, .qtcMyd, .qtcYos]
+    let qtpFormulas: [Formula] = [.qtpArr]
     // Accuracy for all non-integral measurements
     let delta = 0.0000001
     let roughDelta = 0.1
@@ -77,13 +77,13 @@ class QTc_iOSTests: XCTestCase {
 
     // mocks for testing formula sources
     class TestQtcFormulas: QTcFormulaSource {
-        static func qtcCalculator(formula: QTcFormula) -> QTcCalculator {
+        static func qtcCalculator(formula: Formula) -> QTcCalculator {
             return QTcCalculator(formula: formula, longName: "TestLongName", shortName: "TestShortName", reference: "TestReference", equation: "TestEquation", baseEquation: { x, y, sex, age in x + y}, classification: .other, publicationDate: "1901")
         }
      }
     
     class TestQtpFormulas: QTpFormulaSource {
-        static func qtpCalculator(formula: QTpFormula) -> QTpCalculator {
+        static func qtpCalculator(formula: Formula) -> QTpCalculator {
             return QTpCalculator(formula: formula, longName: "TestLongName", shortName: "TestShortName", reference: "TestReference", equation: "TestEquation", baseEquation: {x, sex, age in pow(x, 2.0)}, classification: .other)
         }
     }
@@ -232,7 +232,7 @@ class QTc_iOSTests: XCTestCase {
     func testEquipose() {
         let sampleQTs = [0.345, 1.0, 0.555, 0.114, 0, 0.888]
         // Subset of QTc formulae, only including non-exponential formulas
-        let formulas: [QTcFormula] = [.qtcBzt, .qtcFrd, .qtcHdg, .qtcFrm, .qtcMyd, .qtcRtha]
+        let formulas: [Formula] = [.qtcBzt, .qtcFrd, .qtcHdg, .qtcFrm, .qtcMyd, .qtcRtha]
         
         for formula in formulas {
             let qtc = QTc.qtcCalculator(formula: formula)

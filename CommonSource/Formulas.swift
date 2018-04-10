@@ -13,14 +13,14 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
     static let errorMessage = "Formula not found!"
     
     // These 4 functions are required by the protocols used by this class
-    static func qtcCalculator(formula: QTcFormula) -> QTcCalculator {
+    static func qtcCalculator(formula: Formula) -> QTcCalculator {
         guard let calculator = qtcDictionary[formula] else {
             fatalError(errorMessage)
         }
         return calculator
     }
     
-    static func qtpCalculator(formula: QTpFormula) -> QTpCalculator {
+    static func qtpCalculator(formula: Formula) -> QTpCalculator {
         guard let calculator = qtpDictionary[formula] else {
             fatalError(errorMessage)
         }
@@ -83,7 +83,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
     
     // This is the data source for the formulas.  Potentially this could be a database, but there
     // aren't that many formulas, so for now the formulas are inlined here.
-    static let qtcDictionary: [QTcFormula : QTcCalculator] =
+    static let qtcDictionary: [Formula : QTcCalculator] =
         [.qtcBzt:
             QTcCalculator(formula: .qtcBzt,
                           longName: "Bazett",
@@ -238,7 +238,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
     ]
     
     // We avoid duplicate fields in the QTp formulas by reusing some of the QTc equivalent fields
-    static let qtpDictionary: [QTpFormula: QTpCalculator] =
+    static let qtpDictionary: [Formula: QTpCalculator] =
         [.qtpBzt:
             QTpCalculator(formula: .qtpBzt,
                           longName: QTc.qtcCalculator(formula: .qtcBzt).longName,

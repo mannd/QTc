@@ -10,7 +10,8 @@
 import Foundation
 
 // Nomenclature from Rabkin and Cheng, 2015: https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B17
-public enum QTcFormula {
+public enum Formula {
+    // QTc formulas
     case qtcBzt  // Bazett
     case qtcFrd  // Fridericia
     case qtcFrm  // Framingham
@@ -23,12 +24,10 @@ public enum QTcFormula {
     case qtcDmt  // Dimitrienko
     case qtcYos  // Yoshinaga
     case qtcBdl  // Boudoulas (note Rabkin has qtcBRL -- typo?)
-    case qtcAdm
-    // more coming
+    case qtcAdm  // Adams
     case qtcTest // for testing only
-}
-
-public enum QTpFormula {
+    
+    // QTp formulas
     case qtpBzt  // Bazett
     case qtpFrd  // Fridericia
     case qtpArr  // Arrowood
@@ -36,6 +35,33 @@ public enum QTpFormula {
     case qtpAsh  // Ashman
     case qtpHdg  // Hodges
 }
+
+//public enum QTcFormula {
+//    case qtcBzt  // Bazett
+//    case qtcFrd  // Fridericia
+//    case qtcFrm  // Framingham
+//    case qtcHdg  // Hodges
+//    case qtcRtha // Rautaharju (2014) QTcMod
+//    case qtcRthb // Rautaharju (2014) QTcLogLin
+//    case qtcMyd  // Mayeda
+//    case qtcArr  // Arrowood
+//    case qtcKwt  // Kawataki
+//    case qtcDmt  // Dimitrienko
+//    case qtcYos  // Yoshinaga
+//    case qtcBdl  // Boudoulas (note Rabkin has qtcBRL -- typo?)
+//    case qtcAdm
+//    // more coming
+//    case qtcTest // for testing only
+//}
+
+//public enum QTpFormula {
+//    case qtpBzt  // Bazett
+//    case qtpFrd  // Fridericia
+//    case qtpArr  // Arrowood
+//    case qtpBdl  // Boudoulas
+//    case qtpAsh  // Ashman
+//    case qtpHdg  // Hodges
+//}
 
 // TODO: localize strings, and ensure localization works when used as a Pod
 // See https://medium.com/@shenghuawu/localization-cocoapods-5d1e9f34f6e6 and
@@ -138,10 +164,10 @@ public class BaseCalculator {
 }
 
 public class QTcCalculator: BaseCalculator {
-    let formula: QTcFormula
+    let formula: Formula
     let baseEquation: QTcEquation
     
-    init(formula: QTcFormula, longName: String, shortName: String,
+    init(formula: Formula, longName: String, shortName: String,
          reference: String, equation: String, baseEquation: @escaping QTcEquation,
          classification: FormulaClassification, forAdults: Bool = true, notes: String = "",
          publicationDate: String? = nil, numberOfSubjects: Int? = nil) {
@@ -172,10 +198,10 @@ public class QTcCalculator: BaseCalculator {
 }
 
 public class QTpCalculator: BaseCalculator {
-    let formula: QTpFormula
+    let formula: Formula
     let baseEquation: QTpEquation
     
-    init(formula: QTpFormula, longName: String, shortName: String,
+    init(formula: Formula, longName: String, shortName: String,
                   reference: String, equation: String, baseEquation: @escaping QTpEquation,
                   classification: FormulaClassification, forAdults: Bool = true, notes: String = "", publicationDate: String?  = nil, numberOfSubjects: Int? = nil) {
         self.formula = formula
@@ -202,11 +228,11 @@ public class QTpCalculator: BaseCalculator {
 
 // These are protocols that the formula source must adhere to.
 protocol QTcFormulaSource {
-    static func qtcCalculator(formula: QTcFormula) -> QTcCalculator
+    static func qtcCalculator(formula: Formula) -> QTcCalculator
 }
 
 protocol QTpFormulaSource {
-    static func qtpCalculator(formula: QTpFormula) -> QTpCalculator
+    static func qtpCalculator(formula: Formula) -> QTpCalculator
 }
 
 /// TODO: is @objc tag needed if inheritance from NSObject?
@@ -243,11 +269,11 @@ public class QTc: NSObject {
     
     
     // These functions allow mocking the Formula source
-    static func qtcCalculator<T: QTcFormulaSource>(formulaSource: T.Type, formula: QTcFormula) -> QTcCalculator {
+    static func qtcCalculator<T: QTcFormulaSource>(formulaSource: T.Type, formula: Formula) -> QTcCalculator {
         return T.qtcCalculator(formula: formula)
     }
     
-    static func qtpCalculator<T: QTpFormulaSource>(formulaSource: T.Type, formula: QTpFormula) -> QTpCalculator {
+    static func qtpCalculator<T: QTpFormulaSource>(formulaSource: T.Type, formula: Formula) -> QTpCalculator {
         return T.qtpCalculator(formula: formula)
     }
     
@@ -259,12 +285,12 @@ public class QTc: NSObject {
     //
     
     // QTc Factory
-    public static func qtcCalculator(formula: QTcFormula) -> QTcCalculator {
+    public static func qtcCalculator(formula: Formula) -> QTcCalculator {
         return qtcCalculator(formulaSource: Formulas.self, formula: formula)
     }
     
     // QTp factory
-    public static func qtpCalculator(formula: QTpFormula) -> QTpCalculator {
+    public static func qtpCalculator(formula: Formula) -> QTpCalculator {
         return qtpCalculator(formulaSource: Formulas.self, formula: formula)
     }
     
