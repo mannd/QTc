@@ -17,6 +17,8 @@
 		8EE367281F5B5B330003E5DA /* QTc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE367271F5B5B330003E5DA /* QTc.swift */; };
 		8EE367291F5B5B330003E5DA /* QTc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE367271F5B5B330003E5DA /* QTc.swift */; };
 		8EE50CB41F70C850001F6530 /* Formulas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE50CB31F70C850001F6530 /* Formulas.swift */; };
+		8EFC82C7207C5CD8000C92CE /* QtMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EFC82C6207C5CD8000C92CE /* QtMeasurement.swift */; };
+		8EFC82C8207C5CE0000C92CE /* QtMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EFC82C6207C5CD8000C92CE /* QtMeasurement.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +42,7 @@
 		8EE367221F5B58420003E5DA /* QTc_iOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QTc_iOSTests.swift; sourceTree = "<group>"; };
 		8EE367271F5B5B330003E5DA /* QTc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QTc.swift; sourceTree = "<group>"; };
 		8EE50CB31F70C850001F6530 /* Formulas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Formulas.swift; sourceTree = "<group>"; };
+		8EFC82C6207C5CD8000C92CE /* QtMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QtMeasurement.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +98,7 @@
 				8EE3671E1F5B57B20003E5DA /* Info.plist */,
 				8EE3671F1F5B57B20003E5DA /* QTc.h */,
 				8EE367271F5B5B330003E5DA /* QTc.swift */,
+				8EFC82C6207C5CD8000C92CE /* QtMeasurement.swift */,
 			);
 			path = CommonSource;
 			sourceTree = "<group>";
@@ -266,6 +270,7 @@
 			files = (
 				8EE50CB41F70C850001F6530 /* Formulas.swift in Sources */,
 				8EE367281F5B5B330003E5DA /* QTc.swift in Sources */,
+				8EFC82C7207C5CD8000C92CE /* QtMeasurement.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,6 +288,7 @@
 			files = (
 				8E61A2321F984E5F00625288 /* Formulas.swift in Sources */,
 				8EE367291F5B5B330003E5DA /* QTc.swift in Sources */,
+				8EFC82C8207C5CE0000C92CE /* QtMeasurement.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -36,32 +36,11 @@ public enum Formula {
     case qtpHdg  // Hodges
 }
 
-//public enum QTcFormula {
-//    case qtcBzt  // Bazett
-//    case qtcFrd  // Fridericia
-//    case qtcFrm  // Framingham
-//    case qtcHdg  // Hodges
-//    case qtcRtha // Rautaharju (2014) QTcMod
-//    case qtcRthb // Rautaharju (2014) QTcLogLin
-//    case qtcMyd  // Mayeda
-//    case qtcArr  // Arrowood
-//    case qtcKwt  // Kawataki
-//    case qtcDmt  // Dimitrienko
-//    case qtcYos  // Yoshinaga
-//    case qtcBdl  // Boudoulas (note Rabkin has qtcBRL -- typo?)
-//    case qtcAdm
-//    // more coming
-//    case qtcTest // for testing only
-//}
+public enum FormulaType {
+    case qtc
+    case qtp
+}
 
-//public enum QTpFormula {
-//    case qtpBzt  // Bazett
-//    case qtpFrd  // Fridericia
-//    case qtpArr  // Arrowood
-//    case qtpBdl  // Boudoulas
-//    case qtpAsh  // Ashman
-//    case qtpHdg  // Hodges
-//}
 
 // TODO: localize strings, and ensure localization works when used as a Pod
 // See https://medium.com/@shenghuawu/localization-cocoapods-5d1e9f34f6e6 and
@@ -106,6 +85,7 @@ public enum CalculationError: Error {
     case sexRequired
     case wrongSex
     case qtOutOfRange
+    case qtMissing
     case unspecified
 }
 
@@ -161,6 +141,11 @@ public class BaseCalculator {
         }
         self.numberOfSubjects = numberOfSubjects
     }
+    
+    // base class func, meant to be overriden
+    public func calculate(qtMeasurement: QtMeasurement) throws -> Double? {
+        return nil
+    }
 }
 
 public class QTcCalculator: BaseCalculator {
@@ -195,6 +180,36 @@ public class QTcCalculator: BaseCalculator {
     public func calculate(qtInMsec: Double, rate: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Msec {
         return try QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rate: rate, sex: sex, age: age)
     }
+    
+    override public func calculate(qtMeasurement: QtMeasurement) throws -> Double? {
+        return try calculate(qt: qtMeasurement.qt, intervalRate: qtMeasurement.intervalRate,
+                             intervalRateType: qtMeasurement.intervalRateType, sex: qtMeasurement.sex,
+                             age: qtMeasurement.age, units: qtMeasurement.units)
+    }
+    
+    public func calculate(qt: Double?, intervalRate: Double, intervalRateType: IntervalRateType,
+                   sex: Sex, age: Age, units: Units) throws -> Double? {
+        guard let qt = qt else { throw CalculationError.qtMissing }
+        var result: Double?
+        switch units {
+        case .msec:
+            if intervalRateType == .interval {
+                result = try calculate(qtInMsec: qt, rrInMsec: intervalRate, sex: sex, age: age)
+            }
+            else {
+                result = try calculate(qtInMsec: qt, rate: intervalRate, sex: sex, age: age)
+            }
+        case .sec:
+            if intervalRateType == .interval {
+                result = try calculate(qtInSec: qt, rrInSec: intervalRate, sex: sex, age: age)
+            }
+            else {
+                result = try calculate(qtInSec: qt, rate: intervalRate, sex: sex, age: age)
+            }
+        }
+        return result
+    }
+    
 }
 
 public class QTpCalculator: BaseCalculator {
@@ -223,6 +238,34 @@ public class QTpCalculator: BaseCalculator {
     
     public func calculate(rate: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Sec {
         return try QTc.qtpConvert(baseEquation, rate: rate, sex: sex, age: age)
+    }
+    
+    override public func calculate(qtMeasurement: QtMeasurement) throws -> Double? {
+        return try calculate(intervalRate: qtMeasurement.intervalRate,
+                             intervalRateType: qtMeasurement.intervalRateType, sex: qtMeasurement.sex,
+                             age: qtMeasurement.age, units: qtMeasurement.units)
+    }
+    
+    func calculate(intervalRate: Double, intervalRateType: IntervalRateType,
+                   sex: Sex, age: Age, units: Units) throws -> Double? {
+        var result: Double?
+        switch units {
+        case .msec:
+            if intervalRateType == .interval {
+                result = try calculate(rrInMsec: intervalRate, sex: sex, age: age)
+            }
+            else {
+                result = try calculate(rate: intervalRate, sex: sex, age: age)
+            }
+        case .sec:
+            if intervalRateType == .interval {
+                result = try calculate(rrInSec: intervalRate, sex: sex, age: age)
+            }
+            else {
+                result = try calculate(rate: intervalRate, sex: sex, age: age)
+            }
+        }
+        return result
     }
 }
 
@@ -292,6 +335,16 @@ public class QTc: NSObject {
     // QTp factory
     public static func qtpCalculator(formula: Formula) -> QTpCalculator {
         return qtpCalculator(formulaSource: Formulas.self, formula: formula)
+    }
+    
+    // Generic Calculator factory
+    public static func calculator(formula: Formula, formulaType: FormulaType) -> BaseCalculator {
+        switch formulaType {
+        case .qtc:
+            return qtcCalculator(formula: formula)
+        case .qtp:
+            return qtpCalculator(formula: formula)
+        }
     }
     
     // Convert from one set of units to another

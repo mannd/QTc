@@ -330,6 +330,16 @@ class QTc_iOSTests: XCTestCase {
         let qtcFrm = QTc.qtcCalculator(formula: .qtcFrm)
         XCTAssertEqual(qtcFrm.classification, .linear)
     }
+    
+    func testNewCalculate() {
+        let qtcBzt = QTc.calculator(formula: .qtcBzt, formulaType: .qtc)
+        var qtMeasurement = QtMeasurement(qt: 370.0, intervalRate: 1000, units: .msec, intervalRateType: .interval, sex: .unspecified, age: nil)
+        XCTAssertEqual(try? qtcBzt.calculate(qtMeasurement: qtMeasurement), 370.0)
+        let qtpBzt = QTc.calculator(formula: .qtpBzt, formulaType: .qtp)
+        qtMeasurement.sex = .female
+        XCTAssertEqual(try? qtpBzt.calculate(qtMeasurement: qtMeasurement), 400.0)
+
+    }
 
     // TODO: test new QTc and QTp formulas
 
