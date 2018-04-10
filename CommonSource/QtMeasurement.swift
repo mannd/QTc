@@ -20,10 +20,21 @@ public enum Units {
 
 // Wrap up the parameters needed to measure QTc and QTp
 public struct QtMeasurement {
-    var qt: Double? // an optional, since QT not needed for QTp
-    var intervalRate: Double  // RR interval or HR
-    var units: Units
-    var intervalRateType: IntervalRateType // an interval or HR
-    var sex: Sex
-    var age: Int?  // truncate ages to Int, may be nil as not always needed
+    public let qt: Double? // an optional, since QT not needed for QTp
+    public let intervalRate: Double  // RR interval or HR
+    public let units: Units
+    public let intervalRateType: IntervalRateType // an interval or HR
+    public let sex: Sex
+    public let age: Int?  // truncate ages to Int, may be nil as not always needed
+    
+    // In Swift, default init is interval, so must specifically declare public init
+    public init(qt: Double?, intervalRate: Double, units: Units,
+        intervalRateType: IntervalRateType, sex: Sex, age: Int?) {
+        self.qt = qt
+        self.intervalRate = intervalRate
+        self.units = units
+        self.intervalRateType = intervalRateType
+        self.sex = sex
+        self.age = age
+    }
 }
