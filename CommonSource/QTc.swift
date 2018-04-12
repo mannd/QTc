@@ -34,6 +34,21 @@ public enum Formula {
     case qtpBdl  // Boudoulas
     case qtpAsh  // Ashman
     case qtpHdg  // Hodges
+    
+    func formulaType() -> FormulaType {
+        let qtcFormulas: Set<Formula> = [.qtcBzt, .qtcFrd, .qtcFrm, .qtcHdg, .qtcRtha, .qtcRthb, .qtcMyd,
+                                         .qtcArr, .qtcKwt, .qtcDmt, .qtcYos, .qtcBdl, .qtcAdm]
+        let qtpFormulas: Set<Formula> = [.qtpBzt, .qtpFrd, .qtpArr, .qtpBdl, .qtpAsh, .qtpHdg]
+        if qtcFormulas.contains(self) {
+            return .qtc
+        } else if qtpFormulas.contains(self) {
+            return .qtp
+        } else {
+            assertionFailure("Undefined formula")
+            // above wll halt program and below won't be reached ever.
+            return .qtc
+        }
+    }
 }
 
 public enum FormulaType {
@@ -87,6 +102,7 @@ public enum CalculationError: Error {
     case qtOutOfRange
     case qtMissing
     case unspecified
+    case undefinedFormula
 }
 
 public typealias Age = Int?
@@ -100,6 +116,7 @@ typealias QTpEquation = (_ rr: Double, Sex, Age) throws -> Double
 
 // This would be an abstract class if Swift had them.
 public class BaseCalculator {
+    public var formula: Formula?
     public let longName: String
     public let shortName: String
     public let reference: String
@@ -125,7 +142,7 @@ public class BaseCalculator {
          classification: FormulaClassification, notes: String,
          publicationDate: String?, numberOfSubjects: Int?) {
         
-        
+        self.formula = nil
         self.longName = longName
         self.shortName = shortName
         self.reference = reference
@@ -149,20 +166,20 @@ public class BaseCalculator {
 }
 
 public class QTcCalculator: BaseCalculator {
-    let formula: Formula
     let baseEquation: QTcEquation
     
     init(formula: Formula, longName: String, shortName: String,
          reference: String, equation: String, baseEquation: @escaping QTcEquation,
          classification: FormulaClassification, forAdults: Bool = true, notes: String = "",
          publicationDate: String? = nil, numberOfSubjects: Int? = nil) {
-        self.formula = formula
+        
         self.baseEquation = baseEquation
         super.init(longName: longName, shortName: shortName,
                    reference: reference, equation: equation,
                    classification: classification,
                    notes: notes, publicationDate: publicationDate,
                    numberOfSubjects: numberOfSubjects)
+        self.formula = formula
     }
     
     public func calculate(qtInSec: Double, rrInSec: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Sec {
@@ -213,19 +230,18 @@ public class QTcCalculator: BaseCalculator {
 }
 
 public class QTpCalculator: BaseCalculator {
-    let formula: Formula
     let baseEquation: QTpEquation
     
     init(formula: Formula, longName: String, shortName: String,
                   reference: String, equation: String, baseEquation: @escaping QTpEquation,
                   classification: FormulaClassification, forAdults: Bool = true, notes: String = "", publicationDate: String?  = nil, numberOfSubjects: Int? = nil) {
-        self.formula = formula
         self.baseEquation = baseEquation
         super.init(longName: longName, shortName: shortName,
                    reference: reference, equation: equation,
                    classification: classification,
                    notes: notes, publicationDate: publicationDate,
                    numberOfSubjects: numberOfSubjects)
+        self.formula = formula
     }
     
     public func calculate(rrInSec: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Sec {
@@ -337,7 +353,7 @@ public class QTc: NSObject {
         return qtpCalculator(formulaSource: Formulas.self, formula: formula)
     }
     
-    // Generic Calculator factory
+    // Generic Calculator factories
     public static func calculator(formula: Formula, formulaType: FormulaType) -> BaseCalculator {
         switch formulaType {
         case .qtc:
@@ -345,6 +361,10 @@ public class QTc: NSObject {
         case .qtp:
             return qtpCalculator(formula: formula)
         }
+    }
+    
+    public static func calculator(formula: Formula) -> BaseCalculator {
+        return calculator(formula: formula, formulaType: formula.formulaType())
     }
     
     // Convert from one set of units to another

@@ -336,9 +336,22 @@ class QTc_iOSTests: XCTestCase {
         var qtMeasurement = QtMeasurement(qt: 370.0, intervalRate: 1000, units: .msec, intervalRateType: .interval, sex: .unspecified, age: nil)
         XCTAssertEqual(try? qtcBzt.calculate(qtMeasurement: qtMeasurement), 370.0)
         let qtpBzt = QTc.calculator(formula: .qtpBzt, formulaType: .qtp)
-        qtMeasurement.sex = .female
+        qtMeasurement = QtMeasurement(qt: 370.0, intervalRate: 1000, units: .msec, intervalRateType: .interval, sex: .female, age: nil)
         XCTAssertEqual(try? qtpBzt.calculate(qtMeasurement: qtMeasurement), 400.0)
+        let qtcFrd = QTc.calculator(formula: .qtcFrd)
+        XCTAssertEqual(try? qtcFrd.calculate(qtMeasurement: qtMeasurement), 370.0)
 
+    }
+    
+    func testFormulaTypes() {
+        let qtcBzt = QTc.calculator(formula: .qtcBzt, formulaType: .qtc)
+        XCTAssert(qtcBzt.formula == .qtcBzt)
+        XCTAssert(qtcBzt.formula?.formulaType() == .qtc)
+        // .qtcTest not member of QTc or QTp set of formulas
+        // However can't test this, as it leads to assertionFailure and program halt
+        //let qtcTst = QTc.calculator(formula: .qtcTest, formulaType: .qtc)
+        //XCTAssertThrowsError(qtcTst.formula?.formulaType())
+        
     }
 
     // TODO: test new QTc and QTp formulas
