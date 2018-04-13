@@ -10,29 +10,54 @@
 import Foundation
 
 // Nomenclature from Rabkin and Cheng, 2015: https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B17
-public enum QTcFormula {
+public enum Formula {
+    // QTc formulas
     case qtcBzt  // Bazett
     case qtcFrd  // Fridericia
     case qtcFrm  // Framingham
     case qtcHdg  // Hodges
-    case qtcRtha // Rautaharju (2014)a
+    case qtcRtha // Rautaharju (2014) QTcMod
+    case qtcRthb // Rautaharju (2014) QTcLogLin
     case qtcMyd  // Mayeda
     case qtcArr  // Arrowood
     case qtcKwt  // Kawataki
     case qtcDmt  // Dimitrienko
     case qtcYos  // Yoshinaga
     case qtcBdl  // Boudoulas (note Rabkin has qtcBRL -- typo?)
-    case qtcAdm
-    // more coming
+    case qtcAdm  // Adams
     case qtcTest // for testing only
-}
-
-public enum QTpFormula {
+    
+    // QTp formulas
+    case qtpBzt  // Bazett
+    case qtpFrd  // Fridericia
     case qtpArr  // Arrowood
     case qtpBdl  // Boudoulas
     case qtpAsh  // Ashman
+    case qtpHdg  // Hodges
+    
+    func formulaType() -> FormulaType {
+        let qtcFormulas: Set<Formula> = [.qtcBzt, .qtcFrd, .qtcFrm, .qtcHdg, .qtcRtha, .qtcRthb, .qtcMyd,
+                                         .qtcArr, .qtcKwt, .qtcDmt, .qtcYos, .qtcBdl, .qtcAdm]
+        let qtpFormulas: Set<Formula> = [.qtpBzt, .qtpFrd, .qtpArr, .qtpBdl, .qtpAsh, .qtpHdg]
+        if qtcFormulas.contains(self) {
+            return .qtc
+        } else if qtpFormulas.contains(self) {
+            return .qtp
+        } else {
+            fatalError("Undefined formula")
+        }
+    }
 }
 
+public enum FormulaType {
+    case qtc
+    case qtp
+}
+
+
+// TODO: localize strings, and ensure localization works when used as a Pod
+// See https://medium.com/@shenghuawu/localization-cocoapods-5d1e9f34f6e6 and
+// http://yannickloriot.com/2014/02/cocoapods-and-the-localized-string-files/
 public enum FormulaClassification {
     case linear
     case rational
@@ -52,48 +77,35 @@ public enum Sex {
 public enum CalculationError: Error {
     case heartRateOutOfRange
     case ageOutOfRange
+    case ageRequired
+    case sexRequired
     case wrongSex
+    case qtOutOfRange
+    case qtMissing
     case unspecified
+    case undefinedFormula
 }
 
-public typealias Age = Int
+public typealias Age = Int?
 // These are just to clarify return types of certain functions.
 // They only used when the units aren't clear in the function prototypes.
 public typealias Msec = Double
 public typealias Sec = Double
 
-typealias QTcEquation = (_ qt: Double, _ rr: Double, _ sex: Sex, _ age: Age) -> Double
-typealias QTpEquation = (_ rr: Double, Sex, Age) -> Double
+typealias QTcEquation = (_ qt: Double, _ rr: Double, _ sex: Sex, _ age: Age) throws -> Double
+typealias QTpEquation = (_ rr: Double, Sex, Age) throws -> Double
 
 // This would be an abstract class if Swift had them.
 public class BaseCalculator {
-    public static let unspecified = -1  // use when Age is unspecified
-    
+    public var formula: Formula?
     public let longName: String
     public let shortName: String
     public let reference: String
     public let equation: String
     public let classification: FormulaClassification
-    // true is adult or general equations, few pediatric ones will set this false
-    public let forAdults: Bool
     // potentially add notes to certain formulas
     public let notes: String
-    public var classificationName: String { get {
-        switch classification {
-        case .exponential:
-            return "exponential"
-        case .linear:
-            return "linear"
-        case .logarithmic:
-            return "logarithmic"
-        case .other:
-            return "other"
-        case .power:
-            return "power"
-        case .rational:
-            return "rational"
-        }
-    }}
+    public var numberOfSubjects: Int?
     public var publicationDate: String? { get {
         if let date = date {
             return formatter.string(from: date)
@@ -104,14 +116,15 @@ public class BaseCalculator {
     private let formatter = DateFormatter()
     
     init(longName: String, shortName: String, reference: String, equation: String,
-         classification: FormulaClassification, forAdults: Bool, notes: String,
-         publicationDate: String?) {
+         classification: FormulaClassification, notes: String,
+         publicationDate: String?, numberOfSubjects: Int?) {
+        
+        self.formula = nil
         self.longName = longName
         self.shortName = shortName
         self.reference = reference
         self.equation = equation
         self.classification = classification
-        self.forAdults = forAdults
         self.notes = notes
         formatter.dateFormat = "yyyy"
         if let publicationDate = publicationDate {
@@ -120,78 +133,142 @@ public class BaseCalculator {
         else {
             date = nil
         }
-        
+        self.numberOfSubjects = numberOfSubjects
+    }
+    
+    // base class func, meant to be overriden
+    public func calculate(qtMeasurement: QtMeasurement) throws -> Double? {
+        return nil
     }
 }
 
 public class QTcCalculator: BaseCalculator {
-    let formula: QTcFormula
     let baseEquation: QTcEquation
     
-    init(formula: QTcFormula, longName: String, shortName: String,
+    init(formula: Formula, longName: String, shortName: String,
          reference: String, equation: String, baseEquation: @escaping QTcEquation,
          classification: FormulaClassification, forAdults: Bool = true, notes: String = "",
-         publicationDate: String? = nil) {
-        self.formula = formula
+         publicationDate: String? = nil, numberOfSubjects: Int? = nil) {
+        
         self.baseEquation = baseEquation
         super.init(longName: longName, shortName: shortName,
                    reference: reference, equation: equation,
-                   classification: classification, forAdults: forAdults,
-                   notes: notes, publicationDate: publicationDate)
+                   classification: classification,
+                   notes: notes, publicationDate: publicationDate,
+                   numberOfSubjects: numberOfSubjects)
+        self.formula = formula
     }
     
-    public func calculate(qtInSec: Double, rrInSec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {
-        return baseEquation(qtInSec, rrInSec, sex, age)
+    public func calculate(qtInSec: Double, rrInSec: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Sec {
+        return try baseEquation(qtInSec, rrInSec, sex, age)
     }
     
-    public func calculate(qtInMsec: Double, rrInMsec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Msec {
-        return QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rrInMsec: rrInMsec, sex: sex, age: age)
+    public func calculate(qtInMsec: Double, rrInMsec: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Msec {
+        return try QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rrInMsec: rrInMsec, sex: sex, age: age)
     }
     
-    public func calculate(qtInSec: Double, rate: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {
-        return QTc.qtcConvert(baseEquation, qtInSec: qtInSec, rate: rate, sex: sex, age: age)
+    public func calculate(qtInSec: Double, rate: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Sec {
+        return try QTc.qtcConvert(baseEquation, qtInSec: qtInSec, rate: rate, sex: sex, age: age)
     }
     
-    public func calculate(qtInMsec: Double, rate: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Msec {
-        return QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rate: rate, sex: sex, age: age)
+    public func calculate(qtInMsec: Double, rate: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Msec {
+        return try QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rate: rate, sex: sex, age: age)
     }
+    
+    override public func calculate(qtMeasurement: QtMeasurement) throws -> Double? {
+        return try calculate(qt: qtMeasurement.qt, intervalRate: qtMeasurement.intervalRate,
+                             intervalRateType: qtMeasurement.intervalRateType, sex: qtMeasurement.sex,
+                             age: qtMeasurement.age, units: qtMeasurement.units)
+    }
+    
+    public func calculate(qt: Double?, intervalRate: Double, intervalRateType: IntervalRateType,
+                   sex: Sex, age: Age, units: Units) throws -> Double? {
+        guard let qt = qt else { throw CalculationError.qtMissing }
+        var result: Double?
+        switch units {
+        case .msec:
+            if intervalRateType == .interval {
+                result = try calculate(qtInMsec: qt, rrInMsec: intervalRate, sex: sex, age: age)
+            }
+            else {
+                result = try calculate(qtInMsec: qt, rate: intervalRate, sex: sex, age: age)
+            }
+        case .sec:
+            if intervalRateType == .interval {
+                result = try calculate(qtInSec: qt, rrInSec: intervalRate, sex: sex, age: age)
+            }
+            else {
+                result = try calculate(qtInSec: qt, rate: intervalRate, sex: sex, age: age)
+            }
+        }
+        return result
+    }
+    
 }
 
 public class QTpCalculator: BaseCalculator {
-    let formula: QTpFormula
     let baseEquation: QTpEquation
     
-    init(formula: QTpFormula, longName: String, shortName: String,
+    init(formula: Formula, longName: String, shortName: String,
                   reference: String, equation: String, baseEquation: @escaping QTpEquation,
-                  classification: FormulaClassification, forAdults: Bool = true, notes: String = "", publicationDate: String?  = nil) {
-        self.formula = formula
+                  classification: FormulaClassification, forAdults: Bool = true, notes: String = "", publicationDate: String?  = nil, numberOfSubjects: Int? = nil) {
         self.baseEquation = baseEquation
         super.init(longName: longName, shortName: shortName,
                    reference: reference, equation: equation,
-                   classification: classification, forAdults: forAdults,
-                   notes: notes, publicationDate: publicationDate)
+                   classification: classification,
+                   notes: notes, publicationDate: publicationDate,
+                   numberOfSubjects: numberOfSubjects)
+        self.formula = formula
     }
     
-    public func calculate(rrInSec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {
-        return baseEquation(rrInSec, sex, age)
+    public func calculate(rrInSec: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Sec {
+        return try baseEquation(rrInSec, sex, age)
     }
     
-    public func calculate(rrInMsec: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Msec {
-        return QTc.qtpConvert(baseEquation, rrInMsec: rrInMsec, sex: sex, age: age)
+    public func calculate(rrInMsec: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Msec {
+        return try QTc.qtpConvert(baseEquation, rrInMsec: rrInMsec, sex: sex, age: age)
     }
     
-    public func calculate(rate: Double, sex: Sex = .unspecified, age: Age = unspecified) -> Sec {
-        return QTc.qtpConvert(baseEquation, rate: rate, sex: sex, age: age)
+    public func calculate(rate: Double, sex: Sex = .unspecified, age: Age = nil) throws -> Sec {
+        return try QTc.qtpConvert(baseEquation, rate: rate, sex: sex, age: age)
+    }
+    
+    override public func calculate(qtMeasurement: QtMeasurement) throws -> Double? {
+        return try calculate(intervalRate: qtMeasurement.intervalRate,
+                             intervalRateType: qtMeasurement.intervalRateType, sex: qtMeasurement.sex,
+                             age: qtMeasurement.age, units: qtMeasurement.units)
+    }
+    
+    func calculate(intervalRate: Double, intervalRateType: IntervalRateType,
+                   sex: Sex, age: Age, units: Units) throws -> Double? {
+        var result: Double?
+        switch units {
+        case .msec:
+            if intervalRateType == .interval {
+                result = try calculate(rrInMsec: intervalRate, sex: sex, age: age)
+            }
+            else {
+                result = try calculate(rate: intervalRate, sex: sex, age: age)
+            }
+        case .sec:
+            if intervalRateType == .interval {
+                result = try calculate(rrInSec: intervalRate, sex: sex, age: age)
+            }
+            else {
+                result = try calculate(rate: intervalRate, sex: sex, age: age)
+            }
+        }
+        return result
     }
 }
 
 // These are protocols that the formula source must adhere to.
 protocol QTcFormulaSource {
-    static func qtcCalculator(formula: QTcFormula) -> QTcCalculator
+    static func qtcCalculator(formula: Formula) -> QTcCalculator
 }
 
 protocol QTpFormulaSource {
-    static func qtpCalculator(formula: QTpFormula) -> QTpCalculator
+    static func qtpCalculator(formula: Formula) -> QTpCalculator
 }
 
 /// TODO: is @objc tag needed if inheritance from NSObject?
@@ -228,11 +305,11 @@ public class QTc: NSObject {
     
     
     // These functions allow mocking the Formula source
-    static func qtcCalculator<T: QTcFormulaSource>(formulaSource: T.Type, formula: QTcFormula) -> QTcCalculator {
+    static func qtcCalculator<T: QTcFormulaSource>(formulaSource: T.Type, formula: Formula) -> QTcCalculator {
         return T.qtcCalculator(formula: formula)
     }
     
-    static func qtpCalculator<T: QTpFormulaSource>(formulaSource: T.Type, formula: QTpFormula) -> QTpCalculator {
+    static func qtpCalculator<T: QTpFormulaSource>(formulaSource: T.Type, formula: Formula) -> QTpCalculator {
         return T.qtpCalculator(formula: formula)
     }
     
@@ -244,39 +321,53 @@ public class QTc: NSObject {
     //
     
     // QTc Factory
-    public static func qtcCalculator(formula: QTcFormula) -> QTcCalculator {
+    public static func qtcCalculator(formula: Formula) -> QTcCalculator {
         return qtcCalculator(formulaSource: Formulas.self, formula: formula)
     }
     
     // QTp factory
-    public static func qtpCalculator(formula: QTpFormula) -> QTpCalculator {
+    public static func qtpCalculator(formula: Formula) -> QTpCalculator {
         return qtpCalculator(formulaSource: Formulas.self, formula: formula)
+    }
+    
+    // Generic Calculator factories
+    public static func calculator(formula: Formula, formulaType: FormulaType) -> BaseCalculator {
+        switch formulaType {
+        case .qtc:
+            return qtcCalculator(formula: formula)
+        case .qtp:
+            return qtpCalculator(formula: formula)
+        }
+    }
+    
+    public static func calculator(formula: Formula) -> BaseCalculator {
+        return calculator(formula: formula, formulaType: formula.formulaType())
     }
     
     // Convert from one set of units to another
     // QTc conversion
     fileprivate static func qtcConvert(_ qtcEquation: QTcEquation,
-                                       qtInMsec: Double, rrInMsec: Double, sex: Sex, age: Age) -> Msec {
-        return secToMsec(qtcEquation(msecToSec(qtInMsec), msecToSec(rrInMsec), sex, age))
+                                       qtInMsec: Double, rrInMsec: Double, sex: Sex, age: Age) throws -> Msec {
+        return secToMsec(try qtcEquation(msecToSec(qtInMsec), msecToSec(rrInMsec), sex, age))
     }
     
     fileprivate static func qtcConvert(_ qtcEquation: QTcEquation,
-                                       qtInSec: Double, rate: Double, sex: Sex, age: Age) -> Sec {
-        return qtcEquation(qtInSec, bpmToSec(rate), sex, age)
+                                       qtInSec: Double, rate: Double, sex: Sex, age: Age) throws -> Sec {
+        return try qtcEquation(qtInSec, bpmToSec(rate), sex, age)
     }
     
     fileprivate static func qtcConvert(_ qtcEquation: QTcEquation,
-                                       qtInMsec: Double, rate: Double, sex: Sex, age: Age) -> Msec {
-        return secToMsec(qtcEquation(msecToSec(qtInMsec), bpmToSec(rate), sex, age))
+                                       qtInMsec: Double, rate: Double, sex: Sex, age: Age) throws -> Msec {
+        return secToMsec(try qtcEquation(msecToSec(qtInMsec), bpmToSec(rate), sex, age))
     }
    
     // QTp conversion
-    fileprivate static func qtpConvert(_ qtpEquation: QTpEquation, rrInMsec: Double, sex: Sex, age: Age) -> Msec {
-        return secToMsec(qtpEquation(msecToSec(rrInMsec), sex, age))
+    fileprivate static func qtpConvert(_ qtpEquation: QTpEquation, rrInMsec: Double, sex: Sex, age: Age) throws -> Msec {
+        return secToMsec(try qtpEquation(msecToSec(rrInMsec), sex, age))
     }
     
-    fileprivate static func qtpConvert(_ qtpEquation: QTpEquation, rate: Double, sex: Sex, age: Age) -> Sec {
-        return qtpEquation(bpmToSec(rate), sex, age)
+    fileprivate static func qtpConvert(_ qtpEquation: QTpEquation, rate: Double, sex: Sex, age: Age) throws -> Sec {
+        return try qtpEquation(bpmToSec(rate), sex, age)
     }
 }
 

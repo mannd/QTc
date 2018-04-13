@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "QTc"
-  s.version      = "2.1.0"
+  s.version      = "3.0"
   s.summary      = "Framework for doing QTc calculations"
 
   # This description is used to generate tags and improve search results.
@@ -110,7 +110,6 @@ The goal is to provide an exhaustive set of documented and tested corrected QT (
   # s.resources = "Resources/*.png"
 
   # s.preserve_paths = "FilesToSave", "MoreFilesToSave"
-
 
   # ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
