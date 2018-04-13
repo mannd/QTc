@@ -353,6 +353,7 @@ class QTc_iOSTests: XCTestCase {
         //XCTAssertThrowsError(qtcTst.formula?.formulaType())
         
     }
+    
 
     // TODO: test new QTc and QTp formulas
 

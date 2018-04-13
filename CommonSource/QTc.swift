@@ -44,9 +44,7 @@ public enum Formula {
         } else if qtpFormulas.contains(self) {
             return .qtp
         } else {
-            assertionFailure("Undefined formula")
-            // above wll halt program and below won't be reached ever.
-            return .qtc
+            fatalError("Undefined formula")
         }
     }
 }
@@ -67,23 +65,6 @@ public enum FormulaClassification {
     case logarithmic
     case exponential
     case other
-    
-    var label: String {
-        switch self {
-        case .linear:
-            return "linear"
-        case .rational:
-            return "rational"
-        case .power:
-            return "power"
-        case .logarithmic:
-            return "logarithmic"
-        case .exponential:
-            return "exponential"
-        case .other:
-            return "other"
-        }
-    }
 }
 
 public enum Sex {
@@ -124,10 +105,6 @@ public class BaseCalculator {
     public let classification: FormulaClassification
     // potentially add notes to certain formulas
     public let notes: String
-    public var classificationName: String { get
-    {
-        return classification.label
-    }}
     public var numberOfSubjects: Int?
     public var publicationDate: String? { get {
         if let date = date {

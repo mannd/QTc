@@ -25,11 +25,11 @@ public struct QtMeasurement {
     public let units: Units
     public let intervalRateType: IntervalRateType // an interval or HR
     public let sex: Sex
-    public let age: Int?  // truncate ages to Int, may be nil as not always needed
+    public let age: Int?  // may be nil as not always needed
     
     // In Swift, default init is interval, so must specifically declare public init
     public init(qt: Double?, intervalRate: Double, units: Units,
-        intervalRateType: IntervalRateType, sex: Sex, age: Int?) {
+        intervalRateType: IntervalRateType, sex: Sex = .unspecified, age: Int? = nil) {
         self.qt = qt
         self.intervalRate = intervalRate
         self.units = units
