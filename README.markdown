@@ -33,7 +33,9 @@ To use with an Objective C file add:
     #import <QTc/QTc-Swift.h>
 
 ## Formulas
-QTc and QTp formulas are labeled based on the proposed standard nomenclature of [Rabkin](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16).  QTc formulas try to correct the QT interval for heart rate.  QTp formulas predict the QT based on heart rate.  Use the enum `Formula` to select QTc or QTp formulas:
+QTc and QTp formulas are labeled based on the proposed standard nomenclature of [Rabkin](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16).  QTc formulas try to correct the QT interval for heart rate.  QTp formulas predict the QT based on heart rate.  Don’t confuse the QTp with the same term QTp used in some recent studies to indicate a corrected QT interval measured to the the peak, rather than the end of the T wave.
+
+Use the enum `Formula` to select QTc or QTp formulas:
 
 	public enum Formula {
 		// QTc formulas
@@ -70,7 +72,7 @@ The easiest way to get a calculator for a specific formula is to generate one us
 
 	let calculator = QTc.calculator(formula: .qtcBzt) // generates a Bazett QTc calculator (Swift)
 
-	BaseCalculator calculator = [QTc calculatorWithFormula: Formula.qtcBzt]; // Qbjective C
+	Calculator calculator = [QTc calculatorWithFormula: Formula.qtcBzt]; // Qbjective C
 
 (Note that most of the examples are given as Swift code.  See [Apple’s reference](https://developer.apple.com/library/content/documentation/Swift/Conceptual/BuildingCocoaApps/MixandMatch.html) for more information on calling Swift functions from Objective C.
 
@@ -78,7 +80,7 @@ Here is a QTp calculator:
 
 	let qtpCalculator = QTc.calculator(formula: .qtpFrd) // Friedericia QTp calculator
 
-QTc and QTp calculators are subclasses of the class `BaseCalculator`.  Using a calculator generated in this way to calculate a QTc or QTp requires passing a `QtMeasurment` struct to the calculator.
+QTc and QTp calculators are subclasses of the class `Calculator`.  Using a calculator generated in this way to calculate a QTc or QTp requires passing a `QtMeasurment` struct to the calculator.
 
 ### QtMeasurement
 
@@ -189,7 +191,7 @@ Additionally, if you know of QTc or QTp formulas which are omitted here and need
 ## Demo program
 [**EP QTc**](https://github.com/mannd/EP-QTc) is a demo program that I am writing and that will be available for download on the Apple App Store in the near future.  With it, you can calculate all the QTc and QTp formulas at once, see a graph of intervals, determine some statistics on the formulas, investigate each formula individually, and just generally have a bunch of good clean EP QT fun.
 
-## References (partial list)
+## References
 See the file *Formulas.swift* for an updated list of references.
 
 ## License

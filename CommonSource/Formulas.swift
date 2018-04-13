@@ -3,7 +3,7 @@
 //  Formulas
 //
 //  Created by David Mann on 9/18/17.
-//  Copyright © 2017 EP Studios. All rights reserved.
+//  Copyright © 2017, 2018 EP Studios. All rights reserved.
 //
 
 import Foundation
@@ -83,7 +83,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
     
     // This is the data source for the formulas.  Potentially this could be a database, but there
     // aren't that many formulas, so for now the formulas are inlined here.
-    static let qtcDictionary: [Formula : QTcCalculator] =
+    static let qtcDictionary: [Formula: QTcCalculator] =
         [.qtcBzt:
             QTcCalculator(formula: .qtcBzt,
                           longName: "Bazett",

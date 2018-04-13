@@ -3,7 +3,7 @@
 //  QTc_iOSTests
 //
 //  Created by David Mann on 9/2/17.
-//  Copyright © 2017 EP Studios. All rights reserved.
+//  Copyright © 2017, 2018 EP Studios. All rights reserved.
 //
 
 import XCTest
@@ -344,7 +344,65 @@ class QTc_iOSTests: XCTestCase {
         // However can't test this, as it leads to assertionFailure and program halt
         //let qtcTst = QTc.calculator(formula: .qtcTest, formulaType: .qtc)
         //XCTAssertThrowsError(qtcTst.formula?.formulaType())
-        
+    }
+    
+    func testAbnormalQTc() {
+        var qtcTest = QTcTest(value: 440, units: .msec, valueComparison: .greaterThan)
+        var measurement = QTcMeasurement(qtc: 441, units: .msec)
+        XCTAssertTrue(qtcTest.isAbnormal(qtcMeasurement: measurement))
+        measurement = QTcMeasurement(qtc: 439, units: .msec)
+        XCTAssertFalse(qtcTest.isAbnormal(qtcMeasurement: measurement))
+        measurement = QTcMeasurement(qtc: 440, units: .msec)
+        XCTAssertFalse(qtcTest.isAbnormal(qtcMeasurement: measurement))
+        measurement = QTcMeasurement(qtc: 0.439, units: .sec)
+        XCTAssertFalse(qtcTest.isAbnormal(qtcMeasurement: measurement))
+        measurement = QTcMeasurement(qtc: 0.441, units: .sec)
+        XCTAssertTrue(qtcTest.isAbnormal(qtcMeasurement: measurement))
+        qtcTest = QTcTest(value: 440, units: .msec, valueComparison: .greaterThanOrEqual)
+        measurement = QTcMeasurement(qtc: 440, units: .msec)
+        XCTAssertTrue(qtcTest.isAbnormal(qtcMeasurement: measurement))
+        qtcTest = QTcTest(value: 350, units: .msec, valueComparison: .lessThanOrEqual)
+        measurement = QTcMeasurement(qtc: 350, units: .msec)
+        XCTAssertTrue(qtcTest.isAbnormal(qtcMeasurement: measurement))
+        measurement = QTcMeasurement(qtc: 351, units: .msec)
+        XCTAssertFalse(qtcTest.isAbnormal(qtcMeasurement: measurement))
+
+        qtcTest = QTcTest(value: 350, units: .msec, valueComparison: .lessThanOrEqual, sex: .female)
+        measurement = QTcMeasurement(qtc: 311, units: .msec)
+        XCTAssertFalse(qtcTest.isAbnormal(qtcMeasurement: measurement))
+        measurement = QTcMeasurement(qtc: 311, units: .msec, sex: .male)
+        XCTAssertFalse(qtcTest.isAbnormal(qtcMeasurement: measurement))
+        measurement = QTcMeasurement(qtc: 311, units: .msec, sex: .female)
+        XCTAssertTrue(qtcTest.isAbnormal(qtcMeasurement: measurement))
+
+        qtcTest = QTcTest(value: 350, units: .msec, valueComparison: .lessThanOrEqual, sex: .female, age: 18, ageComparison: .lessThan)
+        measurement = QTcMeasurement(qtc: 311, units: .msec, sex: .female)
+        XCTAssertFalse(qtcTest.isAbnormal(qtcMeasurement: measurement))
+        measurement = QTcMeasurement(qtc: 311, units: .msec, sex: .female, age: 15)
+        XCTAssertTrue(qtcTest.isAbnormal(qtcMeasurement: measurement))
+
+        var testSuite = QTcTestSuite(name: "test", qtcTests: [qtcTest], reference: "test", description: "test")
+        var result = testSuite.abnormalQTcTests(qtcMeasurement: measurement)
+        XCTAssertEqual(result.count, 1)
+        XCTAssertTrue(result[0].severity == .abnormal)
+        XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+
+
+        measurement = QTcMeasurement(qtc: 355, units: .msec, sex: .female, age: 15)
+        result = testSuite.abnormalQTcTests(qtcMeasurement: measurement)
+        XCTAssertEqual(result.count, 0)
+        XCTAssertEqual(testSuite.severity(measurement: measurement), .normal)
+
+        let qtcTest2 = QTcTest(value: 440, units: .msec, valueComparison: .greaterThan, severity: .moderate)
+        testSuite = QTcTestSuite(name: "test2", qtcTests: [qtcTest, qtcTest2], reference: "test", description: "test")
+        measurement = QTcMeasurement(qtc: 500, units: .msec)
+        XCTAssertEqual(testSuite.severity(measurement: measurement), .moderate)
+    }
+    
+    func testAbnormalQTcCriteria() {
+        let testSuite = AbnormalQTc.CriteriaDictionary[.simple]
+        let measurement = QTcMeasurement(qtc: 445, units: .msec)
+        XCTAssertEqual(testSuite?.severity(measurement: measurement), .abnormal)
     }
     
 

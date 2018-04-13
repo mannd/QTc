@@ -3,7 +3,7 @@
 //  QTc
 //
 //  Created by David Mann on 9/2/17.
-//  Copyright © 2017 EP Studios. All rights reserved.
+//  Copyright © 2017, 2018 EP Studios. All rights reserved.
 //
 
 // TODO: Change target version back down to 10.10 for QTc and EP Calipers for Mac
@@ -95,8 +95,11 @@ public typealias Sec = Double
 typealias QTcEquation = (_ qt: Double, _ rr: Double, _ sex: Sex, _ age: Age) throws -> Double
 typealias QTpEquation = (_ rr: Double, Sex, Age) throws -> Double
 
-// This would be an abstract class if Swift had them.
-public class BaseCalculator {
+// For backward compatibility
+public typealias BaseCalculator = Calculator
+
+// This class is meant to be overriden.
+public class Calculator {
     public var formula: Formula?
     public let longName: String
     public let shortName: String
@@ -142,7 +145,7 @@ public class BaseCalculator {
     }
 }
 
-public class QTcCalculator: BaseCalculator {
+public class QTcCalculator: Calculator {
     let baseEquation: QTcEquation
     
     init(formula: Formula, longName: String, shortName: String,
@@ -206,7 +209,7 @@ public class QTcCalculator: BaseCalculator {
     
 }
 
-public class QTpCalculator: BaseCalculator {
+public class QTpCalculator: Calculator {
     let baseEquation: QTpEquation
     
     init(formula: Formula, longName: String, shortName: String,
@@ -313,7 +316,7 @@ public class QTc: NSObject {
         return T.qtpCalculator(formula: formula)
     }
     
-    // The factories: these are called like:
+    // Specific factories: these are called like:
     //
     //     let qtcBztCalculator = QTc.qtcCalculator(formula: .qtcBzt)
     //     let qtc = qtcBztCalculator.calculate(qtInSec: qt, rrInSec: rr)
@@ -330,8 +333,15 @@ public class QTc: NSObject {
         return qtpCalculator(formulaSource: Formulas.self, formula: formula)
     }
     
+    // Generic calculator factories, called like this:
+    //
+    //      let calculator = QTc.calculator(formula: .qtcBzt)
+    //      let measruement = QtMeasurement(.....)  // init a QtMeasurement struct
+    //      let result = calculator.calculate(measurement: measurement)
+    //
+    
     // Generic Calculator factories
-    public static func calculator(formula: Formula, formulaType: FormulaType) -> BaseCalculator {
+    public static func calculator(formula: Formula, formulaType: FormulaType) -> Calculator {
         switch formulaType {
         case .qtc:
             return qtcCalculator(formula: formula)
@@ -340,7 +350,7 @@ public class QTc: NSObject {
         }
     }
     
-    public static func calculator(formula: Formula) -> BaseCalculator {
+    public static func calculator(formula: Formula) -> Calculator {
         return calculator(formula: formula, formulaType: formula.formulaType())
     }
     
