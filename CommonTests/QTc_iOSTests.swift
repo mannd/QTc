@@ -304,13 +304,6 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(qtpArr.shortName, "QTpARR")
     }
     
-    func testClassificationNames() {
-        let qtcTest = QTc.qtcCalculator(formulaSource: TestQtcFormulas.self, formula: .qtcBzt)
-        XCTAssertEqual(qtcTest.classificationName, "other")
-        let qtcBzt = QTc.qtcCalculator(formula: .qtcBzt)
-        XCTAssertEqual(qtcBzt.classificationName, "power")
-    }
-    
     func testSexFormulas() {
         let calculator = QTc.qtcCalculator(formula: .qtcAdm)
         let qt = 0.888
