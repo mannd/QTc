@@ -78,7 +78,7 @@ Here is a QTp calculator:
 
 	let qtpCalculator = QTc.calculator(formula: .qtpFrd) // Friedericia QTp calculator
 
-QTc and QTp calculators are subclasses of the class *BaseCalculator*.  Using a calculator generated in this way to calculate a QTc or QTp requires passing a `QtMeasurment` struct to the calculator.
+QTc and QTp calculators are subclasses of the class `BaseCalculator`.  Using a calculator generated in this way to calculate a QTc or QTp requires passing a `QtMeasurment` struct to the calculator.
 
 ### QtMeasurement
 
@@ -117,7 +117,7 @@ Then use the calculator to calculate the QTc:
 	double qtcBzt = [qtcBztCalculator calculateWithQtInSec: 0.334 rrInSec: 0.785]; // Objective C
 
 ### Calculate functions
-When using the `QTcCalculator` or `QTpCalculator` classes, each calculate function has 4 different signatures, using QT in sec or msec, RR in sec or msec or heart rate in beats per minute.  Functions using msec parameters return QTc in msec, while those using second parameters return QTc in seconds.  All parameters are Double in Swift, double in Objective C.  For example:
+When using the `QTcCalculator` or `QTpCalculator` classes, each calculate function has 4 different signatures, using QT in sec or msec, RR in sec or msec or heart rate in beats per minute.  Functions using msec parameters return QTc in msec, while those using second parameters return QTc in seconds.  All interval/rate parameters are Double in Swift, double in Objective C.  For example:
 
 	let qtcInMsec = qtcBztCalculator.calculate(qtInMsec: 402, rate 72) // returns QTc in msec
 	let qtcInSec = qtcBztCalculator.calculate(qtInSec: 0.402, rate 72) // returns QTc in sec
@@ -130,7 +130,7 @@ Some QTc and QTp formulas are age and or sex dependent.  In this case add a sex:
 	let qtpBdl = QTc.qtpCalculator(formula: .qtpBdl)
 	let qtpInSec = qtpBdl.calculate(rrInSec: 77, sex: .male)
 
-Note that in this case the formula uses sex but not age.  If you include extra age or sex parameters that are not used by the formula they will be ignored.  However failure to include a necessary parameter will result in the return throwing an exception (see below).
+Note that in this case the formula uses sex but not age.  If you include extra age or sex parameters that are not used by the formula they will be ignored.  However failure to include a necessary parameter will result in the function throwing an exception (see below).
 
 ### Other calculator variables and functions
 You can get other information from the calculator instance, for example:
@@ -197,7 +197,7 @@ This QTc framework is open source, and licensed under the
 [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).  When used with Apple devices via the iTunes App Store, it is subject to the [standard Apple iOS license agreement](http://images.apple.com/legal/sla/docs/AppleStoreApp.pdf).
 
 ## Copyright
-Copyright © 2017 [EP Studios, Inc.](http://www.epstudiossoftware.com)
+Copyright © 2017, 2018 [EP Studios, Inc.](http://www.epstudiossoftware.com)
 
 ## Acknowledgments
 Thanks to Marian Stiehler for help in acquiring the original literature that forms the basis of these QTc and QTp formulas!
