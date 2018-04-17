@@ -33,7 +33,7 @@ To use with an Objective C file add:
     #import <QTc/QTc-Swift.h>
 
 ## Formulas
-QTc and QTp formulas are labeled based on the proposed standard nomenclature of [Rabkin](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16).  QTc formulas try to correct the QT interval for heart rate.  QTp formulas predict the QT based on heart rate.  Don’t confuse the QTp with the same term QTp used in some recent studies to indicate a corrected QT interval measured to the the peak, rather than the end of the T wave.
+QTc and QTp formulas are labeled based on the proposed standard nomenclature of [Rabkin et al.](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16).  QTc formulas try to correct the QT interval for heart rate.  QTp formulas predict the QT based on heart rate.  Don’t confuse the QTp with the same term QTp used in some recent studies to indicate a corrected QT interval measured to the the peak, rather than the end of the T wave.
 
 Use the enum `Formula` to select QTc or QTp formulas:
 
@@ -124,7 +124,7 @@ When using the `QTcCalculator` or `QTpCalculator` classes, each calculate functi
 	let qtcInMsec = qtcBztCalculator.calculate(qtInMsec: 402, rate 72) // returns QTc in msec
 	let qtcInSec = qtcBztCalculator.calculate(qtInSec: 0.402, rate 72) // returns QTc in sec
 
-## QTp formulas and formulas depending on sex and/or age
+### QTp formulas and formulas depending on sex and/or age
 QTp formulas are similar to the QTc formulas, except there is no QT parameter.  Only rate or RR interval is needed to calculate the QTp.
 
 Some QTc and QTp formulas are age and or sex dependent.  In this case add a sex: and/or age: parameter to the calling function.  For example:
@@ -147,6 +147,28 @@ You can get other information from the calculator instance, for example:
 	let date = qtcCalculator.publicationDate // year of publication
 	let numberOfSubjects = qtcCalculator.numberOfSubjects // number of subjects studied
 
+## Normal values
+Just as there are many formulas to correct of predict QT intervals, there are numerous proposals aimed at defining normal QTc intervals.  The QTc framework contains of number of these abnormal QTc definitions, along with supporting literature references.
+
+The enum `Criterion` in AbnormalQTc.swift lists previously defined QTc criteria.
+
+	enum Criterion {
+		case simple
+		case fda
+		// etc.
+
+Retrieve a test suite from `AbnormalQTc` and use it to test if a QTc is normal or not.
+
+	if let testSuite = AbnormalQTc.testSuiteDictionary[.fda] {
+		let m = QTcMeasurement(qtc: 455, units: .msec, .sex: .male)
+		let severity = testSuite.severity(measurement: m) // == .abnormal
+	}
+
+Notice the struct `QTcMeasurement` which is used to pass the QTc along with other parameters, including units, sex, and age (the latter two are optional parameters).  The results are given as one of the constants of the struct `Severity`.  These constants are normal, borderline, abnormal, mild, moderate, severe.  The method `Severity.isAbnormal() -> Bool` returns true if a result is abnormal, mild, moderate, or severe.  The last three constants (mild, moderate, and severe) are used in the FDA criterion for prolonged QTc.  See the source code in AbnormalQTc.swift for more information.
+
+QTp intervals are by definition normal.  [Rabkin et al.](https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B16) have proposed that QT intervals lying outside the range of the many QTp formulas may be considered abnormal, as the QTp formulas involve many patients with different characteristics.  This proposal is not implemented here, but is implemented in the EP QTc app (see below).
+
+	
 ## Errors
 ### Mathematical errors
 Some QTc and QTp formulas have the potential for division by zero or performing fractional power operations on negative numbers.  Parameters are not checked for these problematic inputs.  Division by zero (generally if the RR interval is zero) will result in the value Double.infinity, and zero divided by itself (generally if the QT and RR are both zero) or a fractional root of a negative number (if the RR is negative) will result in Double.nan.  Thus if input parameters are not checked for sanity, it is necessary to check results as follows:

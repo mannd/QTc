@@ -400,9 +400,37 @@ class QTc_iOSTests: XCTestCase {
     }
     
     func testAbnormalQTcCriteria() {
-        let testSuite = AbnormalQTc.CriteriaDictionary[.simple]
-        let measurement = QTcMeasurement(qtc: 445, units: .msec)
-        XCTAssertEqual(testSuite?.severity(measurement: measurement), .abnormal)
+        if let testSuite = AbnormalQTc.testSuiteDictionary[.simple] {
+            var measurement = QTcMeasurement(qtc: 445, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+            XCTAssert(testSuite.severity(measurement: measurement).isAbnormal())
+            measurement = QTcMeasurement(qtc: 0.439, units: .sec)
+            XCTAssertFalse(testSuite.severity(measurement: measurement).isAbnormal())
+        }
+        if let testSuite = AbnormalQTc.testSuiteDictionary[.fda] {
+            var measurement = QTcMeasurement(qtc: 455, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .mild)
+            measurement = QTcMeasurement(qtc: 485, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .moderate)
+            measurement = QTcMeasurement(qtc: 600, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .severe)
+            measurement = QTcMeasurement(qtc: 450, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .normal)
+        }
+        if let testSuite = AbnormalQTc.testSuiteDictionary[.ahaaccfhrs] {
+            var measurement = QTcMeasurement(qtc: 450, units: .msec, sex: .male)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+            measurement = QTcMeasurement(qtc: 460, units: .msec, sex: .female)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+            // we leave out the sex here to make sure we still get an abnormal value
+            measurement = QTcMeasurement(qtc: 460, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+            measurement = QTcMeasurement(qtc: 459, units: .msec, sex: .female)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .normal)
+            measurement = QTcMeasurement(qtc: 390, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+        }
+
     }
     
 

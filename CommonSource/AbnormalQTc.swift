@@ -13,6 +13,7 @@ public enum Criterion {
     case simple // across the board upper limit of 440 msec in older literature
     case fda  // FDA criteria characterizes limits of 450 mild, 480 moderate, and 500 severe.
     // reference: https://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guidances/ucm073153.pdf
+    case ahaaccfhrs
     // TODO: the rest of them
     
 }
@@ -37,6 +38,10 @@ public struct Severity: OptionSet {
     public static let mild = Severity(rawValue: 8)
     public static let moderate = Severity(rawValue: 16)
     public static let severe = Severity(rawValue: 32)
+    
+    public func isAbnormal() -> Bool {
+        return self.rawValue >= Severity.abnormal.rawValue
+    }
 }
 
 public struct QTcMeasurement {
@@ -152,15 +157,15 @@ public struct QTcTestSuite {
     func mostSevereFailure(failingTests: [QTcTest]) -> QTcTest? {
         if failingTests.count < 1 { return nil }
         if failingTests.count == 1 { return failingTests[0] }
-        var worstTest: QTcTest?
+        var mostSevereResult: QTcTest?
         var severity: Severity = .normal
         for test in failingTests {
             if UInt8(test.severity.rawValue) > UInt8(severity.rawValue) {
                 severity = test.severity
-                worstTest = test
+                mostSevereResult = test
             }
         }
-        return worstTest
+        return mostSevereResult
     }
     
     public func failingTest(measurement: QTcMeasurement) -> QTcTest? {
@@ -179,14 +184,37 @@ public struct QTcTestSuite {
 }
 
 public struct AbnormalQTc {
-    static let CriteriaDictionary: [Criterion: QTcTestSuite] =
+    static let testSuiteDictionary: [Criterion: QTcTestSuite] =
         [.simple:
             QTcTestSuite(
-                name: "Schwartz, 1985",
+                name: "Schwartz 1985",
                 qtcTests: [QTcTest(value: 440, units: .msec, valueComparison: .greaterThan)],
                 reference: "Schwartz PJ. Idiopathic long QT syndrome: Progress and questions. American Heart Journal. 1985;109(2):399-411. doi:10.1016/0002-8703(85)90626-X",
                 description: "QTc > 440 msec",
-                notes: "Simple but outdated criterion, from long QT syndrome data.  Overdiagnoses long QTc and no reckoning of sex difference in QT duration.")
+                notes: "Simple but outdated criterion, from long QT syndrome data.  Overdiagnoses long QTc and no reckoning of sex difference in QT duration."),
+         .fda:
+            QTcTestSuite(
+                name: "FDA 2005",
+                qtcTests: [
+                    QTcTest(value: 450, units: .msec, valueComparison: .greaterThan, severity: .mild),
+                    QTcTest(value: 480, units: .msec, valueComparison: .greaterThan, severity: .moderate),
+                    QTcTest(value: 500, units: .msec, valueComparison: .greaterThan, severity: .severe)],
+                reference: "Guidance for Industry E14 Clinical Evaluation of QT/QTc Interval Prolongation and Proarrhythmic Potential for Non-Antiarrhythmic Drugs. :20.",
+                description: "QTc > 450 msec mild prolongation\nQTc > 480 msec moderate prolongation\nQTc > 500 msec severe prolongation",
+                notes: "Used in FDA trials."),
+         .ahaaccfhrs:
+            QTcTestSuite(
+                name: "AHA/ACCF/HRS 2009",
+                qtcTests: [
+                QTcTest(value: 450, units: .msec, valueComparison: .greaterThanOrEqual, sex: .male),
+                QTcTest(value: 460, units: .msec, valueComparison: .greaterThanOrEqual, sex: .female),
+                // We include test below if sex not specified, since by above 2 tests this must be true.  This
+                // test is redundant with the one above, but we leave them both in for clarity's sake.
+                QTcTest(value: 460, units: .msec, valueComparison: .greaterThanOrEqual, sex: .unspecified),
+                QTcTest(value: 390, units: .msec, valueComparison: .lessThanOrEqual)],
+                reference: "AHA/ACCF/HRS Recommendations for the Standardization and Interpretation of the Electrocardiogram: Part IV: The ST Segment, T and U Waves, and the QT Interval A Scientific Statement From the American Heart Association Electrocardiography and Arrhythmias Committee, Council on Clinical Cardiology; the American College of Cardiology Foundation; and the Heart Rhythm Society Endorsed by the International Society for Computerized Electrocardiology. Journal of the American College of Cardiology. 2009;53(11):982-991. doi:10.1016/j.jacc.2008.12.014",
+                description: "QTc ≥ 450 men\nQTc ≥ 460 women\nQTc ≤ 390 men and women",
+                notes: "Includes both long and short QTc criteria."),
     ]
 
 }
