@@ -430,6 +430,21 @@ class QTc_iOSTests: XCTestCase {
             measurement = QTcMeasurement(qtc: 390, units: .msec)
             XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
         }
+        if let testSuite = AbnormalQTc.testSuiteDictionary[.european] {
+            var measurement = QTcMeasurement(qtc: 450, units: .msec, sex: .male)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+            measurement = QTcMeasurement(qtc: 460, units: .msec, sex: .female)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .normal)
+            measurement = QTcMeasurement(qtc: 461, units: .msec, sex: .female)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+            // we leave out the sex here to make sure we still get an abnormal value
+            measurement = QTcMeasurement(qtc: 461, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+            measurement = QTcMeasurement(qtc: 459, units: .msec, sex: .female)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .normal)
+            measurement = QTcMeasurement(qtc: 290, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+        }
 
     }
     

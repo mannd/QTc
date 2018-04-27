@@ -8,14 +8,15 @@
 
 import Foundation
 
-// These are tests for abnormal QTc values from the literature
-public enum Criterion {
-    case simple // across the board upper limit of 440 msec in older literature
-    case fda  // FDA criteria characterizes limits of 450 mild, 480 moderate, and 500 severe.
-    // reference: https://www.fda.gov/downloads/Drugs/GuidanceComplianceRegulatoryInformation/Guidances/ucm073153.pdf
-    case ahaaccfhrs
+// These are tests for abnormal QTc values from the literature.
+// Using String base allows serialization of this enum.
+public enum Criterion: String {
+    case schwartz1985 = "schwartz1985"
+    case fda2005 = "fda2005"
+    case aha2009 = "aha2009"
+    case esc2005 = "esc2005"
+    case goldenberg2006 = "goldenberg2006"
     // TODO: the rest of them
-    
 }
 
 // Usage: if Comaprison.greaterThan, then QTc greater than the value is abnormal
@@ -38,6 +39,7 @@ public struct Severity: OptionSet {
     public static let mild = Severity(rawValue: 8)
     public static let moderate = Severity(rawValue: 16)
     public static let severe = Severity(rawValue: 32)
+    public static let error = Severity(rawValue: 64)
     
     public func isAbnormal() -> Bool {
         return self.rawValue >= Severity.abnormal.rawValue
@@ -129,10 +131,10 @@ public struct QTcTest {
 }
 
 public struct QTcTestSuite {
-    let name: String
+    public let name: String
     let qtcTests: QTcTests
     let reference: String
-    let description: String // the test described in prose
+    public let description: String // the test described in prose
     let notes: String?  // optional notes about this test suite
     
     public init(name: String, qtcTests: QTcTests, reference: String, description: String, notes: String? = nil) {
@@ -185,14 +187,14 @@ public struct QTcTestSuite {
 
 public struct AbnormalQTc {
     static let testSuiteDictionary: [Criterion: QTcTestSuite] =
-        [.simple:
+        [.schwartz1985:
             QTcTestSuite(
                 name: "Schwartz 1985",
                 qtcTests: [QTcTest(value: 440, units: .msec, valueComparison: .greaterThan)],
                 reference: "Schwartz PJ. Idiopathic long QT syndrome: Progress and questions. American Heart Journal. 1985;109(2):399-411. doi:10.1016/0002-8703(85)90626-X",
                 description: "QTc > 440 msec",
                 notes: "Simple but outdated criterion, from long QT syndrome data.  Overdiagnoses long QTc and no reckoning of sex difference in QT duration."),
-         .fda:
+         .fda2005:
             QTcTestSuite(
                 name: "FDA 2005",
                 qtcTests: [
@@ -202,9 +204,9 @@ public struct AbnormalQTc {
                 reference: "Guidance for Industry E14 Clinical Evaluation of QT/QTc Interval Prolongation and Proarrhythmic Potential for Non-Antiarrhythmic Drugs. :20.",
                 description: "QTc > 450 msec mild prolongation\nQTc > 480 msec moderate prolongation\nQTc > 500 msec severe prolongation",
                 notes: "Used in FDA trials."),
-         .ahaaccfhrs:
+         .aha2009:
             QTcTestSuite(
-                name: "AHA/ACCF/HRS 2009",
+                name: "AHA 2009",
                 qtcTests: [
                 QTcTest(value: 450, units: .msec, valueComparison: .greaterThanOrEqual, sex: .male),
                 QTcTest(value: 460, units: .msec, valueComparison: .greaterThanOrEqual, sex: .female),
@@ -213,9 +215,26 @@ public struct AbnormalQTc {
                 QTcTest(value: 460, units: .msec, valueComparison: .greaterThanOrEqual, sex: .unspecified),
                 QTcTest(value: 390, units: .msec, valueComparison: .lessThanOrEqual)],
                 reference: "AHA/ACCF/HRS Recommendations for the Standardization and Interpretation of the Electrocardiogram: Part IV: The ST Segment, T and U Waves, and the QT Interval A Scientific Statement From the American Heart Association Electrocardiography and Arrhythmias Committee, Council on Clinical Cardiology; the American College of Cardiology Foundation; and the Heart Rhythm Society Endorsed by the International Society for Computerized Electrocardiology. Journal of the American College of Cardiology. 2009;53(11):982-991. doi:10.1016/j.jacc.2008.12.014",
-                description: "QTc ≥ 450 men\nQTc ≥ 460 women\nQTc ≤ 390 men and women",
+                description: "QTc ≥ 450 msec men\nQTc ≥ 460 msec women\nQTc ≤ 390 msec men and women",
                 notes: "Includes both long and short QTc criteria."),
+         .esc2005:
+            QTcTestSuite(
+                name: "ESC 2005",
+                qtcTests: [
+                QTcTest(value: 440, units: .msec, valueComparison: .greaterThan, sex: .male),
+                QTcTest(value: 460, units: .msec, valueComparison: .greaterThan, sex: .female),
+                // include below when sex unspecified
+                QTcTest(value: 460, units: .msec, valueComparison: .greaterThan),
+                QTcTest(value: 300, units: .msec, valueComparison: .lessThan)],
+                reference: "Corrado, Domenico, Antonio Pelliccia, Hans Halvor Bjørnstad, Luc Vanhees, Alessandro Biffi, Mats Borjesson, Nicole Panhuyzen-Goedkoop, et al. “Cardiovascular Pre-Participation Screening of Young Competitive Athletes for Prevention of Sudden Death: Proposal for a Common European ProtocolConsensus Statement of the Study Group of Sport Cardiology of the Working Group of Cardiac Rehabilitation and Exercise Physiology and the Working Group of Myocardial and Pericardial Diseases of the European Society of Cardiology.” European Heart Journal 26, no. 5 (March 1, 2005): 516–24. https://doi.org/10.1093/eurheartj/ehi108.",
+                description: "QTc > 440 msec men\nQTc > 460 msec women\nQTc < 300 msec men and women",
+                notes: "Includes both long and short QTc criteria.")
+
     ]
+    
+    public static func qtcLimits(criterion: Criterion) -> QTcTestSuite? {
+        return testSuiteDictionary[criterion]
+    }
 
 }
 

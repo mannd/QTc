@@ -139,7 +139,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           numberOfSubjects: 607),
          .qtcRtha:
             QTcCalculator(formula: .qtcRtha,
-                          longName: "Rautaharju QTcMod",
+                          longName: "Rautaharju-a",
                           shortName: "QTcRTHa",
                           reference: "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. International Journal of Cardiology. 2014;174(3):535-540. doi:10.1016/j.ijcard.2014.04.133",
                           equation: "QT * (120 + HR) /180",
@@ -150,7 +150,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
          // TODO: Add tests for .qtcRthb
          .qtcRthb:
             QTcCalculator(formula: .qtcRthb,
-                          longName: "Rautaharju QTcLogLin",
+                          longName: "Rautaharju-b",
                           shortName: "QTcRTHb",
                           // TODO: extract common strings like references
                           reference: "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. International Journal of Cardiology. 2014;174(3):535-540. doi:10.1016/j.ijcard.2014.04.133",
