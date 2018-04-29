@@ -253,6 +253,8 @@ public class QTpCalculator: Calculator {
             }
             else {
                 result = try calculate(rate: intervalRate, sex: sex, age: age)
+                // be true to the units passed, and return result in msec
+                result = QTc.secToMsec(result)
             }
         case .sec:
             if intervalRateType == .interval {
