@@ -140,8 +140,9 @@ public class Calculator {
     }
     
     // base class func, meant to be overriden
-    public func calculate(qtMeasurement: QtMeasurement) throws -> Double? {
-        return nil
+    public func calculate(qtMeasurement: QtMeasurement) throws -> Double {
+        assertionFailure("Base class Calculator.calculate() must be overriden.")
+        return 0
     }
 }
 
@@ -178,16 +179,16 @@ public class QTcCalculator: Calculator {
         return try QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rate: rate, sex: sex, age: age)
     }
     
-    override public func calculate(qtMeasurement: QtMeasurement) throws -> Double? {
+    override public func calculate(qtMeasurement: QtMeasurement) throws -> Double {
         return try calculate(qt: qtMeasurement.qt, intervalRate: qtMeasurement.intervalRate,
                              intervalRateType: qtMeasurement.intervalRateType, sex: qtMeasurement.sex,
                              age: qtMeasurement.age, units: qtMeasurement.units)
     }
     
     public func calculate(qt: Double?, intervalRate: Double, intervalRateType: IntervalRateType,
-                   sex: Sex, age: Age, units: Units) throws -> Double? {
+                   sex: Sex, age: Age, units: Units) throws -> Double {
         guard let qt = qt else { throw CalculationError.qtMissing }
-        var result: Double?
+        var result: Double
         switch units {
         case .msec:
             if intervalRateType == .interval {
@@ -236,15 +237,15 @@ public class QTpCalculator: Calculator {
         return try QTc.qtpConvert(baseEquation, rate: rate, sex: sex, age: age)
     }
     
-    override public func calculate(qtMeasurement: QtMeasurement) throws -> Double? {
+    override public func calculate(qtMeasurement: QtMeasurement) throws -> Double {
         return try calculate(intervalRate: qtMeasurement.intervalRate,
                              intervalRateType: qtMeasurement.intervalRateType, sex: qtMeasurement.sex,
                              age: qtMeasurement.age, units: qtMeasurement.units)
     }
     
     func calculate(intervalRate: Double, intervalRateType: IntervalRateType,
-                   sex: Sex, age: Age, units: Units) throws -> Double? {
-        var result: Double?
+                   sex: Sex, age: Age, units: Units) throws -> Double {
+        var result: Double
         switch units {
         case .msec:
             if intervalRateType == .interval {
