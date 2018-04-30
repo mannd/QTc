@@ -18,7 +18,7 @@ public enum Units {
     case sec
 }
 
-// Wrap up the parameters needed to measure QTc and QTp
+/// Struct that wraps up the parameters needed to measure QTc and QTp
 public struct QtMeasurement {
     public let qt: Double? // an optional, since QT not needed for QTp
     public let intervalRate: Double  // RR interval or HR

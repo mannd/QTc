@@ -8,7 +8,7 @@
 
 import Foundation
 
-// These are tests for abnormal QTc values from the literature.
+/// These are tests for abnormal QTc values from the literature.
 // Using String base allows serialization of this enum.
 public enum Criterion: String {
     case schwartz1985 = "schwartz1985"
@@ -27,6 +27,7 @@ public enum Comparison {
     case lessThanOrEqual
 }
 
+/// Different levels of Severity in the interpretation of the QTc/p interval
 public struct Severity: OptionSet {
     public let rawValue: Int
     public init(rawValue: Int) {
@@ -46,6 +47,7 @@ public struct Severity: OptionSet {
     }
 }
 
+/// A struct to wrap the parameters necessary to interpret a QTc interval
 public struct QTcMeasurement {
     let qtc: Double
     let units: Units
@@ -62,8 +64,8 @@ public struct QTcMeasurement {
 
 public typealias QTcTests = [QTcTest]
 
-// QTcTest describes a test for an abnormal QTc value, for example, QTc > 470 msec in women would be:
-// let test = QTcTest(value: 470, units: .msec, sex: .female, valueLimitType: .upper, valueIntervalType: .open)
+/// QTcTest describes a test for an abnormal QTc value, for example, QTc > 470 msec in women would be:
+/// let test = QTcTest(value: 470, units: .msec, sex: .female, valueLimitType: .upper, valueIntervalType: .open)
 public struct QTcTest {
     let value: Double
     let units: Units
@@ -130,6 +132,7 @@ public struct QTcTest {
     
 }
 
+/// Wrapper for a set of QTcTests, based on a literature reference
 public struct QTcTestSuite {
     public let name: String
     let qtcTests: QTcTests
@@ -185,6 +188,7 @@ public struct QTcTestSuite {
     }
 }
 
+/// Provides dictionary of QTcTestSuites
 public struct AbnormalQTc {
     static let testSuiteDictionary: [Criterion: QTcTestSuite] =
         [.schwartz1985:
@@ -232,6 +236,7 @@ public struct AbnormalQTc {
 
     ]
     
+    /// Returns a QTcTestSuite based on a test Criterion
     public static func qtcLimits(criterion: Criterion) -> QTcTestSuite? {
         return testSuiteDictionary[criterion]
     }

@@ -10,6 +10,7 @@
 import Foundation
 
 // Nomenclature from Rabkin and Cheng, 2015: https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B17
+/// enum listing QTc and QTp formulas
 public enum Formula {
     // QTc formulas
     case qtcBzt  // Bazett
@@ -49,6 +50,7 @@ public enum Formula {
     }
 }
 
+/// enum indicating if a Formula is a QTc or QTp
 public enum FormulaType {
     case qtc
     case qtp
@@ -58,6 +60,8 @@ public enum FormulaType {
 // TODO: localize strings, and ensure localization works when used as a Pod
 // See https://medium.com/@shenghuawu/localization-cocoapods-5d1e9f34f6e6 and
 // http://yannickloriot.com/2014/02/cocoapods-and-the-localized-string-files/
+
+/// Mathematical classification of formula
 public enum FormulaClassification {
     case linear
     case rational
@@ -73,7 +77,7 @@ public enum Sex {
     case unspecified
 }
 
-// These error codes can be thrown by certain formulas when parameters don't apply
+/// These error codes can be thrown by certain formulas when parameters don't apply
 public enum CalculationError: Error {
     case heartRateOutOfRange
     case ageOutOfRange
@@ -87,20 +91,21 @@ public enum CalculationError: Error {
 }
 
 public typealias Age = Int?
-// These are just to clarify return types of certain functions.
-// They only used when the units aren't clear in the function prototypes.
+
+/// These are just to clarify return types of certain functions.
+/// They are only used when the units aren't clear in the function prototypes.
 public typealias Msec = Double
 public typealias Sec = Double
 
 typealias QTcEquation = (_ qt: Double, _ rr: Double, _ sex: Sex, _ age: Age) throws -> Double
 typealias QTpEquation = (_ rr: Double, Sex, Age) throws -> Double
 
-// For backward compatibility
+/// For backward compatibility
 public typealias BaseCalculator = Calculator
 
-// This class is meant to be overriden.
+/// This class is meant to be overriden.  Do not instantiate a Calculator, just its subclasses.
 public class Calculator {
-    public var formula: Formula?
+    public var formula: Formula
     public let longName: String
     public let shortName: String
     public let reference: String
@@ -122,7 +127,8 @@ public class Calculator {
          classification: FormulaClassification, notes: String,
          publicationDate: String?, numberOfSubjects: Int?) {
         
-        self.formula = nil
+        self.formula = .qtcBzt  // arbitrary initiation, always overriden,
+                                // but can avoid formula as optional
         self.longName = longName
         self.shortName = shortName
         self.reference = reference
@@ -139,13 +145,14 @@ public class Calculator {
         self.numberOfSubjects = numberOfSubjects
     }
     
-    // base class func, meant to be overriden
+    /// base class func, meant to be overriden
     public func calculate(qtMeasurement: QtMeasurement) throws -> Double {
         assertionFailure("Base class Calculator.calculate() must be overriden.")
         return 0
     }
 }
 
+/// class containing all aspects of a QTc calculator
 public class QTcCalculator: Calculator {
     let baseEquation: QTcEquation
     
@@ -210,6 +217,7 @@ public class QTcCalculator: Calculator {
     
 }
 
+/// class containing all aspects of a QTp calculator
 public class QTpCalculator: Calculator {
     let baseEquation: QTpEquation
     
@@ -277,13 +285,11 @@ protocol QTpFormulaSource {
     static func qtpCalculator(formula: Formula) -> QTpCalculator
 }
 
-/// TODO: is @objc tag needed if inheritance from NSObject?
-// The QTc class is not instantiated, rather it provides static functions:
-//     conversion functions such as secToMsec(sec:) and factory
-//     methods to generate QTc and QTp calculator classes
+// TODO: is @objc tag needed if inheritance from NSObject?
+/// The QTc class is not instantiated, rather it provides static functions:
+///    conversion functions such as secToMsec(sec:) and factory
+///     methods to generate QTc and QTp calculator classes
 public class QTc: NSObject {
-//    public static let unspecified = -1   // for unspecified age
-  
     // Static conversion functions
     public static func secToMsec(_ sec: Double) -> Double {
         return sec * 1000
@@ -319,31 +325,24 @@ public class QTc: NSObject {
         return T.qtpCalculator(formula: formula)
     }
     
-    // Specific factories: these are called like:
-    //
-    //     let qtcBztCalculator = QTc.qtcCalculator(formula: .qtcBzt)
-    //     let qtc = qtcBztCalculator.calculate(qtInSec: qt, rrInSec: rr)
-    //     (etc.)
-    //
+    /// Specific factories: these are called like:
+    ///
+    ///     let qtcBztCalculator = QTc.qtcCalculator(formula: .qtcBzt)
+    ///     let qtc = qtcBztCalculator.calculate(qtInSec: qt, rrInSec: rr)
+    ///     (etc.)
     
-    // QTc Factory
+    /// QTc Factory.  Returns a QTcCalculator.
     public static func qtcCalculator(formula: Formula) -> QTcCalculator {
         return qtcCalculator(formulaSource: Formulas.self, formula: formula)
     }
     
-    // QTp factory
+    /// QTp factory.  Returns a QTpCalculator.
     public static func qtpCalculator(formula: Formula) -> QTpCalculator {
         return qtpCalculator(formulaSource: Formulas.self, formula: formula)
     }
     
-    // Generic calculator factories, called like this:
-    //
-    //      let calculator = QTc.calculator(formula: .qtcBzt)
-    //      let measruement = QtMeasurement(.....)  // init a QtMeasurement struct
-    //      let result = calculator.calculate(measurement: measurement)
-    //
     
-    // Generic Calculator factories
+    /// Generic Calculator factory
     public static func calculator(formula: Formula, formulaType: FormulaType) -> Calculator {
         switch formulaType {
         case .qtc:
@@ -353,6 +352,11 @@ public class QTc: NSObject {
         }
     }
     
+    /// Generic calculator factory, called like this:
+    ///
+    ///      let calculator = QTc.calculator(formula: .qtcBzt)
+    ///      let measruement = QtMeasurement(.....)  // init a QtMeasurement struct
+    ///      let result = calculator.calculate(measurement: measurement)
     public static func calculator(formula: Formula) -> Calculator {
         return calculator(formula: formula, formulaType: formula.formulaType())
     }
