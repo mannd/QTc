@@ -285,11 +285,13 @@ protocol QTpFormulaSource {
     static func qtpCalculator(formula: Formula) -> QTpCalculator
 }
 
-// TODO: is @objc tag needed if inheritance from NSObject?
-/// The QTc class is not instantiated, rather it provides static functions:
-///    conversion functions such as secToMsec(sec:) and factory
-///     methods to generate QTc and QTp calculator classes
-public class QTc: NSObject {
+/// The QTc class provides static functions:
+///  conversion functions such as secToMsec(sec:) and factory
+///  methods to generate QTc and QTp calculator classes
+public class QTc {
+    // QTc class is not to be instantiated.
+    private init() {}
+    
     // Static conversion functions
     public static func secToMsec(_ sec: Double) -> Double {
         return sec * 1000

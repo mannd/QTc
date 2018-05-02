@@ -9,7 +9,6 @@
 import Foundation
 
 /// These are tests for abnormal QTc values from the literature.
-// Using String base allows serialization of this enum.
 public enum Criterion: String {
     case schwartz1985 = "schwartz1985"
     case fda2005 = "fda2005"
@@ -27,13 +26,14 @@ public enum Comparison {
     case lessThanOrEqual
 }
 
+// TODO: Consider refactor name of Severity to Interpretation.
 /// Different levels of Severity in the interpretation of the QTc/p interval
 public struct Severity: OptionSet {
     public let rawValue: Int
     public init(rawValue: Int) {
         self.rawValue = rawValue
     }
-    
+    public static let undefined = Severity(rawValue: 0)
     public static let normal = Severity(rawValue: 1)
     public static let borderline = Severity(rawValue: 2)
     public static let abnormal = Severity(rawValue: 4)
@@ -63,9 +63,12 @@ public struct QTcMeasurement {
 }
 
 public typealias QTcTests = [QTcTest]
+public typealias Cutoff = (value: Double, severity: Severity)
+public typealias Cutoffs = [Cutoff]
 
 /// QTcTest describes a test for an abnormal QTc value, for example, QTc > 470 msec in women would be:
-/// let test = QTcTest(value: 470, units: .msec, sex: .female, valueLimitType: .upper, valueIntervalType: .open)
+///
+///     let test = QTcTest(value: 470, units: .msec, sex: .female, valueLimitType: .upper, valueIntervalType: .open)
 public struct QTcTest {
     let value: Double
     let units: Units
@@ -88,6 +91,7 @@ public struct QTcTest {
     func isAbnormal(qtcMeasurement: QTcMeasurement) -> Bool {
         var qtcValue = qtcMeasurement.qtc
         if units != qtcMeasurement.units {
+            // Happily, this switch statement says what it does!
             switch units {
             case .sec:
                 qtcValue = QTc.msecToSec(qtcValue)
@@ -130,13 +134,18 @@ public struct QTcTest {
         return result
     }
     
+    func cutoff() -> Cutoff {
+        return (value, severity)
+    }
+    
+    
 }
 
 /// Wrapper for a set of QTcTests, based on a literature reference
 public struct QTcTestSuite {
     public let name: String
     let qtcTests: QTcTests
-    let reference: String
+    public let reference: String
     public let description: String // the test described in prose
     let notes: String?  // optional notes about this test suite
     
@@ -186,6 +195,15 @@ public struct QTcTestSuite {
             return .normal
         }
     }
+    
+    public func cutoffs() -> Cutoffs {
+        var cutoffs: Cutoffs = []
+        for test in qtcTests {
+            cutoffs.append(test.cutoff())
+        }
+        return cutoffs
+    }
+
 }
 
 /// Provides dictionary of QTcTestSuites
