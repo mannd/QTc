@@ -145,16 +145,27 @@ public struct QTcTest {
 public struct QTcTestSuite {
     public let name: String
     let qtcTests: QTcTests
+    public let requiresSex: Bool
+    public let requiresAge: Bool
     public let reference: String
     public let description: String // the test described in prose
     let notes: String?  // optional notes about this test suite
     
-    public init(name: String, qtcTests: QTcTests, reference: String, description: String, notes: String? = nil) {
+    public init(name: String, qtcTests: QTcTests, reference: String, description: String, notes: String? = nil,
+                requiresSex: Bool = false, requiresAge: Bool = false) {
         self.name = name
         self.qtcTests = qtcTests
         self.reference = reference
         self.description = description
         self.notes = notes
+        self.requiresSex = requiresSex
+        self.requiresAge = requiresAge
+    }
+    
+    public func isUndefined(qtcMeasurement: QTcMeasurement) -> Bool {
+        let missingSex = requiresSex && qtcMeasurement.sex == .unspecified
+        let missingAge = requiresAge && qtcMeasurement.age == nil
+        return missingAge || missingSex
     }
     
     // returns abnormal tests
@@ -187,6 +198,9 @@ public struct QTcTestSuite {
     }
     
     public func severity(measurement: QTcMeasurement) -> Severity {
+        if isUndefined(qtcMeasurement: measurement) {
+            return .undefined
+        }
         let result = failingTest(measurement: measurement)
         if let result = result {
             return result.severity
@@ -232,13 +246,11 @@ public struct AbnormalQTc {
                 qtcTests: [
                 QTcTest(value: 450, units: .msec, valueComparison: .greaterThanOrEqual, sex: .male),
                 QTcTest(value: 460, units: .msec, valueComparison: .greaterThanOrEqual, sex: .female),
-                // We include test below if sex not specified, since by above 2 tests this must be true.  This
-                // test is redundant with the one above, but we leave them both in for clarity's sake.
-                QTcTest(value: 460, units: .msec, valueComparison: .greaterThanOrEqual, sex: .unspecified),
                 QTcTest(value: 390, units: .msec, valueComparison: .lessThanOrEqual)],
                 reference: "AHA/ACCF/HRS Recommendations for the Standardization and Interpretation of the Electrocardiogram: Part IV: The ST Segment, T and U Waves, and the QT Interval A Scientific Statement From the American Heart Association Electrocardiography and Arrhythmias Committee, Council on Clinical Cardiology; the American College of Cardiology Foundation; and the Heart Rhythm Society Endorsed by the International Society for Computerized Electrocardiology. Journal of the American College of Cardiology. 2009;53(11):982-991. doi:10.1016/j.jacc.2008.12.014",
                 description: "QTc ≥ 450 msec men\nQTc ≥ 460 msec women\nQTc ≤ 390 msec men and women",
-                notes: "Includes both long and short QTc criteria."),
+                notes: "Includes both long and short QTc criteria.",
+                requiresSex: true),
          .esc2005:
             QTcTestSuite(
                 name: "ESC 2005",
@@ -250,7 +262,8 @@ public struct AbnormalQTc {
                 QTcTest(value: 300, units: .msec, valueComparison: .lessThan)],
                 reference: "Corrado, Domenico, Antonio Pelliccia, Hans Halvor Bjørnstad, Luc Vanhees, Alessandro Biffi, Mats Borjesson, Nicole Panhuyzen-Goedkoop, et al. “Cardiovascular Pre-Participation Screening of Young Competitive Athletes for Prevention of Sudden Death: Proposal for a Common European ProtocolConsensus Statement of the Study Group of Sport Cardiology of the Working Group of Cardiac Rehabilitation and Exercise Physiology and the Working Group of Myocardial and Pericardial Diseases of the European Society of Cardiology.” European Heart Journal 26, no. 5 (March 1, 2005): 516–24. https://doi.org/10.1093/eurheartj/ehi108.",
                 description: "QTc > 440 msec men\nQTc > 460 msec women\nQTc < 300 msec men and women",
-                notes: "Includes both long and short QTc criteria.")
+                notes: "Includes both long and short QTc criteria.",
+                requiresSex: true)
 
     ]
     
