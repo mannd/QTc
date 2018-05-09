@@ -60,6 +60,13 @@ public struct QTcMeasurement {
         self.sex = sex
         self.age = age
     }
+    
+    public init(qtc: Double, qtMeasurement: QtMeasurement) {
+        self.qtc = qtc
+        self.units = qtMeasurement.units
+        self.sex = qtMeasurement.sex
+        self.age = qtMeasurement.age
+    }
 }
 
 public typealias QTcTests = [QTcTest]
@@ -193,7 +200,7 @@ public struct QTcTestSuite {
         return mostSevereResult
     }
     
-    public func failingTest(measurement: QTcMeasurement) -> QTcTest? {
+    func failingTest(measurement: QTcMeasurement) -> QTcTest? {
         return mostSevereFailure(failingTests: abnormalQTcTests(qtcMeasurement: measurement))
     }
     
@@ -217,7 +224,7 @@ public struct QTcTestSuite {
         }
         return cutoffs
     }
-
+    
 }
 
 /// Provides dictionary of QTcTestSuites
@@ -244,9 +251,9 @@ public struct AbnormalQTc {
             QTcTestSuite(
                 name: "AHA 2009",
                 qtcTests: [
-                QTcTest(value: 450, units: .msec, valueComparison: .greaterThanOrEqual, sex: .male),
-                QTcTest(value: 460, units: .msec, valueComparison: .greaterThanOrEqual, sex: .female),
-                QTcTest(value: 390, units: .msec, valueComparison: .lessThanOrEqual)],
+                    QTcTest(value: 450, units: .msec, valueComparison: .greaterThanOrEqual, sex: .male),
+                    QTcTest(value: 460, units: .msec, valueComparison: .greaterThanOrEqual, sex: .female),
+                    QTcTest(value: 390, units: .msec, valueComparison: .lessThanOrEqual)],
                 reference: "AHA/ACCF/HRS Recommendations for the Standardization and Interpretation of the Electrocardiogram: Part IV: The ST Segment, T and U Waves, and the QT Interval A Scientific Statement From the American Heart Association Electrocardiography and Arrhythmias Committee, Council on Clinical Cardiology; the American College of Cardiology Foundation; and the Heart Rhythm Society Endorsed by the International Society for Computerized Electrocardiology. Journal of the American College of Cardiology. 2009;53(11):982-991. doi:10.1016/j.jacc.2008.12.014",
                 description: "QTc ≥ 450 msec men\nQTc ≥ 460 msec women\nQTc ≤ 390 msec men and women",
                 notes: "Includes both long and short QTc criteria.",
@@ -255,23 +262,37 @@ public struct AbnormalQTc {
             QTcTestSuite(
                 name: "ESC 2005",
                 qtcTests: [
-                QTcTest(value: 440, units: .msec, valueComparison: .greaterThan, sex: .male),
-                QTcTest(value: 460, units: .msec, valueComparison: .greaterThan, sex: .female),
-                // include below when sex unspecified
-                QTcTest(value: 460, units: .msec, valueComparison: .greaterThan),
-                QTcTest(value: 300, units: .msec, valueComparison: .lessThan)],
-                reference: "Corrado, Domenico, Antonio Pelliccia, Hans Halvor Bjørnstad, Luc Vanhees, Alessandro Biffi, Mats Borjesson, Nicole Panhuyzen-Goedkoop, et al. “Cardiovascular Pre-Participation Screening of Young Competitive Athletes for Prevention of Sudden Death: Proposal for a Common European ProtocolConsensus Statement of the Study Group of Sport Cardiology of the Working Group of Cardiac Rehabilitation and Exercise Physiology and the Working Group of Myocardial and Pericardial Diseases of the European Society of Cardiology.” European Heart Journal 26, no. 5 (March 1, 2005): 516–24. https://doi.org/10.1093/eurheartj/ehi108.",
+                    QTcTest(value: 440, units: .msec, valueComparison: .greaterThan, sex: .male),
+                    QTcTest(value: 460, units: .msec, valueComparison: .greaterThan, sex: .female),
+                    // include below when sex unspecified
+                    QTcTest(value: 460, units: .msec, valueComparison: .greaterThan),
+                    QTcTest(value: 300, units: .msec, valueComparison: .lessThan)],
+                reference: "Corrado D, Pelliccia A, Bjørnstad HH, et al. Cardiovascular pre-participation screening of young competitive athletes for prevention of sudden death: proposal for a common European protocolConsensus Statement of the Study Group of Sport Cardiology of the Working Group of Cardiac Rehabilitation and Exercise Physiology and the Working Group of Myocardial and Pericardial Diseases of the European Society of Cardiology. Eur Heart J. 2005;26(5):516-524. doi:10.1093/eurheartj/ehi108",
                 description: "QTc > 440 msec men\nQTc > 460 msec women\nQTc < 300 msec men and women",
                 notes: "Includes both long and short QTc criteria.",
-                requiresSex: true)
-
+                requiresSex: true),
+         .goldenberg2006:
+            QTcTestSuite(
+                name: "Goldenberg 2006",
+                qtcTests: [
+                    QTcTest(value: 440, units: .msec, valueComparison: .greaterThanOrEqual, age: 15, ageComparison: .lessThanOrEqual, severity: .borderline),
+                    QTcTest(value: 460, units: .msec, valueComparison: .greaterThan, age: 15, ageComparison: .lessThanOrEqual, severity: .abnormal),
+                    QTcTest(value: 430, units: .msec, valueComparison: .greaterThanOrEqual, sex: .male, age: 15, ageComparison: .greaterThan, severity: .borderline),
+                    QTcTest(value: 450, units: .msec, valueComparison: .greaterThan, sex: .male, age: 15, ageComparison: .greaterThan, severity: .abnormal),
+                    QTcTest(value: 450, units: .msec, valueComparison: .greaterThanOrEqual, sex: .female, age: 15, ageComparison: .greaterThan, severity: .borderline),
+                    QTcTest(value: 470, units: .msec, valueComparison: .greaterThan, sex: .female, age: 15, ageComparison: .greaterThan, severity: .abnormal)],
+                reference: "Goldenberg Ilan, Moss Arthur J., Zareba Wojciech. QT Interval: How to Measure It and What Is \"Normal.\" Journal of Cardiovascular Electrophysiology. 2006;17(3):333-336. doi:10.1111/j.1540-8167.2006.00408.x",
+                description: "Age 1-15 (M/F): borderline QTc 440-460 msec, abnormal QTc > 460 msec\nAge > 15 (M): borderline QTc 430-454 msec, abnormal > QTc 460 msec\nAge > 15 (F): borderline QTc 450-460 msec, abnormal QTc > 470 msec",
+                notes: "Based on 581 healthy subjects: 158 children, 423 adults: 223 men, 200 women.  Used QTcBZT.",
+                requiresSex: true,
+                requiresAge: true)
     ]
     
     /// Returns a QTcTestSuite based on a test Criterion
     public static func qtcLimits(criterion: Criterion) -> QTcTestSuite? {
         return testSuiteDictionary[criterion]
     }
-
+    
 }
 
 
