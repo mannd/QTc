@@ -16,6 +16,8 @@ public enum Criterion: String {
     case esc2005 = "esc2005"
     case goldenberg2006 = "goldenberg2006"
     case aha2009 = "aha2009"
+    case gollob2011 = "gollob2011"
+    case mazzanti2014 = "mazzanti2014"
     // TODO: the rest of them
 }
 
@@ -296,10 +298,31 @@ public struct AbnormalQTc {
                     QTcTest(value: 480, units: .msec, valueComparison: .greaterThanOrEqual, severity: .severe)
                 ],
                 reference: "Schwartz PJ, Moss AJ, Vincent GM, Crampton RS. Diagnostic criteria for the long QT syndrome. An update. Circulation. 1993;88(2):782-784. doi:10.1161/01.CIR.88.2.782",
-                description: "QTc >= 450 msec (in males) mild (1 point)\nQTc >= 460 msec moderate (2 points)\nQTc >= 480 msec severe (3 points)",
+                description: "QTc ≥ 450 msec (in males) mild (1 point)\nQTc ≥ 460 msec moderate (2 points)\nQTc ≥ 480 msec severe (3 points)",
                 notes: "Revision of original Schwartz 1985 criteria.  Used in point system of 1993 LQTS Diagnostic criteria.",
                 requiresSex: true,
-                requiresAge: false)
+                requiresAge: false),
+         .gollob2011:
+            QTcTestSuite(
+                name: "Gollob 2011",
+                qtcTests: [
+                    QTcTest(value: 370, units: .msec, valueComparison: .lessThan, severity: .mild),
+                    QTcTest(value: 350, units: .msec, valueComparison: .lessThan, severity: .moderate),
+                    QTcTest(value: 330, units: .msec, valueComparison: .lessThan, severity: .severe)
+                ],
+                reference: "Gollob MH, Redpath CJ, Roberts JD. The Short QT Syndrome. Journal of the American College of Cardiology. 2011;57(7):802-812. doi:10.1016/j.jacc.2010.09.048",
+                description: "QTc < 370 msec mild (1 point)\nQTc < 350 msec moderate (2 points)\nQTc < 330 msec severe (3 points)",
+                notes:  "Based on 61 reported cases of Short QT Syndrome.  Used in point system for SQTS."),
+         .mazzanti2014:
+            QTcTestSuite(
+                name: "Mazzanti 2014",
+                qtcTests: [
+                    QTcTest(value: 360, units: .msec, valueComparison: .lessThanOrEqual, severity: .borderline),
+                    QTcTest(value: 340, units: .msec, valueComparison: .lessThanOrEqual, severity: .abnormal)
+                ],
+                reference: "Mazzanti A, Kanthan A, Monteforte N, et al. Novel Insight Into the Natural History of Short QT Syndrome. Journal of the American College of Cardiology. 2014;63(13):1300-1308. doi:10.1016/j.jacc.2013.09.078",
+                description: "QTc ≤ 360 msec borderline\nQTc ≤ 340 msec abnormal",
+                notes: "Based on 63 cases of suspected SQTS.")
     ]
     
     /// Returns a QTcTestSuite based on a test Criterion
