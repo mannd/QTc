@@ -11,10 +11,11 @@ import Foundation
 /// These are tests for abnormal QTc values from the literature.
 public enum Criterion: String {
     case schwartz1985 = "schwartz1985"
+    case schwartz1993 = "schwartz1993"
     case fda2005 = "fda2005"
-    case aha2009 = "aha2009"
     case esc2005 = "esc2005"
     case goldenberg2006 = "goldenberg2006"
+    case aha2009 = "aha2009"
     // TODO: the rest of them
 }
 
@@ -285,7 +286,20 @@ public struct AbnormalQTc {
                 description: "Age 1-15 (M/F): borderline QTc 440-460 msec, abnormal QTc > 460 msec\nAge > 15 (M): borderline QTc 430-454 msec, abnormal > QTc 460 msec\nAge > 15 (F): borderline QTc 450-460 msec, abnormal QTc > 470 msec",
                 notes: "Based on 581 healthy subjects: 158 children, 423 adults: 223 men, 200 women.  Used QTcBZT.",
                 requiresSex: true,
-                requiresAge: true)
+                requiresAge: true),
+         .schwartz1993:
+            QTcTestSuite(
+                name: "Schwartz 1993",
+                qtcTests: [
+                    QTcTest(value: 450, units: .msec, valueComparison: .greaterThanOrEqual, sex: .male, severity: .mild),
+                    QTcTest(value: 460, units: .msec, valueComparison: .greaterThanOrEqual, severity: .moderate),
+                    QTcTest(value: 480, units: .msec, valueComparison: .greaterThanOrEqual, severity: .severe)
+                ],
+                reference: "Schwartz PJ, Moss AJ, Vincent GM, Crampton RS. Diagnostic criteria for the long QT syndrome. An update. Circulation. 1993;88(2):782-784. doi:10.1161/01.CIR.88.2.782",
+                description: "QTc >= 450 msec (in males) mild (1 point)\nQTc >= 460 msec moderate (2 points)\nQTc >= 480 msec severe (3 points)",
+                notes: "Revision of original Schwartz 1985 criteria.  Used in point system of 1993 LQTS Diagnostic criteria.",
+                requiresSex: true,
+                requiresAge: false)
     ]
     
     /// Returns a QTcTestSuite based on a test Criterion
