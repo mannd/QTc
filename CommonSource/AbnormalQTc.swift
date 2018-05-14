@@ -326,7 +326,7 @@ public struct AbnormalQTc {
     ]
     
     /// Returns a QTcTestSuite based on a test Criterion
-    public static func qtcLimits(criterion: Criterion) -> QTcTestSuite? {
+    public static func qtcTestSuite(criterion: Criterion) -> QTcTestSuite? {
         return testSuiteDictionary[criterion]
     }
     
