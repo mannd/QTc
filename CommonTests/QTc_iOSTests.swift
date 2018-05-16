@@ -46,41 +46,55 @@ class QTc_iOSTests: XCTestCase {
     // TODO: Add other hand calculated tables for each formula
     // table of calculated QTc from
     let qtcMultipleTable: [(rate: Double, rrInSec: Double, rrInMsec: Double, qtInMsec: Double,
-                            qtcBzt: Double, qtcFrd: Double, qtcFrm: Double, qtcHDG: Double)] =
-      [(88, 0.682, 681.8, 278, 336.7, 315.9, 327.0, 327.0), (112, 0.536, 535.7, 334, 456.3, 411.2, 405.5, 425.0),
-       (47, 1.2766, 1276.6, 402, 355.8, 370.6, 359.4, 379.3), (132, 0.4545, 454.5, 219, 324.8, 284.8, 303, 345)]
-
+        qtcBzt: Double, qtcFrd: Double, qtcFrm: Double, qtcHDG: Double)] =
+        [(88, 0.682, 681.8, 278, 336.7, 315.9, 327.0, 327.0), (112, 0.536, 535.7, 334, 456.3, 411.2, 405.5, 425.0),
+         (47, 1.2766, 1276.6, 402, 355.8, 370.6, 359.4, 379.3), (132, 0.4545, 454.5, 219, 324.8, 284.8, 303, 345)]
+    
     // TODO: Add new formulae here
     let qtcRandomTable: [(qtInSec: Double, rrInSec: Double, qtcMyd: Double, qtcRtha: Double,
-                          qtcArr: Double, qtcKwt: Double, qtcDmt: Double)] = [(0.217, 1.228, 0.191683142324075,
-                                                                               0.20357003257329, 0.188180853891965, 0.206138989195107, 0.199352096980993),
-                                                              (0.617, 1.873, 0.422349852160997, 0.521139348638548,
-                                                               0.540226253226725,0.527412865616186 , 0.476131661614717),
-                                                              (0.441, 0.024, 4.19557027148694, 6.419, 0.744999998985912,
-                                                               1.12043270968093, 2.05783877711859),
-                                                              (0.626, 1.938, 0.419771215123981, 0.525004471964224,
-                                                               0.545939267391605, 0.530561692609049, 0.47631825370458),
-                                                              (0.594, 1.693, 0.432192914133319, 0.512952155936208,
-                                                               0.527461134835087, 0.520741518839723, 0.477915505801712),
-                                                              (0.522, 0.670, 0.664846401046771, 0.607701492537313,
-                                                               0.585658505426308, 0.576968100296572, 0.615887811579245),
-                                                              (0.162, 0.238, 0.385533865286431, 0.334890756302521,
-                                                               0.400524764066341, 0.231937395103792, 0.29308171977912),
-                                                              (0.449, 0.738, 0.539436462235939, 0.50213369467028,
-                                                               0.496257865770434, 0.484431360905827, 0.509024942553452),
-                                                              (0.364, 0.720, 0.443887132523326, 0.411185185185185,
-                                                               0.415398777435965, 0.395155707875796, 0.416891521344714),
-                                                              (0.279, 0.013, 3.84399149834848, 7.33984615384616,
-                                                               0.583, 0.826263113547243, 1.67704840828666),
-                                                              (0.184, 0.384, 0.328005981451736, 0.282388888888889,
-                                                               0.347039639944786, 0.233741064151123, 0.27320524164178)]
+        qtcArr: Double, qtcKwt: Double, qtcDmt: Double)] = [(0.217, 1.228, 0.191683142324075,
+                                                             0.20357003257329, 0.188180853891965, 0.206138989195107, 0.199352096980993),
+                                                            (0.617, 1.873, 0.422349852160997, 0.521139348638548,
+                                                             0.540226253226725,0.527412865616186 , 0.476131661614717),
+                                                            (0.441, 0.024, 4.19557027148694, 6.419, 0.744999998985912,
+                                                             1.12043270968093, 2.05783877711859),
+                                                            (0.626, 1.938, 0.419771215123981, 0.525004471964224,
+                                                             0.545939267391605, 0.530561692609049, 0.47631825370458),
+                                                            (0.594, 1.693, 0.432192914133319, 0.512952155936208,
+                                                             0.527461134835087, 0.520741518839723, 0.477915505801712),
+                                                            (0.522, 0.670, 0.664846401046771, 0.607701492537313,
+                                                             0.585658505426308, 0.576968100296572, 0.615887811579245),
+                                                            (0.162, 0.238, 0.385533865286431, 0.334890756302521,
+                                                             0.400524764066341, 0.231937395103792, 0.29308171977912),
+                                                            (0.449, 0.738, 0.539436462235939, 0.50213369467028,
+                                                             0.496257865770434, 0.484431360905827, 0.509024942553452),
+                                                            (0.364, 0.720, 0.443887132523326, 0.411185185185185,
+                                                             0.415398777435965, 0.395155707875796, 0.416891521344714),
+                                                            (0.279, 0.013, 3.84399149834848, 7.33984615384616,
+                                                             0.583, 0.826263113547243, 1.67704840828666),
+                                                            (0.184, 0.384, 0.328005981451736, 0.282388888888889,
+                                                             0.347039639944786, 0.233741064151123, 0.27320524164178)]
+
+    // QTp random test intervals
+    let qtIntervals =
+[0.587, 0.628, 0.774, 0.44, 0.61, 0.564, 0.322, 0.652, 0.611, 0.771, 0.522, 0.282, 0.255, 0.542, 0.4, 0.706, 0.301, 0.389, 0.486, 0.499]
+    let rrIntervals = 
+[1.04, 1.741, 0.803, 0.744, 0.462, 1.741, 0.814, 1.492, 1.217, 1.316, 1.072, 1.729, 1.631, 0.876, 0.738, 1.325, 1.066, 0.57, 0.603, 0.821]
+    let qtpBztMaleResults =
+[0.377327444005866, 0.488203748449354, 0.331557988894854, 0.319145108062148, 0.251491152925903, 0.488203748449354, 0.333821209631743, 0.451945571944233, 0.40817557496744, 0.42445305983112, 0.383088501524126, 0.486518344977864, 0.472529258353385, 0.346301025121209, 0.317855627604735, 0.425901984029189, 0.382014921174553, 0.279343874105018, 0.287316376143094, 0.335253486186199]
+    let qtpBztFemaleResults = [0.407921561087423, 0.527787836161464, 0.358441069075518, 0.345021738445565, 0.271882327487463, 0.527787836161464, 0.360887794196479, 0.488589807507279, 0.441270891856692, 0.4588681727904, 0.414149731377433, 0.525965778354448, 0.510842441463119, 0.374379486617523, 0.343627705518633, 0.460434577328854, 0.41298910397249, 0.30199337741083, 0.310612298533075, 0.362436201282377]
+    let qtpFrdResults =
+[0.386559422661292, 0.458991603861966, 0.354631247099717, 0.345723947150657, 0.294952767914911, 0.458991603861966, 0.356243229467337, 0.435974838280842, 0.407350896973457, 0.41810989654274, 0.390484152137325, 0.457934624637034, 0.449113873741475, 0.365067512187644, 0.344792072153498, 0.41906087001553, 0.389754273515837, 0.316346792990953, 0.322337565550937, 0.357261488417636]
+    let qtpHdgResults = [0.395038461538462, 0.435689833429064, 0.365240348692403, 0.354870967741935, 0.268727272727273, 0.435689833429064, 0.367007371007371, 0.425624664879357, 0.409722267871816, 0.416212765957447, 0.39805223880597, 0.435271255060729, 0.431622317596566, 0.37613698630137, 0.353723577235772, 0.416754716981132, 0.397500938086304, 0.311789473684211, 0.321870646766169, 0.3681071863581]
+    let qtcRthbMaleResults = [0.581343039402066, 0.539876501292278, 0.804174636591087, 0.480109064822965, 0.706177170185111, 0.475876501292278, 0.35037381620353, 0.59024899978608, 0.581832195881668, 0.729613630344318, 0.511915407946455, 0.195090829692423, 0.178212616137001, 0.560500006698053, 0.441146783627781, 0.663531970103914, 0.291739182875841, 0.46167084747726, 0.55205665809079, 0.526235809548196]
+    let qtcRthbFemaleResults = [0.580695812286438, 0.52926765756804, 0.807541128337159, 0.484551008433048, 0.716354877945081, 0.465267657568039, 0.353543571822623, 0.582928175464681, 0.57844314285625, 0.724767662325179, 0.510758174544893, 0.184635377981728, 0.169028318291773, 0.562581497625133, 0.44570009096784, 0.658556002180993, 0.29067706412139, 0.469515787318061, 0.559226003573487, 0.529280960371902]
 
     // mocks for testing formula sources
     class TestQtcFormulas: QTcFormulaSource {
         static func qtcCalculator(formula: Formula) -> QTcCalculator {
             return QTcCalculator(formula: formula, longName: "TestLongName", shortName: "TestShortName", reference: "TestReference", equation: "TestEquation", baseEquation: { x, y, sex, age in x + y}, classification: .other, publicationDate: "1901")
         }
-     }
+    }
     
     class TestQtpFormulas: QTpFormulaSource {
         static func qtpCalculator(formula: Formula) -> QTpCalculator {
@@ -88,16 +102,16 @@ class QTc_iOSTests: XCTestCase {
         }
     }
     
- override func setUp() {
- super.setUp()
- // Put setup code here. This method is called before the invocation of each test method in the class.
- }
- 
- override func tearDown() {
- // Put teardown code here. This method is called after the invocation of each test method in the class.
- super.tearDown()
- }
- 
+    override func setUp() {
+        super.setUp()
+        // Put setup code here. This method is called before the invocation of each test method in the class.
+    }
+    
+    override func tearDown() {
+        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        super.tearDown()
+    }
+    
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
@@ -155,7 +169,7 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(try! qtcBzt.calculate(qtInSec: 2.78, rrInSec: QTc.bpmToSec(88)), 3.3667, accuracy: roughDelta)
         XCTAssertEqual(try! qtcBzt.calculate(qtInSec: 5.0, rrInSec: 0), Double.infinity)
         XCTAssertEqual(try! qtcBzt.calculate(qtInSec: 5.0, rrInSec: 0), Double.infinity)
-
+        
         // QTcFRD (Fridericia)
         let qtcFrd = QTc.qtcCalculator(formula: .qtcFrd)
         XCTAssertEqual(try! qtcFrd.calculate(qtInMsec: 456, rate: 77), 495.5, accuracy: roughDelta)
@@ -173,15 +187,15 @@ class QTc_iOSTests: XCTestCase {
             XCTAssertEqual(try! qtcBzt.calculate(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcBztResult), accuracy: roughDelta)
             XCTAssertEqual(try! qtcBzt.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcBztResult, accuracy: roughDelta)
             XCTAssertEqual(try! qtcBzt.calculate(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcBztResult), accuracy: roughDelta)
-
+            
             // QTcFRD
             XCTAssertEqual(try! qtcFrd.calculate(qtInMsec: qtInMsec, rate: rate), qtcFrdResult, accuracy: roughDelta)
             XCTAssertEqual(try! qtcFrd.calculate(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcFrdResult), accuracy: roughDelta)
             XCTAssertEqual(try! qtcFrd.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcFrdResult, accuracy: roughDelta)
             XCTAssertEqual(try! qtcFrd.calculate(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcFrdResult), accuracy: roughDelta)
             
-   
-         // QTcFRM
+            
+            // QTcFRM
             XCTAssertEqual(try! qtcFrm.calculate(qtInMsec: qtInMsec, rate: rate), qtcFrmResult, accuracy: roughDelta)
             XCTAssertEqual(try! qtcFrm.calculate(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcFrmResult), accuracy: roughDelta)
             XCTAssertEqual(try! qtcFrm.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcFrmResult, accuracy: roughDelta)
@@ -192,7 +206,7 @@ class QTc_iOSTests: XCTestCase {
             XCTAssertEqual(try! qtcHdg.calculate(qtInSec: QTc.msecToSec(qtInMsec), rrInSec: rrInSec), QTc.msecToSec(qtcHdgResult), accuracy: roughDelta)
             XCTAssertEqual(try! qtcHdg.calculate(qtInMsec: qtInMsec, rrInMsec: rrInMsec), qtcHdgResult, accuracy: roughDelta)
             XCTAssertEqual(try! qtcHdg.calculate(qtInSec: QTc.msecToSec(qtInMsec), rate: rate), QTc.msecToSec(qtcHdgResult), accuracy: roughDelta)
-
+            
         }
         
         // handle zero RR
@@ -206,7 +220,7 @@ class QTc_iOSTests: XCTestCase {
         // QTcRHTa
         let qtcRtha = QTc.qtcCalculator(formula: .qtcRtha)
         XCTAssertEqual(try! qtcRtha.calculate(qtInSec: 0.444, rate: 58.123), 0.43937, accuracy: delta)
-
+        
         // QTcMyd
         let qtcMyd = QTc.qtcCalculator(formula: .qtcMyd)
         XCTAssertEqual(try! qtcMyd.calculate(qtInSec: 0.399, rrInSec: 0.788), 0.46075606, accuracy: delta)
@@ -227,7 +241,7 @@ class QTc_iOSTests: XCTestCase {
         }
         
     }
-
+    
     // Most QTc functions will have QTc == QT at HR 60 (RR 1000 msec)
     func testEquipose() {
         let sampleQTs = [0.345, 1.0, 0.555, 0.114, 0, 0.888]
@@ -241,12 +255,12 @@ class QTc_iOSTests: XCTestCase {
             }
         }
     }
-
+    
     func testNewFormulas() {
         let qtcYos = QTc.qtcCalculator(formula: .qtcYos)
         // QTcYOS is pediatric formula and throws if age not given or age is adult
         XCTAssertEqual(try! qtcYos.calculate(qtInSec: 0.421, rrInSec: 1.34, age: 14), 0.384485183352,
-                                   accuracy: delta)
+                       accuracy: delta)
         XCTAssertThrowsError(try qtcYos.calculate(qtInSec: 0.421, rate: 1.34))
         XCTAssertThrowsError(try qtcYos.calculate(qtInSec: 0.421, rate: 1.34, age: 21))
     }
@@ -260,7 +274,7 @@ class QTc_iOSTests: XCTestCase {
     }
     
     func testQTcConvert() {
-       let qtcBzt = QTc.qtcCalculator(formula: .qtcBzt)
+        let qtcBzt = QTc.qtcCalculator(formula: .qtcBzt)
         let qtcHdg = QTc.qtcCalculator(formula: .qtcHdg)
         let qtcRtha = QTc.qtcCalculator(formula: .qtcRtha)
         let qtcFrm = QTc.qtcCalculator(formula: .qtcFrm)
@@ -333,13 +347,13 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(try? qtpBzt.calculate(qtMeasurement: qtMeasurement), 400.0)
         let qtcFrd = QTc.calculator(formula: .qtcFrd)
         XCTAssertEqual(try? qtcFrd.calculate(qtMeasurement: qtMeasurement), 370.0)
-
+        
     }
     
     func testFormulaTypes() {
         let qtcBzt = QTc.calculator(formula: .qtcBzt, formulaType: .qtc)
         XCTAssert(qtcBzt.formula == .qtcBzt)
-        XCTAssert(qtcBzt.formula?.formulaType() == .qtc)
+        XCTAssert(qtcBzt.formula.formulaType() == .qtc)
         // .qtcTest not member of QTc or QTp set of formulas
         // However can't test this, as it leads to assertionFailure and program halt
         //let qtcTst = QTc.calculator(formula: .qtcTest, formulaType: .qtc)
@@ -366,7 +380,7 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertTrue(qtcTest.isAbnormal(qtcMeasurement: measurement))
         measurement = QTcMeasurement(qtc: 351, units: .msec)
         XCTAssertFalse(qtcTest.isAbnormal(qtcMeasurement: measurement))
-
+        
         qtcTest = QTcTest(value: 350, units: .msec, valueComparison: .lessThanOrEqual, sex: .female)
         measurement = QTcMeasurement(qtc: 311, units: .msec)
         XCTAssertFalse(qtcTest.isAbnormal(qtcMeasurement: measurement))
@@ -374,25 +388,25 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertFalse(qtcTest.isAbnormal(qtcMeasurement: measurement))
         measurement = QTcMeasurement(qtc: 311, units: .msec, sex: .female)
         XCTAssertTrue(qtcTest.isAbnormal(qtcMeasurement: measurement))
-
+        
         qtcTest = QTcTest(value: 350, units: .msec, valueComparison: .lessThanOrEqual, sex: .female, age: 18, ageComparison: .lessThan)
         measurement = QTcMeasurement(qtc: 311, units: .msec, sex: .female)
         XCTAssertFalse(qtcTest.isAbnormal(qtcMeasurement: measurement))
         measurement = QTcMeasurement(qtc: 311, units: .msec, sex: .female, age: 15)
         XCTAssertTrue(qtcTest.isAbnormal(qtcMeasurement: measurement))
-
+        
         var testSuite = QTcTestSuite(name: "test", qtcTests: [qtcTest], reference: "test", description: "test")
         var result = testSuite.abnormalQTcTests(qtcMeasurement: measurement)
         XCTAssertEqual(result.count, 1)
         XCTAssertTrue(result[0].severity == .abnormal)
         XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
-
-
+        
+        
         measurement = QTcMeasurement(qtc: 355, units: .msec, sex: .female, age: 15)
         result = testSuite.abnormalQTcTests(qtcMeasurement: measurement)
         XCTAssertEqual(result.count, 0)
         XCTAssertEqual(testSuite.severity(measurement: measurement), .normal)
-
+        
         let qtcTest2 = QTcTest(value: 440, units: .msec, valueComparison: .greaterThan, severity: .moderate)
         testSuite = QTcTestSuite(name: "test2", qtcTests: [qtcTest, qtcTest2], reference: "test", description: "test")
         measurement = QTcMeasurement(qtc: 500, units: .msec)
@@ -400,14 +414,14 @@ class QTc_iOSTests: XCTestCase {
     }
     
     func testAbnormalQTcCriteria() {
-        if let testSuite = AbnormalQTc.testSuiteDictionary[.simple] {
+        if let testSuite = AbnormalQTc.qtcTestSuite(criterion: .schwartz1985) {
             var measurement = QTcMeasurement(qtc: 445, units: .msec)
             XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
             XCTAssert(testSuite.severity(measurement: measurement).isAbnormal())
             measurement = QTcMeasurement(qtc: 0.439, units: .sec)
             XCTAssertFalse(testSuite.severity(measurement: measurement).isAbnormal())
         }
-        if let testSuite = AbnormalQTc.testSuiteDictionary[.fda] {
+        if let testSuite = AbnormalQTc.qtcTestSuite(criterion: .fda2005) {
             var measurement = QTcMeasurement(qtc: 455, units: .msec)
             XCTAssertEqual(testSuite.severity(measurement: measurement), .mild)
             measurement = QTcMeasurement(qtc: 485, units: .msec)
@@ -417,38 +431,113 @@ class QTc_iOSTests: XCTestCase {
             measurement = QTcMeasurement(qtc: 450, units: .msec)
             XCTAssertEqual(testSuite.severity(measurement: measurement), .normal)
         }
-        if let testSuite = AbnormalQTc.testSuiteDictionary[.ahaaccfhrs] {
+        if let testSuite = AbnormalQTc.qtcTestSuite(criterion: .aha2009) {
             var measurement = QTcMeasurement(qtc: 450, units: .msec, sex: .male)
             XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
             measurement = QTcMeasurement(qtc: 460, units: .msec, sex: .female)
             XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
-            // we leave out the sex here to make sure we still get an abnormal value
+            // we leave out the sex here to get undefined value
             measurement = QTcMeasurement(qtc: 460, units: .msec)
-            XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .undefined)
             measurement = QTcMeasurement(qtc: 459, units: .msec, sex: .female)
             XCTAssertEqual(testSuite.severity(measurement: measurement), .normal)
             measurement = QTcMeasurement(qtc: 390, units: .msec)
-            XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .undefined)
         }
-        if let testSuite = AbnormalQTc.testSuiteDictionary[.european] {
+        if let testSuite = AbnormalQTc.qtcTestSuite(criterion: .esc2005) {
             var measurement = QTcMeasurement(qtc: 450, units: .msec, sex: .male)
             XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
             measurement = QTcMeasurement(qtc: 460, units: .msec, sex: .female)
             XCTAssertEqual(testSuite.severity(measurement: measurement), .normal)
             measurement = QTcMeasurement(qtc: 461, units: .msec, sex: .female)
             XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
-            // we leave out the sex here to make sure we still get an abnormal value
+            // we leave out the sex here to make sure we get an undefined value
             measurement = QTcMeasurement(qtc: 461, units: .msec)
-            XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .undefined)
             measurement = QTcMeasurement(qtc: 459, units: .msec, sex: .female)
             XCTAssertEqual(testSuite.severity(measurement: measurement), .normal)
             measurement = QTcMeasurement(qtc: 290, units: .msec)
-            XCTAssertEqual(testSuite.severity(measurement: measurement), .abnormal)
+            XCTAssertEqual(testSuite.severity(measurement: measurement), .undefined)
         }
-
+        if let testSuite = AbnormalQTc.qtcTestSuite(criterion: .goldenberg2006) {
+            var m = QTcMeasurement(qtc: 445, units: .msec) // requires age and sex
+            XCTAssertEqual(testSuite.severity(measurement: m), .undefined)
+            m = QTcMeasurement(qtc: 445, units: .msec, sex: .male)
+            XCTAssertEqual(testSuite.severity(measurement: m), .undefined)
+            m = QTcMeasurement(qtc: 445, units: .msec, sex: .male, age: 20)
+            XCTAssertEqual(testSuite.severity(measurement: m), .borderline)
+            m = QTcMeasurement(qtc: 461, units: .msec, sex: .female, age: 10)
+            XCTAssertEqual(testSuite.severity(measurement: m), .abnormal)
+            m = QTcMeasurement(qtc: 461, units: .msec, sex: .female, age: 16)
+            XCTAssertEqual(testSuite.severity(measurement: m), .borderline)
+            m = QTcMeasurement(qtc: 461, units: .msec, sex: .male, age: 16)
+            XCTAssertEqual(testSuite.severity(measurement: m), .abnormal)
+        }
+        if let testSuite = AbnormalQTc.qtcTestSuite(criterion: .schwartz1993) {
+            var m = QTcMeasurement(qtc: 445, units: .msec) // requires sex
+            XCTAssertEqual(testSuite.severity(measurement: m), .undefined)
+            m = QTcMeasurement(qtc: 445, units: .msec, sex: .male)
+            XCTAssertEqual(testSuite.severity(measurement: m), .normal)
+            m = QTcMeasurement(qtc: 445, units: .msec, sex: .male, age: 20)
+            XCTAssertEqual(testSuite.severity(measurement: m), .normal)
+            m = QTcMeasurement(qtc: 461, units: .msec, sex: .female, age: 10)
+            XCTAssertEqual(testSuite.severity(measurement: m), .moderate)
+            m = QTcMeasurement(qtc: 461, units: .msec, sex: .female, age: 16)
+            XCTAssertEqual(testSuite.severity(measurement: m), .moderate)
+            m = QTcMeasurement(qtc: 451, units: .msec, sex: .male, age: 16)
+            XCTAssertEqual(testSuite.severity(measurement: m), .mild)
+            m = QTcMeasurement(qtc: 451, units: .msec, sex: .female, age: 16)
+            XCTAssertEqual(testSuite.severity(measurement: m), .normal)
+        }
+        // test short QTc
+        if let testSuite = AbnormalQTc.qtcTestSuite(criterion: .gollob2011) {
+            var m = QTcMeasurement(qtc: 0.345, units: .sec)
+            XCTAssertEqual(testSuite.severity(measurement: m), .moderate)
+            m = QTcMeasurement(qtc: 315, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: m), .severe)
+            m = QTcMeasurement(qtc: 370, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: m), .normal)
+            m = QTcMeasurement(qtc: 369.99999, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: m), .mild)
+        }
+        if let testSuite = AbnormalQTc.qtcTestSuite(criterion: .mazzanti2014) {
+            var m = QTcMeasurement(qtc: 360, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: m), .borderline)
+            m = QTcMeasurement(qtc: 335, units: .msec)
+            XCTAssertEqual(testSuite.severity(measurement: m), .abnormal)
+        }
+        
     }
     
-
     // TODO: test new QTc and QTp formulas
-
+    func testQTp() {
+        var calculator: QTpCalculator = QTc.qtpCalculator(formula: .qtpBzt)
+        var i = 0
+        for interval in rrIntervals {
+            XCTAssertEqual(try calculator.calculate(rrInSec: interval, sex: .male), qtpBztMaleResults[i], accuracy: delta)
+            XCTAssertEqual(try calculator.calculate(rrInSec: interval, sex: .female), qtpBztFemaleResults[i], accuracy: delta)
+            i += 1
+        }
+        calculator = QTc.qtpCalculator(formula: .qtpFrd)
+        i = 0
+        for interval in rrIntervals {
+            XCTAssertEqual(try calculator.calculate(rrInSec: interval), qtpFrdResults[i], accuracy: delta)
+            i += 1
+        }
+        calculator = QTc.qtpCalculator(formula: .qtpHdg)
+        i = 0
+        for interval in rrIntervals {
+            XCTAssertEqual(try calculator.calculate(rrInSec: interval), qtpHdgResults[i], accuracy: delta)
+            i += 1
+        }
+        let qtcCalculator = QTc.qtcCalculator(formula: .qtcRthb)
+        i = 0
+        for interval in rrIntervals {
+            XCTAssertEqual(try qtcCalculator.calculate(qtInSec: qtIntervals[i], rrInSec: interval, sex: .male, age: nil), qtcRthbMaleResults[i], accuracy: delta)
+            
+            XCTAssertEqual(try qtcCalculator.calculate(qtInSec: qtIntervals[i], rrInSec: interval, sex: .female, age: nil), qtcRthbFemaleResults[i], accuracy: delta)
+            i += 1
+        }
+    }
+    
 }

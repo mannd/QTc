@@ -285,7 +285,7 @@ public struct AbnormalQTc {
                     QTcTest(value: 450, units: .msec, valueComparison: .greaterThanOrEqual, sex: .female, age: 15, ageComparison: .greaterThan, severity: .borderline),
                     QTcTest(value: 470, units: .msec, valueComparison: .greaterThan, sex: .female, age: 15, ageComparison: .greaterThan, severity: .abnormal)],
                 reference: "Goldenberg Ilan, Moss Arthur J., Zareba Wojciech. QT Interval: How to Measure It and What Is \"Normal.\" Journal of Cardiovascular Electrophysiology. 2006;17(3):333-336. doi:10.1111/j.1540-8167.2006.00408.x",
-                description: "Age 1-15 (M/F): borderline QTc 440-460 msec, abnormal QTc > 460 msec\nAge > 15 (M): borderline QTc 430-454 msec, abnormal > QTc 460 msec\nAge > 15 (F): borderline QTc 450-460 msec, abnormal QTc > 470 msec",
+                description: "Age 1-15 (M/F): borderline QTc 440-460 msec, abnormal QTc > 460 msec\nAge > 15 (M): borderline QTc 430-450 msec, abnormal > QTc 450 msec\nAge > 15 (F): borderline QTc 450-470 msec, abnormal QTc > 470 msec",
                 notes: "Based on 581 healthy subjects: 158 children, 423 adults: 223 men, 200 women.  Used QTcBZT.",
                 requiresSex: true,
                 requiresAge: true),
