@@ -3,7 +3,7 @@
 //  Formulas
 //
 //  Created by David Mann on 9/18/17.
-//  Copyright © 2017 EP Studios. All rights reserved.
+//  Copyright © 2017, 2018 EP Studios. All rights reserved.
 //
 
 import Foundation
@@ -83,7 +83,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
     
     // This is the data source for the formulas.  Potentially this could be a database, but there
     // aren't that many formulas, so for now the formulas are inlined here.
-    static let qtcDictionary: [Formula : QTcCalculator] =
+    static let qtcDictionary: [Formula: QTcCalculator] =
         [.qtcBzt:
             QTcCalculator(formula: .qtcBzt,
                           longName: "Bazett",
@@ -139,7 +139,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           numberOfSubjects: 607),
          .qtcRtha:
             QTcCalculator(formula: .qtcRtha,
-                          longName: "Rautaharju QTcMod",
+                          longName: "Rautaharju-a",
                           shortName: "QTcRTHa",
                           reference: "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. International Journal of Cardiology. 2014;174(3):535-540. doi:10.1016/j.ijcard.2014.04.133",
                           equation: "QT * (120 + HR) /180",
@@ -147,10 +147,9 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           classification: .rational,
                           notes: "Healthy subjects: 57,595, aged 5-89 years, 54% women.\nAbnormal QTc: age < 40: 430 ms for men, 440 ms for women; age 40-69: 440 ms for men, 450 ms for women, age ≥ 70: 455 ms for men, 460 ms for women.",
                           publicationDate: "2014"),
-         // TODO: Add tests for .qtcRthb
          .qtcRthb:
             QTcCalculator(formula: .qtcRthb,
-                          longName: "Rautaharju QTcLogLin",
+                          longName: "Rautaharju-b",
                           shortName: "QTcRTHb",
                           // TODO: extract common strings like references
                           reference: "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. International Journal of Cardiology. 2014;174(3):535-540. doi:10.1016/j.ijcard.2014.04.133",
@@ -176,7 +175,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
             QTcCalculator(formula: .qtcArr,
                           longName: "Arrowood",
                           shortName: "QTcARR",
-                          reference: "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohrnty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223.",
+                          reference: "Arrowood JA, Kline J, Simpson PM, Quigg RJ, Pippin JJ, Nixon JV, Mohanty PK.  Modulation of the QT interval: effects of graded exercise and reflex cardiovascular stimulation.  J Appl Physiol. 1993;75:2217-2223.",
                           equation: "QT + 0.304 - 0.492*e^(-0.008*HR)",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtInSec + 0.304 - 0.492 * exp(-0.008 * QTc.secToBpm(rrInSec))},
                           classification: .other,
@@ -288,7 +287,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           longName: QTc.qtcCalculator(formula: .qtcHdg).longName,
                           shortName: "QTpHDG",
                           reference: QTc.qtcCalculator(formula: .qtcHdg).reference,
-                          equation: "QT = 496 - (1.75 * HR)",
+                          equation: "QT = 496 - (1.75 * HR) result in msec",
                           baseEquation: {rrInSec,sex,age in 0.496 - (0.00175 * QTc.secToBpm(rrInSec))},
                           classification: QTc.qtcCalculator(formula: .qtcHdg).classification,
                           publicationDate: QTc.qtcCalculator(formula: .qtcHdg).publicationDate,
@@ -298,11 +297,11 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                          longName: QTc.qtcCalculator(formula: .qtcFrd).longName,
                          shortName: "QTpFRD",
                          reference: QTc.qtcCalculator(formula: .qtcFrd).reference,
-                         equation: "QT = 0.763077204245941 * RR^(1/3)",
+                         equation: "QT = 0.3815 * RR^(1/3)",
                          baseEquation: {rrInSec, sex, age in (8.22 / 100) * pow(100 * rrInSec, 1/3)},
-                         classification: .power,
-                         notes: "test",
-                         publicationDate: "1920",
+                         classification: QTc.qtcCalculator(formula: .qtcFrd).classification,
+                         notes: QTc.qtcCalculator(formula: .qtcFrd).notes,
+                         publicationDate: QTc.qtcCalculator(formula: .qtcFrd).publicationDate,
                          numberOfSubjects: QTc.qtcCalculator(formula: .qtcFrd).numberOfSubjects)
     ]
 }

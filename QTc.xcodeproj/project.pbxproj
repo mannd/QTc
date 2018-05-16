@@ -11,6 +11,8 @@
 		8E61A2361F984F8700625288 /* QTc_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE367221F5B58420003E5DA /* QTc_iOSTests.swift */; };
 		8E65B4A9206C000800B32186 /* QTc.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 8E65B4A8206C000800B32186 /* QTc.podspec */; };
 		8E65B4AA206C000800B32186 /* QTc.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 8E65B4A8206C000800B32186 /* QTc.podspec */; };
+		8E7E241F2081842A00A1BE89 /* AbnormalQTc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7E241E2081842A00A1BE89 /* AbnormalQTc.swift */; };
+		8E7E24202081842A00A1BE89 /* AbnormalQTc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7E241E2081842A00A1BE89 /* AbnormalQTc.swift */; };
 		8EE366F11F5B566A0003E5DA /* QTc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EE366E71F5B566A0003E5DA /* QTc.framework */; };
 		8EE367231F5B58C50003E5DA /* QTc.h in Headers */ = {isa = PBXBuildFile; fileRef = 8EE3671F1F5B57B20003E5DA /* QTc.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8EE367241F5B58C60003E5DA /* QTc.h in Headers */ = {isa = PBXBuildFile; fileRef = 8EE3671F1F5B57B20003E5DA /* QTc.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -33,6 +35,7 @@
 
 /* Begin PBXFileReference section */
 		8E65B4A8206C000800B32186 /* QTc.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = QTc.podspec; sourceTree = "<group>"; };
+		8E7E241E2081842A00A1BE89 /* AbnormalQTc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbnormalQTc.swift; sourceTree = "<group>"; };
 		8EE366E71F5B566A0003E5DA /* QTc.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = QTc.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8EE366F01F5B566A0003E5DA /* QTc_iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QTc_iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8EE367061F5B56AA0003E5DA /* QTc.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = QTc.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,6 +102,7 @@
 				8EE3671F1F5B57B20003E5DA /* QTc.h */,
 				8EE367271F5B5B330003E5DA /* QTc.swift */,
 				8EFC82C6207C5CD8000C92CE /* QtMeasurement.swift */,
+				8E7E241E2081842A00A1BE89 /* AbnormalQTc.swift */,
 			);
 			path = CommonSource;
 			sourceTree = "<group>";
@@ -268,6 +272,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E7E241F2081842A00A1BE89 /* AbnormalQTc.swift in Sources */,
 				8EE50CB41F70C850001F6530 /* Formulas.swift in Sources */,
 				8EE367281F5B5B330003E5DA /* QTc.swift in Sources */,
 				8EFC82C7207C5CD8000C92CE /* QtMeasurement.swift in Sources */,
@@ -286,6 +291,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E7E24202081842A00A1BE89 /* AbnormalQTc.swift in Sources */,
 				8E61A2321F984E5F00625288 /* Formulas.swift in Sources */,
 				8EE367291F5B5B330003E5DA /* QTc.swift in Sources */,
 				8EFC82C8207C5CE0000C92CE /* QtMeasurement.swift in Sources */,

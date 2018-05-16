@@ -3,13 +3,14 @@
 //  QTc
 //
 //  Created by David Mann on 9/2/17.
-//  Copyright © 2017 EP Studios. All rights reserved.
+//  Copyright © 2017, 2018 EP Studios. All rights reserved.
 //
 
 // TODO: Change target version back down to 10.10 for QTc and EP Calipers for Mac
 import Foundation
 
 // Nomenclature from Rabkin and Cheng, 2015: https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B17
+/// enum listing QTc and QTp formulas
 public enum Formula {
     // QTc formulas
     case qtcBzt  // Bazett
@@ -35,7 +36,7 @@ public enum Formula {
     case qtpAsh  // Ashman
     case qtpHdg  // Hodges
     
-    func formulaType() -> FormulaType {
+    public func formulaType() -> FormulaType {
         let qtcFormulas: Set<Formula> = [.qtcBzt, .qtcFrd, .qtcFrm, .qtcHdg, .qtcRtha, .qtcRthb, .qtcMyd,
                                          .qtcArr, .qtcKwt, .qtcDmt, .qtcYos, .qtcBdl, .qtcAdm]
         let qtpFormulas: Set<Formula> = [.qtpBzt, .qtpFrd, .qtpArr, .qtpBdl, .qtpAsh, .qtpHdg]
@@ -49,6 +50,7 @@ public enum Formula {
     }
 }
 
+/// enum indicating if a Formula is a QTc or QTp
 public enum FormulaType {
     case qtc
     case qtp
@@ -58,6 +60,8 @@ public enum FormulaType {
 // TODO: localize strings, and ensure localization works when used as a Pod
 // See https://medium.com/@shenghuawu/localization-cocoapods-5d1e9f34f6e6 and
 // http://yannickloriot.com/2014/02/cocoapods-and-the-localized-string-files/
+
+/// Mathematical classification of formula
 public enum FormulaClassification {
     case linear
     case rational
@@ -73,7 +77,7 @@ public enum Sex {
     case unspecified
 }
 
-// These error codes can be thrown by certain formulas when parameters don't apply
+/// These error codes can be thrown by certain formulas when parameters don't apply
 public enum CalculationError: Error {
     case heartRateOutOfRange
     case ageOutOfRange
@@ -87,17 +91,21 @@ public enum CalculationError: Error {
 }
 
 public typealias Age = Int?
-// These are just to clarify return types of certain functions.
-// They only used when the units aren't clear in the function prototypes.
+
+/// These are just to clarify return types of certain functions.
+/// They are only used when the units aren't clear in the function prototypes.
 public typealias Msec = Double
 public typealias Sec = Double
 
 typealias QTcEquation = (_ qt: Double, _ rr: Double, _ sex: Sex, _ age: Age) throws -> Double
 typealias QTpEquation = (_ rr: Double, Sex, Age) throws -> Double
 
-// This would be an abstract class if Swift had them.
-public class BaseCalculator {
-    public var formula: Formula?
+/// For backward compatibility
+public typealias BaseCalculator = Calculator
+
+/// This class is meant to be overriden.  Do not instantiate a Calculator, just its subclasses.
+public class Calculator {
+    public var formula: Formula
     public let longName: String
     public let shortName: String
     public let reference: String
@@ -119,7 +127,8 @@ public class BaseCalculator {
          classification: FormulaClassification, notes: String,
          publicationDate: String?, numberOfSubjects: Int?) {
         
-        self.formula = nil
+        self.formula = .qtcBzt  // arbitrary initiation, always overriden,
+                                // but can avoid formula as optional
         self.longName = longName
         self.shortName = shortName
         self.reference = reference
@@ -136,13 +145,15 @@ public class BaseCalculator {
         self.numberOfSubjects = numberOfSubjects
     }
     
-    // base class func, meant to be overriden
-    public func calculate(qtMeasurement: QtMeasurement) throws -> Double? {
-        return nil
+    /// base class func, meant to be overriden
+    public func calculate(qtMeasurement: QtMeasurement) throws -> Double {
+        assertionFailure("Base class Calculator.calculate() must be overriden.")
+        return 0
     }
 }
 
-public class QTcCalculator: BaseCalculator {
+/// class containing all aspects of a QTc calculator
+public class QTcCalculator: Calculator {
     let baseEquation: QTcEquation
     
     init(formula: Formula, longName: String, shortName: String,
@@ -175,16 +186,16 @@ public class QTcCalculator: BaseCalculator {
         return try QTc.qtcConvert(baseEquation, qtInMsec: qtInMsec, rate: rate, sex: sex, age: age)
     }
     
-    override public func calculate(qtMeasurement: QtMeasurement) throws -> Double? {
+    override public func calculate(qtMeasurement: QtMeasurement) throws -> Double {
         return try calculate(qt: qtMeasurement.qt, intervalRate: qtMeasurement.intervalRate,
                              intervalRateType: qtMeasurement.intervalRateType, sex: qtMeasurement.sex,
                              age: qtMeasurement.age, units: qtMeasurement.units)
     }
     
     public func calculate(qt: Double?, intervalRate: Double, intervalRateType: IntervalRateType,
-                   sex: Sex, age: Age, units: Units) throws -> Double? {
+                   sex: Sex, age: Age, units: Units) throws -> Double {
         guard let qt = qt else { throw CalculationError.qtMissing }
-        var result: Double?
+        var result: Double
         switch units {
         case .msec:
             if intervalRateType == .interval {
@@ -206,7 +217,8 @@ public class QTcCalculator: BaseCalculator {
     
 }
 
-public class QTpCalculator: BaseCalculator {
+/// class containing all aspects of a QTp calculator
+public class QTpCalculator: Calculator {
     let baseEquation: QTpEquation
     
     init(formula: Formula, longName: String, shortName: String,
@@ -233,15 +245,15 @@ public class QTpCalculator: BaseCalculator {
         return try QTc.qtpConvert(baseEquation, rate: rate, sex: sex, age: age)
     }
     
-    override public func calculate(qtMeasurement: QtMeasurement) throws -> Double? {
+    override public func calculate(qtMeasurement: QtMeasurement) throws -> Double {
         return try calculate(intervalRate: qtMeasurement.intervalRate,
                              intervalRateType: qtMeasurement.intervalRateType, sex: qtMeasurement.sex,
                              age: qtMeasurement.age, units: qtMeasurement.units)
     }
     
     func calculate(intervalRate: Double, intervalRateType: IntervalRateType,
-                   sex: Sex, age: Age, units: Units) throws -> Double? {
-        var result: Double?
+                   sex: Sex, age: Age, units: Units) throws -> Double {
+        var result: Double
         switch units {
         case .msec:
             if intervalRateType == .interval {
@@ -249,6 +261,8 @@ public class QTpCalculator: BaseCalculator {
             }
             else {
                 result = try calculate(rate: intervalRate, sex: sex, age: age)
+                // be true to the units passed, and return result in msec
+                result = QTc.secToMsec(result)
             }
         case .sec:
             if intervalRateType == .interval {
@@ -271,13 +285,13 @@ protocol QTpFormulaSource {
     static func qtpCalculator(formula: Formula) -> QTpCalculator
 }
 
-/// TODO: is @objc tag needed if inheritance from NSObject?
-// The QTc class is not instantiated, rather it provides static functions:
-//     conversion functions such as secToMsec(sec:) and factory
-//     methods to generate QTc and QTp calculator classes
-public class QTc: NSObject {
-//    public static let unspecified = -1   // for unspecified age
-  
+/// The QTc class provides static functions:
+///  conversion functions such as secToMsec(sec:) and factory
+///  methods to generate QTc and QTp calculator classes
+public class QTc {
+    // QTc class is not to be instantiated.
+    private init() {}
+    
     // Static conversion functions
     public static func secToMsec(_ sec: Double) -> Double {
         return sec * 1000
@@ -313,25 +327,25 @@ public class QTc: NSObject {
         return T.qtpCalculator(formula: formula)
     }
     
-    // The factories: these are called like:
-    //
-    //     let qtcBztCalculator = QTc.qtcCalculator(formula: .qtcBzt)
-    //     let qtc = qtcBztCalculator.calculate(qtInSec: qt, rrInSec: rr)
-    //     (etc.)
-    //
+    /// Specific factories: these are called like:
+    ///
+    ///     let qtcBztCalculator = QTc.qtcCalculator(formula: .qtcBzt)
+    ///     let qtc = qtcBztCalculator.calculate(qtInSec: qt, rrInSec: rr)
+    ///     (etc.)
     
-    // QTc Factory
+    /// QTc Factory.  Returns a QTcCalculator.
     public static func qtcCalculator(formula: Formula) -> QTcCalculator {
         return qtcCalculator(formulaSource: Formulas.self, formula: formula)
     }
     
-    // QTp factory
+    /// QTp factory.  Returns a QTpCalculator.
     public static func qtpCalculator(formula: Formula) -> QTpCalculator {
         return qtpCalculator(formulaSource: Formulas.self, formula: formula)
     }
     
-    // Generic Calculator factories
-    public static func calculator(formula: Formula, formulaType: FormulaType) -> BaseCalculator {
+    
+    /// Generic Calculator factory
+    public static func calculator(formula: Formula, formulaType: FormulaType) -> Calculator {
         switch formulaType {
         case .qtc:
             return qtcCalculator(formula: formula)
@@ -340,7 +354,12 @@ public class QTc: NSObject {
         }
     }
     
-    public static func calculator(formula: Formula) -> BaseCalculator {
+    /// Generic calculator factory, called like this:
+    ///
+    ///      let calculator = QTc.calculator(formula: .qtcBzt)
+    ///      let measruement = QtMeasurement(.....)  // init a QtMeasurement struct
+    ///      let result = calculator.calculate(measurement: measurement)
+    public static func calculator(formula: Formula) -> Calculator {
         return calculator(formula: formula, formulaType: formula.formulaType())
     }
     
