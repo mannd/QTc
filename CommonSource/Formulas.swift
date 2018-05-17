@@ -110,11 +110,13 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
             QTcCalculator(formula: .qtcMyd,
                           longName: "Mayeda",
                           shortName: "QTcMYD",
-                          reference: "Mayeda I. On time relation between systolic duration of heart and pulse rate. Acta Sch Med Univ Imp. 1934;17:53-55.",
+                          reference: "Mayeda I. On time relation between systolic duration of heart and pulse rate. Acta Scholae Med Univ Imp Kioto. 1934;17:53-55.",
                           equation: "QT/RR^0.604",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.604)},
                           classification: .power,
-                          publicationDate: "1934"),
+                          notes: "200 normal subjects and patients without heart disease (135 M, 65 F; age 18-64; HR 54.5-115.8).",
+                          publicationDate: "1934",
+                          numberOfSubjects: 200),
          .qtcFrm:
             QTcCalculator(formula: .qtcFrm,
                           longName: "Framingham",
@@ -297,11 +299,22 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                          longName: QTc.qtcCalculator(formula: .qtcFrd).longName,
                          shortName: "QTpFRD",
                          reference: QTc.qtcCalculator(formula: .qtcFrd).reference,
-                         equation: "QT = 0.3815 * RR^(1/3)",
-                         baseEquation: {rrInSec, sex, age in (8.22 / 100) * pow(100 * rrInSec, 1/3)},
+                         equation: "QT = 0.3815 * RR^(1/3), units in 0.01 sec",
+                         baseEquation: {rrInSec, sex, age in 0.0822 * pow(100.0 * rrInSec, 1/3)},
                          classification: QTc.qtcCalculator(formula: .qtcFrd).classification,
                          notes: QTc.qtcCalculator(formula: .qtcFrd).notes,
                          publicationDate: QTc.qtcCalculator(formula: .qtcFrd).publicationDate,
-                         numberOfSubjects: QTc.qtcCalculator(formula: .qtcFrd).numberOfSubjects)
+                         numberOfSubjects: QTc.qtcCalculator(formula: .qtcFrd).numberOfSubjects),
+         .qtpMyd:
+            QTpCalculator(formula: .qtpMyd,
+                          longName: QTc.qtcCalculator(formula: .qtcMyd).longName,
+                          shortName: "QTpMYD",
+                          reference: QTc.qtcCalculator(formula: .qtcMyd).reference,
+                          equation: "QTp = 0.02574 * (100 * RR)^0.604",
+                          baseEquation: {rrInSec, sex, age in 0.02574 * pow(100.0 * rrInSec, 0.604)},
+                          classification: QTc.qtcCalculator(formula: .qtcMyd).classification,
+                          notes: "200 normal subjects and patients without heart disease (135 M, 65 F; age 18-64; HR 54.5-115.8).",
+                          publicationDate: QTc.qtcCalculator(formula: .qtcMyd).publicationDate,
+                          numberOfSubjects: 200)
     ]
 }

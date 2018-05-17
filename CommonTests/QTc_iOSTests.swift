@@ -88,6 +88,8 @@ class QTc_iOSTests: XCTestCase {
     let qtpHdgResults = [0.395038461538462, 0.435689833429064, 0.365240348692403, 0.354870967741935, 0.268727272727273, 0.435689833429064, 0.367007371007371, 0.425624664879357, 0.409722267871816, 0.416212765957447, 0.39805223880597, 0.435271255060729, 0.431622317596566, 0.37613698630137, 0.353723577235772, 0.416754716981132, 0.397500938086304, 0.311789473684211, 0.321870646766169, 0.3681071863581]
     let qtcRthbMaleResults = [0.581343039402066, 0.539876501292278, 0.804174636591087, 0.480109064822965, 0.706177170185111, 0.475876501292278, 0.35037381620353, 0.59024899978608, 0.581832195881668, 0.729613630344318, 0.511915407946455, 0.195090829692423, 0.178212616137001, 0.560500006698053, 0.441146783627781, 0.663531970103914, 0.291739182875841, 0.46167084747726, 0.55205665809079, 0.526235809548196]
     let qtcRthbFemaleResults = [0.580695812286438, 0.52926765756804, 0.807541128337159, 0.484551008433048, 0.716354877945081, 0.465267657568039, 0.353543571822623, 0.582928175464681, 0.57844314285625, 0.724767662325179, 0.510758174544893, 0.184635377981728, 0.169028318291773, 0.562581497625133, 0.44570009096784, 0.658556002180993, 0.29067706412139, 0.469515787318061, 0.559226003573487, 0.529280960371902]
+    let qtpMydResults = [0.425497173513281, 0.580832622192216, 0.363962577477372, 0.347567048264256, 0.260646739027945, 0.580832622192216, 0.366965877563262, 0.529133078075342, 0.467868764175226, 0.490500099361997, 0.433357376010936, 0.578411232930745, 0.558381132281235, 0.383602141228905, 0.345871346870654, 0.49252347281055, 0.43189074158302, 0.29590816947795, 0.30614008546182, 0.368868703669459]
+
 
     // mocks for testing formula sources
     class TestQtcFormulas: QTcFormulaSource {
@@ -217,7 +219,7 @@ class QTc_iOSTests: XCTestCase {
         // handle negative RR
         XCTAssert(try! qtcBzt.calculate(qtInMsec: 300, rrInMsec: -100).isNaN)
         
-        // QTcRHTa
+        // QTcRTHa
         let qtcRtha = QTc.qtcCalculator(formula: .qtcRtha)
         XCTAssertEqual(try! qtcRtha.calculate(qtInSec: 0.444, rate: 58.123), 0.43937, accuracy: delta)
         
@@ -530,8 +532,17 @@ class QTc_iOSTests: XCTestCase {
             XCTAssertEqual(try calculator.calculate(rrInSec: interval), qtpHdgResults[i], accuracy: delta)
             i += 1
         }
-        let qtcCalculator = QTc.qtcCalculator(formula: .qtcRthb)
+        calculator = QTc.qtpCalculator(formula: .qtpMyd)
         i = 0
+        for interval in rrIntervals {
+            XCTAssertEqual(try calculator.calculate(rrInSec: interval), qtpMydResults[i], accuracy: delta)
+            i += 1
+        }
+    }
+    
+    func testQTc() {
+        let qtcCalculator = QTc.qtcCalculator(formula: .qtcRthb)
+        var i = 0
         for interval in rrIntervals {
             XCTAssertEqual(try qtcCalculator.calculate(qtInSec: qtIntervals[i], rrInSec: interval, sex: .male, age: nil), qtcRthbMaleResults[i], accuracy: delta)
             
