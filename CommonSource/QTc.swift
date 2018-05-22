@@ -36,11 +36,13 @@ public enum Formula {
     case qtpAsh  // Ashman
     case qtpHdg  // Hodges
     case qtpMyd  // Mayeda
+    case qtpKrj  // Karjalainen
+    case qtpSch  // Schlamowitz
     
     public func formulaType() -> FormulaType {
         let qtcFormulas: Set<Formula> = [.qtcBzt, .qtcFrd, .qtcFrm, .qtcHdg, .qtcRtha, .qtcRthb, .qtcMyd,
                                          .qtcArr, .qtcKwt, .qtcDmt, .qtcYos, .qtcBdl, .qtcAdm]
-        let qtpFormulas: Set<Formula> = [.qtpBzt, .qtpFrd, .qtpArr, .qtpBdl, .qtpAsh, .qtpHdg, .qtpMyd]
+        let qtpFormulas: Set<Formula> = [.qtpBzt, .qtpFrd, .qtpArr, .qtpBdl, .qtpAsh, .qtpHdg, .qtpMyd, .qtpKrj, .qtpSch]
         if qtcFormulas.contains(self) {
             return .qtc
         } else if qtpFormulas.contains(self) {

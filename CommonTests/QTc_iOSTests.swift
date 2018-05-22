@@ -89,7 +89,11 @@ class QTc_iOSTests: XCTestCase {
     let qtcRthbMaleResults = [0.581343039402066, 0.539876501292278, 0.804174636591087, 0.480109064822965, 0.706177170185111, 0.475876501292278, 0.35037381620353, 0.59024899978608, 0.581832195881668, 0.729613630344318, 0.511915407946455, 0.195090829692423, 0.178212616137001, 0.560500006698053, 0.441146783627781, 0.663531970103914, 0.291739182875841, 0.46167084747726, 0.55205665809079, 0.526235809548196]
     let qtcRthbFemaleResults = [0.580695812286438, 0.52926765756804, 0.807541128337159, 0.484551008433048, 0.716354877945081, 0.465267657568039, 0.353543571822623, 0.582928175464681, 0.57844314285625, 0.724767662325179, 0.510758174544893, 0.184635377981728, 0.169028318291773, 0.562581497625133, 0.44570009096784, 0.658556002180993, 0.29067706412139, 0.469515787318061, 0.559226003573487, 0.529280960371902]
     let qtpMydResults = [0.425497173513281, 0.580832622192216, 0.363962577477372, 0.347567048264256, 0.260646739027945, 0.580832622192216, 0.366965877563262, 0.529133078075342, 0.467868764175226, 0.490500099361997, 0.433357376010936, 0.578411232930745, 0.558381132281235, 0.383602141228905, 0.345871346870654, 0.49252347281055, 0.43189074158302, 0.29590816947795, 0.30614008546182, 0.368868703669459]
-
+    // QTpKRJ is rate dependent
+    let qtpKrjSlowResults = [0.39764, 0.478956, 0.370148, 0.363304, 0.330592, 0.478956, 0.371424, 0.450072, 0.418172, 0.429656, 0.401352, 0.477564, 0.466196, 0.378616, 0.362608, 0.4307, 0.400656, 0.34312, 0.346948, 0.372236]
+    let qtpKrjFastResults = [0.49836, 0.767544, 0.407352, 0.384696, 0.276408, 0.767544, 0.411576, 0.671928, 0.566328, 0.604344, 0.510648, 0.762936, 0.725304, 0.435384, 0.382392, 0.6078, 0.508344, 0.31788, 0.330552, 0.414264]
+    let qtpKrjMediumResults = [0.39824, 0.507596, 0.361268, 0.352064, 0.308072, 0.507596, 0.362984, 0.468752, 0.425852, 0.441296, 0.403232, 0.505724, 0.490436, 0.372656, 0.351128, 0.4427, 0.402296, 0.32492, 0.330068, 0.364076]
+    let qtpSchResults =  [0.3802, 0.523905, 0.331615, 0.31952, 0.26171, 0.523905, 0.33387, 0.47286, 0.416485, 0.43678, 0.38676, 0.521445, 0.501355, 0.34658, 0.31829, 0.438625, 0.38553, 0.28385, 0.290615, 0.335305]
 
     // mocks for testing formula sources
     class TestQtcFormulas: QTcFormulaSource {
@@ -538,6 +542,27 @@ class QTc_iOSTests: XCTestCase {
             XCTAssertEqual(try calculator.calculate(rrInSec: interval), qtpMydResults[i], accuracy: delta)
             i += 1
         }
+        calculator = QTc.qtpCalculator(formula: .qtpKrj)
+        i = 0
+        for interval in rrIntervals {
+            if interval > 1.0 {
+                XCTAssertEqual(qtpKrjSlowResults[i], try calculator.calculate(rrInSec: interval), accuracy: delta)
+            }
+            else if interval <= 0.6 {
+                XCTAssertEqual(qtpKrjFastResults[i], try calculator.calculate(rrInSec: interval), accuracy: delta)
+            }
+            else {
+                XCTAssertEqual(qtpKrjMediumResults[i], try calculator.calculate(rrInSec: interval), accuracy: delta)
+            }
+            i += 1
+        }
+        calculator = QTc.qtpCalculator(formula: .qtpSch)
+        i = 0
+        for interval in rrIntervals {
+            XCTAssertEqual(try calculator.calculate(rrInSec: interval), qtpSchResults[i], accuracy: delta)
+            i += 1
+        }
+
     }
     
     func testQTc() {
