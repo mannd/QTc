@@ -94,6 +94,9 @@ class QTc_iOSTests: XCTestCase {
     let qtpKrjFastResults = [0.49836, 0.767544, 0.407352, 0.384696, 0.276408, 0.767544, 0.411576, 0.671928, 0.566328, 0.604344, 0.510648, 0.762936, 0.725304, 0.435384, 0.382392, 0.6078, 0.508344, 0.31788, 0.330552, 0.414264]
     let qtpKrjMediumResults = [0.39824, 0.507596, 0.361268, 0.352064, 0.308072, 0.507596, 0.362984, 0.468752, 0.425852, 0.441296, 0.403232, 0.505724, 0.490436, 0.372656, 0.351128, 0.4427, 0.402296, 0.32492, 0.330068, 0.364076]
     let qtpSchResults =  [0.3802, 0.523905, 0.331615, 0.31952, 0.26171, 0.523905, 0.33387, 0.47286, 0.416485, 0.43678, 0.38676, 0.521445, 0.501355, 0.34658, 0.31829, 0.438625, 0.38553, 0.28385, 0.290615, 0.335305]
+    let qtpAdmMenResults = [0.405944, 0.5136176, 0.3695408, 0.3604784, 0.3171632, 0.5136176, 0.3712304, 0.4753712, 0.4331312, 0.4483376, 0.4108592, 0.5117744, 0.4967216, 0.3807536, 0.3595568, 0.44972, 0.4099376, 0.333752, 0.3388208, 0.3723056]
+    let qtpAdmWomenResults = [0.409836, 0.4980919, 0.3799977, 0.3725696, 0.3370658, 0.4980919, 0.3813826, 0.4667428, 0.4321203, 0.4445844, 0.4138648, 0.4965811, 0.4842429, 0.3891884, 0.3718142, 0.4457175, 0.4131094, 0.350663, 0.3548177, 0.3822639]
+    let qtpAdmCombinedResults = [0.409456, 0.5120824, 0.3747592, 0.3661216, 0.3248368, 0.5120824, 0.3763696, 0.4756288, 0.4353688, 0.4498624, 0.4141408, 0.5103256, 0.4959784, 0.3854464, 0.3652432, 0.45118, 0.4132624, 0.340648, 0.3454792, 0.3773944]
 
     // mocks for testing formula sources
     class TestQtcFormulas: QTcFormulaSource {
@@ -560,6 +563,14 @@ class QTc_iOSTests: XCTestCase {
         i = 0
         for interval in rrIntervals {
             XCTAssertEqual(try calculator.calculate(rrInSec: interval), qtpSchResults[i], accuracy: delta)
+            i += 1
+        }
+        calculator = QTc.qtpCalculator(formula: .qtpAdm)
+        i = 0
+        for interval in rrIntervals {
+            XCTAssertEqual(try calculator.calculate(rrInSec: interval, sex: .male), qtpAdmMenResults[i], accuracy: delta)
+            XCTAssertEqual(try calculator.calculate(rrInSec: interval, sex: .female), qtpAdmWomenResults[i], accuracy: delta)
+            XCTAssertEqual(try calculator.calculate(rrInSec: interval, sex: .unspecified), qtpAdmCombinedResults[i], accuracy: delta)
             i += 1
         }
 

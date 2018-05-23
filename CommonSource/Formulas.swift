@@ -38,10 +38,14 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
     private static func qtcLinear(qtInSec: Double, rrInSec: Double, alpha: Double) -> Sec {
         return qtInSec + alpha * (1 - rrInSec)
     }
+
+    private static func qtpLinear(rrInSec: Double, alpha: Double, k: Double) -> Sec {
+        return k + alpha * rrInSec
+    }
     
     // Some complex formulae easier to present here than as closure
     private static func qtcAdm(qtInSec: Double, rrInSec: Double, sex: Sex, age: Age) -> Sec {
-        var alpha: Double
+        let alpha: Double
         switch sex {
         case .unspecified:
             alpha = 0.1464
@@ -53,6 +57,23 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
         return qtcLinear(qtInSec: qtInSec, rrInSec: rrInSec, alpha: alpha)
     }
     
+    private static func qtpAdm(rrInSec: Double, sex: Sex, age: Age) -> Sec {
+        let alpha: Double
+        let k: Double
+        switch sex {
+        case .unspecified:
+            alpha = 0.1464
+            k = 0.2572
+        case .male:
+            alpha = 0.1536
+            k = 0.2462
+        case .female:
+            alpha = 0.1259
+            k = 0.2789
+        }
+        return qtpLinear(rrInSec: rrInSec, alpha: alpha, k: k)
+    }
+
     private static func qtpAsh(rrInSec: Double, sex: Sex, age: Age) throws -> Sec {
         // TODO: This formula has gaps in the paper's abstract, need full text of reference!
         // These gaps are "papered over" here.
@@ -144,7 +165,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           longName: "Rautaharju-a",
                           shortName: "QTcRTHa",
                           reference: "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. International Journal of Cardiology. 2014;174(3):535-540. doi:10.1016/j.ijcard.2014.04.133",
-                          equation: "QT * (120 + HR) /180",
+                          equation: "QT * (120 + HR) / 180",
                           baseEquation: {qtInSec, rrInSec, sex, age in qtInSec * (120.0 + QTc.secToBpm(rrInSec)) / 180.0},
                           classification: .rational,
                           notes: "Healthy subjects: 57,595, aged 5-89 years, 54% women.\nAbnormal QTc: age < 40: 430 ms for men, 440 ms for women; age 40-69: 440 ms for men, 450 ms for women, age ≥ 70: 455 ms for men, 460 ms for women.",
@@ -219,7 +240,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
             QTcCalculator(formula: .qtcAdm,
                           longName: "Adams",
                           shortName: "QTcADM",
-                          reference: "Adams W. The normal duration of the electrocardiographic ventricular complex. J Clin Invest. 1936;15:335-342.",
+                          reference: "Adams W. The normal duration of the electrocardiographic ventricular complex. J Clin Invest. 1936;15(4):335-342.  doi:10.1172%2FJCI100784",
                           equation: "QT + 0.1464(1-RR) (all subjects)\nQT + 0.1536(1-RR) (males)\nQT + 0.1259(1-RR) (females)",
                           baseEquation: qtcAdm,
                           classification: .linear,
@@ -350,6 +371,17 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           classification: .linear,
                           notes: "650 healthy male soldiers, age 18-44.  No women.",
                           publicationDate: "1946",
-                          numberOfSubjects: 650)
+                          numberOfSubjects: 650),
+         .qtpAdm:
+           QTpCalculator(formula: .qtpAdm,
+                         longName: QTc.calculator(formula: .qtcAdm).longName,
+                         shortName: "QTpADM",
+                         reference: QTc.calculator(formula: .qtcAdm).reference,
+                         equation: "0.2462 + 0.1536*RR for men\n0.2789 + 0.1259*RR for women\n0.2572 + 0.1464*RR for combined sexes",
+                         baseEquation: qtpAdm,
+                         classification: .linear,
+                         notes: "104 healthy subjects, 50 men, 54 women, mean age 28.",
+                         publicationDate: QTc.calculator(formula: .qtcAdm).publicationDate,
+                         numberOfSubjects: QTc.calculator(formula: .qtcAdm).numberOfSubjects)
     ]
 }
