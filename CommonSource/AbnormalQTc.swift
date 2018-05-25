@@ -248,7 +248,11 @@ public struct AbnormalQTc {
                     QTcTest(value: 480, units: .msec, valueComparison: .greaterThan, severity: .moderate),
                     QTcTest(value: 500, units: .msec, valueComparison: .greaterThan, severity: .severe)],
                 reference: "Guidance for Industry E14 Clinical Evaluation of QT/QTc Interval Prolongation and Proarrhythmic Potential for Non-Antiarrhythmic Drugs. :20.",
-                description: "QTc > 450 msec mild prolongation\nQTc > 480 msec moderate prolongation\nQTc > 500 msec severe prolongation",
+                description: """
+                                QTc > 450 msec mild prolongation
+                                QTc > 480 msec moderate prolongation
+                                QTc > 500 msec severe prolongation
+                                """,
                 notes: "Used in FDA trials."),
          .aha2009:
             QTcTestSuite(
@@ -258,7 +262,11 @@ public struct AbnormalQTc {
                     QTcTest(value: 460, units: .msec, valueComparison: .greaterThanOrEqual, sex: .female),
                     QTcTest(value: 390, units: .msec, valueComparison: .lessThanOrEqual)],
                 reference: "AHA/ACCF/HRS Recommendations for the Standardization and Interpretation of the Electrocardiogram: Part IV: The ST Segment, T and U Waves, and the QT Interval A Scientific Statement From the American Heart Association Electrocardiography and Arrhythmias Committee, Council on Clinical Cardiology; the American College of Cardiology Foundation; and the Heart Rhythm Society Endorsed by the International Society for Computerized Electrocardiology. Journal of the American College of Cardiology. 2009;53(11):982-991. doi:10.1016/j.jacc.2008.12.014",
-                description: "QTc ≥ 450 msec men\nQTc ≥ 460 msec women\nQTc ≤ 390 msec men and women",
+                description: """
+                                QTc ≥ 450 msec men
+                                QTc ≥ 460 msec women
+                                QTc ≤ 390 msec men and women
+                                """,
                 notes: "Includes both long and short QTc criteria.",
                 requiresSex: true),
          .esc2005:
@@ -271,7 +279,11 @@ public struct AbnormalQTc {
                     QTcTest(value: 460, units: .msec, valueComparison: .greaterThan),
                     QTcTest(value: 300, units: .msec, valueComparison: .lessThan)],
                 reference: "Corrado D, Pelliccia A, Bjørnstad HH, et al. Cardiovascular pre-participation screening of young competitive athletes for prevention of sudden death: proposal for a common European protocolConsensus Statement of the Study Group of Sport Cardiology of the Working Group of Cardiac Rehabilitation and Exercise Physiology and the Working Group of Myocardial and Pericardial Diseases of the European Society of Cardiology. Eur Heart J. 2005;26(5):516-524. doi:10.1093/eurheartj/ehi108",
-                description: "QTc > 440 msec men\nQTc > 460 msec women\nQTc < 300 msec men and women",
+                description: """
+                                QTc > 440 msec men
+                                QTc > 460 msec women
+                                QTc < 300 msec men and women
+                                """,
                 notes: "Includes both long and short QTc criteria.",
                 requiresSex: true),
          .goldenberg2006:
@@ -298,7 +310,11 @@ public struct AbnormalQTc {
                     QTcTest(value: 480, units: .msec, valueComparison: .greaterThanOrEqual, severity: .severe)
                 ],
                 reference: "Schwartz PJ, Moss AJ, Vincent GM, Crampton RS. Diagnostic criteria for the long QT syndrome. An update. Circulation. 1993;88(2):782-784. doi:10.1161/01.CIR.88.2.782",
-                description: "QTc ≥ 450 msec (in males) mild (1 point)\nQTc ≥ 460 msec moderate (2 points)\nQTc ≥ 480 msec severe (3 points)",
+                description: """
+                                QTc ≥ 450 msec (in males) mild (1 point)
+                                QTc ≥ 460 msec moderate (2 points)
+                                QTc ≥ 480 msec severe (3 points)
+                                """,
                 notes: "Revision of original Schwartz 1985 criteria.  Used in point system of 1993 LQTS Diagnostic criteria.",
                 requiresSex: true,
                 requiresAge: false),
@@ -321,7 +337,10 @@ public struct AbnormalQTc {
                     QTcTest(value: 340, units: .msec, valueComparison: .lessThanOrEqual, severity: .abnormal)
                 ],
                 reference: "Mazzanti A, Kanthan A, Monteforte N, et al. Novel Insight Into the Natural History of Short QT Syndrome. Journal of the American College of Cardiology. 2014;63(13):1300-1308. doi:10.1016/j.jacc.2013.09.078",
-                description: "QTc ≤ 360 msec borderline\nQTc ≤ 340 msec abnormal",
+                description: """
+                                QTc ≤ 360 msec borderline
+                                QTc ≤ 340 msec abnormal
+                                """,
                 notes: "Based on 63 cases of suspected SQTS.")
     ]
     

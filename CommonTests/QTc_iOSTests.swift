@@ -97,6 +97,13 @@ class QTc_iOSTests: XCTestCase {
     let qtpAdmMenResults = [0.405944, 0.5136176, 0.3695408, 0.3604784, 0.3171632, 0.5136176, 0.3712304, 0.4753712, 0.4331312, 0.4483376, 0.4108592, 0.5117744, 0.4967216, 0.3807536, 0.3595568, 0.44972, 0.4099376, 0.333752, 0.3388208, 0.3723056]
     let qtpAdmWomenResults = [0.409836, 0.4980919, 0.3799977, 0.3725696, 0.3370658, 0.4980919, 0.3813826, 0.4667428, 0.4321203, 0.4445844, 0.4138648, 0.4965811, 0.4842429, 0.3891884, 0.3718142, 0.4457175, 0.4131094, 0.350663, 0.3548177, 0.3822639]
     let qtpAdmCombinedResults = [0.409456, 0.5120824, 0.3747592, 0.3661216, 0.3248368, 0.5120824, 0.3763696, 0.4756288, 0.4353688, 0.4498624, 0.4141408, 0.5103256, 0.4959784, 0.3854464, 0.3652432, 0.45118, 0.4132624, 0.340648, 0.3454792, 0.3773944]
+    let ages = [45, 43, 36, 49, 32, 57, 23, 45, 26, 31, 54, 45, 50, 49, 29, 26, 42, 47, 36, 42]
+    let qtpSmnResults = [0.4014, 0.49894, 0.36552, 0.36116, 0.31658, 0.50314, 0.36316, 0.46468, 0.42048, 0.43584, 0.40858, 0.49786, 0.48564, 0.37964, 0.35432, 0.4356, 0.40414, 0.3362, 0.33752, 0.36984]
+    let qtpKwtResults = [0.454434032947036, 0.516906753734889, 0.425982148944625, 0.417932117799132, 0.370999229501259, 0.516906753734889, 0.427433557189848, 0.497341522548198, 0.472645098358642, 0.481977190824566, 0.457890053953813, 0.516013735565187, 0.508541036683082, 0.43534999150123, 0.417086952467717, 0.482799135016553, 0.457248000417796, 0.391004024677794, 0.396544418864229, 0.428349538226906]
+    let qtpScl20to40Results = [0.3738622153476, 0.443915237311756, 0.342982775479653, 0.334368051076366, 0.285264538311867, 0.443915237311756, 0.34454180952133, 0.421654496877457, 0.393970758021775, 0.404376359794986, 0.377658030351792, 0.442892976382533, 0.434361958180625, 0.353076243539145, 0.33346678511196, 0.405296096912831, 0.376952125845609, 0.305955839936506, 0.311749835295614, 0.345526622009758]
+    let qtpScl40to60Results = [0.377154083910409, 0.447823924935884, 0.346002749603373, 0.337312172280812, 0.287776301542286, 0.447823924935884, 0.347575510988814, 0.425367177982039, 0.397439682935174, 0.407936906359218, 0.380983321185079, 0.446792662967033, 0.438186528881586, 0.356185090966534, 0.336402970641248, 0.408864741791309, 0.38027120116752, 0.3086497907284, 0.314494802398846, 0.348568994782171]
+    let qtpScl60to70Results = [0.383267554098483, 0.455082916237838, 0.351611272975997, 0.342779825946212, 0.292441004684493, 0.455082916237838, 0.353209527999854, 0.432262157176261, 0.403881972060058, 0.414549349978507, 0.387158861304039, 0.454034938052534, 0.445289303040515, 0.361958664760256, 0.341855886624211, 0.415492225137053, 0.386435198193926, 0.31365284219906, 0.319592598447705, 0.354219115645224]
+    let qtpSclOver70Results = [0.388440490411469, 0.461225139647183, 0.356356946598986, 0.347406302124627, 0.296388061189437, 0.461225139647183, 0.357976773163043, 0.438096370340604, 0.409333139781115, 0.420144494579444, 0.392384318327774, 0.460163016971034, 0.451299342713454, 0.366843996431866, 0.346469892455949, 0.421100095660375, 0.391650887985501, 0.317886193443464, 0.323906118181355, 0.35899998714473]
 
     // mocks for testing formula sources
     class TestQtcFormulas: QTcFormulaSource {
@@ -573,8 +580,45 @@ class QTc_iOSTests: XCTestCase {
             XCTAssertEqual(try calculator.calculate(rrInSec: interval, sex: .unspecified), qtpAdmCombinedResults[i], accuracy: delta)
             i += 1
         }
-
+        calculator = QTc.qtpCalculator(formula: .qtpSmn)
+        i = 0
+        for interval in rrIntervals {
+            XCTAssertEqual(try calculator.calculate(rrInSec: interval, age: ages[i]), qtpSmnResults[i], accuracy: delta)
+            i += 1
+        }
+        // make sure QTpSMN throws if no age given
+        XCTAssertThrowsError(try calculator.calculate(rrInSec: 0.4))
+        calculator = QTc.qtpCalculator(formula: .qtpKwt)
+        i = 0
+        for interval in rrIntervals {
+            XCTAssertEqual(try calculator.calculate(rrInSec: interval, age: ages[i]), qtpKwtResults[i], accuracy: delta)
+            i += 1
+        }
+        calculator = QTc.qtpCalculator(formula: .qtpScl)
+        i = 0
+        for interval in rrIntervals {
+            if ages[i] < 20 {
+                i += 1
+                continue
+            }
+            if ages[i] < 40 {
+                XCTAssertEqual(try calculator.calculate(rrInSec: interval, age: ages[i]), qtpScl20to40Results[i], accuracy: delta)
+            }
+            else if ages[i] < 60 {
+                XCTAssertEqual(try calculator.calculate(rrInSec: interval, age: ages[i]), qtpScl40to60Results[i], accuracy: delta)
+            }
+            else if ages[i] < 70 {
+                XCTAssertEqual(try calculator.calculate(rrInSec: interval, age: ages[i]), qtpScl60to70Results[i], accuracy: delta)
+            }
+            else {
+                XCTAssertEqual(try calculator.calculate(rrInSec: interval, age: ages[i]), qtpSclOver70Results[i], accuracy: delta)
+            }
+            i += 1
+        }
+        XCTAssertThrowsError(try calculator.calculate(rate: 60))
+        XCTAssertThrowsError(try calculator.calculate(rate: 60, age: 15))
     }
+    
     
     func testQTc() {
         let qtcCalculator = QTc.qtcCalculator(formula: .qtcRthb)
