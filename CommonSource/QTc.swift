@@ -42,11 +42,12 @@ public enum Formula {
     case qtpSmn  // Simonson
     case qtpKwt  // Kawataki
     case qtpScl  // Schlomka
+    case qtpMrr  // Merri
     
     public func formulaType() -> FormulaType {
         let qtcFormulas: Set<Formula> = [.qtcBzt, .qtcFrd, .qtcFrm, .qtcHdg, .qtcRtha, .qtcRthb, .qtcMyd,
                                          .qtcArr, .qtcKwt, .qtcDmt, .qtcYos, .qtcBdl, .qtcAdm]
-        let qtpFormulas: Set<Formula> = [.qtpBzt, .qtpFrd, .qtpArr, .qtpBdl, .qtpAsh, .qtpHdg, .qtpMyd, .qtpKrj, .qtpSch, .qtpAdm, .qtpSmn, .qtpKwt, .qtpScl]
+        let qtpFormulas: Set<Formula> = [.qtpBzt, .qtpFrd, .qtpArr, .qtpBdl, .qtpAsh, .qtpHdg, .qtpMyd, .qtpKrj, .qtpSch, .qtpAdm, .qtpSmn, .qtpKwt, .qtpScl, .qtpMrr]
         if qtcFormulas.contains(self) {
             return .qtc
         } else if qtpFormulas.contains(self) {

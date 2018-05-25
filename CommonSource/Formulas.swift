@@ -371,7 +371,6 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                                     RR and QT in msec
                                     """,
                          baseEquation: {rrInSec, sex, age in
-
                              if rrInSec > 1.0 {
                                  return QTc.msecToSec(116.0 * rrInSec + 277.0)
                              }
@@ -462,7 +461,36 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           classification: .power,
                           notes: "336 men and women.  Age dependent formula.",
                           publicationDate: "1936",
-                          numberOfSubjects: 336)
-
-    ]
+                          numberOfSubjects: 336),
+         .qtpMrr:
+            QTpCalculator(formula: .qtpMrr,
+                          longName: "Merri",
+                          shortName: "QTpMRR",
+                          reference: "Merri M, Benhorin J, Alberti M, Locati E, Moss AJ. Electrocardiographic quantitation of ventricular repolarization. Circulation. 1989;80(5):1301-1308. doi:10.1161/01.CIR.80.5.1301",
+                          equation: """
+                                10^(1.3 + 0.44 * log(RR)) for men
+                                10^(1.43 + 0.4 * log(RR)) for women
+                                10^(1.41 + 0.4 * log(RR)) for total population
+                                RR in msec, log is base 10
+                                """,
+                          baseEquation: {rrInSec, sex, age in
+                            var k: Double
+                            var a: Double
+                            switch(sex) {
+                            case .unspecified:
+                                k = 1.41
+                                a = 0.4
+                            case .male:
+                                k = 1.3
+                                a = 0.44
+                            case .female:
+                                k = 1.43
+                                a = 0.4
+                            }
+                            return QTc.msecToSec(pow(10.0, k + a * log10(QTc.secToMsec(rrInSec))))},
+                          classification: .logarithmic,
+                          notes: "364 healthy subjects, 191 men, 173 women, age 10-81.",
+                          publicationDate: "1989",
+                          numberOfSubjects: 364)
+            ]
 }
