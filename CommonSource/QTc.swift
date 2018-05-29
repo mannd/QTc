@@ -26,6 +26,7 @@ public enum Formula {
     case qtcYos  // Yoshinaga
     case qtcBdl  // Boudoulas (note Rabkin has qtcBRL -- typo?)
     case qtcAdm  // Adams
+    case qtcGot  // Goto
     case qtcTest // for testing only
     
     // QTp formulas
@@ -43,11 +44,18 @@ public enum Formula {
     case qtpKwt  // Kawataki
     case qtpScl  // Schlomka
     case qtpMrr  // Merri
+    case qtpHgg  // Hegglin
+    case qtpGot  // Goto
+    case qtpKlg  // Kligfield
+    case qtpShp  // Shipley
+    case qtpWhl  // Wohlfart
+    case qtpSrm  // Sarma
+    case qtpLcc  // Lecocq
     
     public func formulaType() -> FormulaType {
         let qtcFormulas: Set<Formula> = [.qtcBzt, .qtcFrd, .qtcFrm, .qtcHdg, .qtcRtha, .qtcRthb, .qtcMyd,
-                                         .qtcArr, .qtcKwt, .qtcDmt, .qtcYos, .qtcBdl, .qtcAdm]
-        let qtpFormulas: Set<Formula> = [.qtpBzt, .qtpFrd, .qtpArr, .qtpBdl, .qtpAsh, .qtpHdg, .qtpMyd, .qtpKrj, .qtpSch, .qtpAdm, .qtpSmn, .qtpKwt, .qtpScl, .qtpMrr]
+                                         .qtcArr, .qtcKwt, .qtcDmt, .qtcYos, .qtcBdl, .qtcAdm, .qtcGot]
+        let qtpFormulas: Set<Formula> = [.qtpBzt, .qtpFrd, .qtpArr, .qtpBdl, .qtpAsh, .qtpHdg, .qtpMyd, .qtpKrj, .qtpSch, .qtpAdm, .qtpSmn, .qtpKwt, .qtpScl, .qtpMrr, .qtpHgg, .qtpGot, .qtpKlg, .qtpShp, .qtpWhl, .qtpSrm, .qtpLcc]
         if qtcFormulas.contains(self) {
             return .qtc
         } else if qtpFormulas.contains(self) {
