@@ -11,7 +11,7 @@ import Foundation
 
 // Nomenclature from Rabkin and Cheng, 2015: https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B17
 /// enum listing QTc and QTp formulas
-public enum Formula {
+public enum Formula: String {
     // QTc formulas
     case qtcBzt  // Bazett
     case qtcFrd  // Fridericia

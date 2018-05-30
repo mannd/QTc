@@ -108,7 +108,9 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
     
     // This reference is extracted because it is used for two different QTc formulas
     static let rautaharju2014Reference = "Rautaharju PM, Mason JW, Akiyama T. New age- and sex-specific criteria for QT prolongation based on rate correction formulas that minimize bias at the upper normal limits. International Journal of Cardiology. 2014;174(3):535-540. doi:10.1016/j.ijcard.2014.04.133"
-    
+    static let rautaharju2014NumberOfSubjects = 57_595
+    static let rautaharju2014Notes = "Healthy subjects: 57,595, aged 5-89 years, 54% women."
+
     // This is the data source for the formulas.  Potentially this could be a database, but there
     // aren't that many formulas, so for now the formulas are inlined here.
     static let qtcDictionary: [Formula: QTcCalculator] =
@@ -120,7 +122,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                                         original: Bazett HC. An analysis of the time-relations of electrocardiograms. Heart 1920;7:353–370.
                                         reprint: Bazett H. C. An analysis of the time‐relations of electrocardiograms. Annals of Noninvasive Electrocardiology. 2006;2(2):177-194. doi:10.1111/j.1542-474X.1997.tb00325.x
                                         """,
-                          equation: "QT/RR^0.5",
+                          equation: "QT/\u{221A}RR",
                           baseEquation: {qtInSec, rrInSec, _, _ in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.5)},
                           classification: .power,
                           notes: "Oldest, most commonly used formula, but inaccurate at extremes of heart rate.  Healthy subjects: 20 men, age 14 - 40 (including one with age labeled \"Boy\"), 19 women, age 20 - 53.  Majority of subjects in their 20s.",
@@ -131,7 +133,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           longName: "Fridericia",
                           shortName: "QTcFRD",
                           reference: "Fridericia LS. Die Systolendauer im Elektrokardiogramm bei normalen Menschen und bei Herzkranken. Acta Medica Scandinavica. 1920;53(1):469-486. doi:10.1111/j.0954-6820.1920.tb18266.x",
-                          equation: "QT/RR^(1/3)",
+                          equation: "QT/\u{221B}RR",
                           baseEquation: {qtInSec, rrInSec, _, _ in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 1 / 3.0)},
                           classification: .power,
                           notes: "50 normal subjects, 28 men, 22 women, ages 2 to 81, most (35) age 20 to 40.  HR range 51-135.",
@@ -178,9 +180,9 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           equation: "QT * (120 + HR) / 180",
                           baseEquation: {qtInSec, rrInSec, _, _ in qtInSec * (120.0 + QTc.secToBpm(rrInSec)) / 180.0},
                           classification: .rational,
-                          //FIXME: these limits don't belong here
-                          notes: "Healthy subjects: 57,595, aged 5-89 years, 54% women.\nAbnormal QTc: age < 40: 430 ms for men, 440 ms for women; age 40-69: 440 ms for men, 450 ms for women, age ≥ 70: 455 ms for men, 460 ms for women.",
-                          publicationDate: "2014"),
+                          notes: rautaharju2014Notes,
+                          publicationDate: "2014",
+                          numberOfSubjects: rautaharju2014NumberOfSubjects),
          .qtcRthb:
             QTcCalculator(formula: .qtcRthb,
                           longName: "Rautaharju-b",
@@ -206,8 +208,9 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                             }
                             return QTc.msecToSec(QTc.secToMsec(qtInSec) + C * (1 - pow(rrInSec, k)))},
                           classification: .power,
-                          notes: "Healthy subjects: 57,595, aged 5-89 years, 54% women.\nAbnormal QTc: age < 40: 430 ms for men, 440 ms for women; age 40-69: 440 ms for men, 450 ms for women, age ≥ 70: 455 ms for men, 460 ms for women.",
-                          publicationDate: "2014"),
+                          notes: rautaharju2014Notes,
+                          publicationDate: "2014",
+                          numberOfSubjects: rautaharju2014NumberOfSubjects),
          .qtcArr:
             QTcCalculator(formula: .qtcArr,
                           longName: "Arrowood",
@@ -216,6 +219,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           equation: "QT + 0.304 - 0.492*e^(-0.008*HR)",
                           baseEquation: {qtInSec, rrInSec, _, _ in qtInSec + 0.304 - 0.492 * exp(-0.008 * QTc.secToBpm(rrInSec))},
                           classification: .exponential,
+                          notes: "16 normal volunteers, age 21-62.  M/F ratio not given.  ECGs at rest and with exercise.",
                           publicationDate: "1993",
                           numberOfSubjects: 16),
          .qtcKwt:
@@ -239,7 +243,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           classification: .power,
                           notes: "Healthy subjects: 13,039, aged 4-99 years, 51% women.",
                           publicationDate: "2005",
-                          numberOfSubjects: 13039),
+                          numberOfSubjects: 13_039),
          .qtcYos:
             QTcCalculator(formula: .qtcYos,
                           longName: "Yoshinaga",
@@ -254,7 +258,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           classification: .power,
                           notes: "12,543 healthy children, ages 6-12.",
                           publicationDate: "1993",
-                          numberOfSubjects: 12543),
+                          numberOfSubjects: 12_543),
          .qtcAdm:
             QTcCalculator(formula: .qtcAdm,
                           longName: "Adams",
@@ -267,7 +271,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                                     """,
                           baseEquation: qtcAdm,
                           classification: .linear,
-                          notes: "Gender-based formula",
+                          notes: "104 healthy subjects, 50 men, 54 women, mean age 28.",
                           publicationDate: "1936",
                           numberOfSubjects: 104),
          .qtcGot:
@@ -301,7 +305,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           longName: QTc.qtcCalculator(formula: .qtcBzt).longName,
                           shortName: "QTpBZT",
                           reference: QTc.qtcCalculator(formula: .qtcBzt).reference,
-                          equation: "K * RR^0.5 | where K = 0.37 for men and 0.40 for women",
+                          equation: "K * \u{221A}RR | where K = 0.37 for men and 0.40 for women",
                           baseEquation: { rrInSec,sex, _  in
                             let k: Double
                             switch(sex) {
@@ -362,6 +366,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           equation: "496 - (1.75 * HR) | result in msec",
                           baseEquation: {rrInSec, _, _ in 0.496 - (0.00175 * QTc.secToBpm(rrInSec))},
                           classification: QTc.qtcCalculator(formula: .qtcHdg).classification,
+                          notes: QTc.qtcCalculator(formula: .qtcHdg).notes,
                           publicationDate: QTc.qtcCalculator(formula: .qtcHdg).publicationDate,
                           numberOfSubjects: QTc.qtcCalculator(formula: .qtcHdg).numberOfSubjects),
          .qtpFrd:
@@ -369,7 +374,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                          longName: QTc.qtcCalculator(formula: .qtcFrd).longName,
                          shortName: "QTpFRD",
                          reference: QTc.qtcCalculator(formula: .qtcFrd).reference,
-                         equation: "0.3815 * RR^(1/3) | units in 0.01 sec",
+                         equation: "0.3815 * \u{221B}RR | units in 0.01 sec",
                          baseEquation: {rrInSec, _, _ in 0.0822 * pow(100.0 * rrInSec, 1/3)},
                          classification: QTc.qtcCalculator(formula: .qtcFrd).classification,
                          notes: QTc.qtcCalculator(formula: .qtcFrd).notes,
@@ -525,7 +530,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           longName: "Hegglin",
                           shortName: "QTpHGG",
                           reference: "Hegglin R, Holzmann M. Die klinische Bedeutung der verlangerten QT-Distanz (Systolendauer) im Elektrokardiogramm, Ztschr Klin Med. 1937;132:1.",
-                          equation: "0.39 * RR^0.5",
+                          equation: "0.39 * \u{221A}RR",
                           baseEquation: {rrInSec, _, _ in 0.39 * pow(rrInSec, 0.5)},
                           classification: .power,
                           notes: "700 normal subjects and patients without heart disease.",
