@@ -144,8 +144,18 @@ public struct QTcTest {
         return result
     }
     
-    func cutoff() -> Cutoff {
-        return (value, severity)
+    func cutoff(units: Units) -> Cutoff {
+        if units == self.units {
+            return (value, severity)
+        }
+        else {
+            switch(units) {
+            case .msec:
+                return (1000.0 * value, severity)
+            case .sec:
+                return (value / 1000.0, severity)
+            }
+        }
     }
     
     
@@ -220,10 +230,10 @@ public struct QTcTestSuite {
         }
     }
     
-    public func cutoffs() -> Cutoffs {
+    public func cutoffs(units: Units) -> Cutoffs {
         var cutoffs: Cutoffs = []
         for test in qtcTests {
-            cutoffs.append(test.cutoff())
+            cutoffs.append(test.cutoff(units: units))
         }
         return cutoffs
     }

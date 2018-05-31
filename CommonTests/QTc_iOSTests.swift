@@ -723,5 +723,14 @@ class QTc_iOSTests: XCTestCase {
             i += 1
         }
     }
+
+    func testCutoffs() {
+        let test = AbnormalQTc.qtcTestSuite(criterion: .schwartz1985)
+        let cutoffs = test?.cutoffs(units: .sec)
+        XCTAssertEqual(cutoffs![0].value, 0.44)
+        let cutoffsMsec = test?.cutoffs(units: .msec)
+        XCTAssertEqual(cutoffsMsec![0].value, 440.0)
+
+    }
     
 }
