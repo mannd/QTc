@@ -238,6 +238,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           longName: "Dimitrienko",
                           shortName: "QTcDMT",
                           reference: "Dmitrienko AA, Sides GD, Winters KJ, et al. Electrocardiogram Reference Ranges Derived from a Standardized Clinical Trial Population. Drug Information Journal. 2005;39(4):395-405. doi:10.1177/009286150503900408",
+                          // Note that the QTcDMT in Rabkin appears to use a formula with a typo: the exponent he uses in 0.473 rather than 0.413.  The exponent from the paper is clearly 0.413.
                           equation: "QT/RR^0.413",
                           baseEquation: {qtInSec, rrInSec, _, _ in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.413)},
                           classification: .power,
@@ -279,10 +280,10 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           longName: "Goto",
                           shortName: "QTcGOT",
                           reference: "Goto H, Mamorita N, Ikeda N, Miyahara H. Estimation of the upper limit of the reference value of the QT interval in rest electrocardiograms in healthy young Japanese men using the bootstrap method. J Electrocardiol. 2008;41(6):703.e1-10. doi:10.1016/j.jelectrocard.2008.08.001",
-                          equation: "QT/RR^0.319",
-                          baseEquation: {qtInSec, rrInSec, _, _ in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.319)},
+                          equation: "QT/RR^0.3409",
+                          baseEquation: {qtInSec, rrInSec, _, _ in qtcExp(qtInSec: qtInSec, rrInSec: rrInSec, exp: 0.3409)},
                           classification: .power,
-                          notes: "1276 healthy men, age 20-35.  No women.",
+                          notes: "1276 healthy men, age 20-35.",
                           publicationDate: "2008",
                           numberOfSubjects: 1276),
          // Add new equations above
@@ -364,7 +365,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           shortName: "QTpHDG",
                           reference: QTc.qtcCalculator(formula: .qtcHdg).reference,
                           equation: "496 - (1.75 * HR) | result in msec",
-                          baseEquation: {rrInSec, _, _ in 0.496 - (0.00175 * QTc.secToBpm(rrInSec))},
+                          baseEquation: {rrInSec, _, _ in QTc.msecToSec(496 - (1.75 * QTc.secToBpm(rrInSec)))},
                           classification: QTc.qtcCalculator(formula: .qtcHdg).classification,
                           notes: QTc.qtcCalculator(formula: .qtcHdg).notes,
                           publicationDate: QTc.qtcCalculator(formula: .qtcHdg).publicationDate,
@@ -415,7 +416,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                              }
                          },
                          classification: .linear,
-                         notes: "324 healthy young (age 18-28) men.  No women in study group.",
+                         notes: "324 healthy young (age 18-28) men.",
                          publicationDate: "1994",
                          numberOfSubjects: 324),
          .qtpSch:
@@ -426,7 +427,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           equation: "0.205*RR + 0.167",
                           baseEquation: {rrInSec, _, _ in 0.205 * rrInSec + 0.167},
                           classification: .linear,
-                          notes: "650 healthy male soldiers, age 18-44.  No women.",
+                          notes: "650 healthy male soldiers, age 18-44.",
                           publicationDate: "1946",
                           numberOfSubjects: 650),
          .qtpAdm:
@@ -469,6 +470,8 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           publicationDate: QTc.calculator(formula: .qtcKwt).publicationDate,
                           numberOfSubjects: QTc.calculator(formula: .qtcKwt).numberOfSubjects),
          .qtpScl:
+            // NB: lacking definitive source we have added constants for decades 30s and 50s, since they aren't given in Simonson.
+            // These constants work for the table in Simonson and the figures in Rabkin.
             QTpCalculator(formula: .qtpScl,
                           longName: "Schlomka",
                           shortName: "QTpSCL",
@@ -478,11 +481,17 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                             guard let age = age else {throw CalculationError.ageRequired}
                             guard age > 19 else {throw CalculationError.ageOutOfRange}
                             var k: Double
-                            if age < 40 {
+                            if age < 30 {
                                 k = 0.0795
                             }
-                            else if age < 60 {
+                            else if age < 40 {
+                                k = 0.0799 // extrapolated constant
+                            }
+                            else if age < 50 {
                                 k = 0.0802
+                            }
+                            else if age < 60 {
+                                k = 0.0808  // extrpolated constant
                             }
                             else if age < 70 {
                                 k = 0.0815
@@ -543,13 +552,13 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           shortName: "QTpGOT",
                           reference: QTc.qtcCalculator(formula: .qtcGot).reference,
                           equation: "435 * RR^0.3409 | RR in sec, result in msec",
-                          baseEquation: {rrInSec, _, _ in 0.435 * pow(rrInSec, 0.3409)},
+                          baseEquation: {rrInSec, _, _ in QTc.msecToSec(435.0 * pow(rrInSec, 0.3409))},
                           classification: .power,
                           notes: QTc.qtcCalculator(formula: .qtcGot).notes + "  QTp formula in this paper defines upper limit of normal QT.",
                           publicationDate: QTc.qtcCalculator(formula: .qtcGot).publicationDate,
                           numberOfSubjects: QTc.qtcCalculator(formula: .qtcGot).numberOfSubjects),
          .qtpKlg:
-           QTpCalculator(formula: .qtpKlg,
+            QTpCalculator(formula: .qtpKlg,
                          longName: "Kligfield",
                          shortName: "QTpKLG",
                          reference: "Kligfield P, Lax KG, Okin PM. QTc behavior during treadmill exercise as a function of the underlying QT-heart rate relationship. Journal of Electrocardiology. 1995;28:206-210. doi:10.1016/S0022-0736(95)80058-1",

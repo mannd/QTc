@@ -109,7 +109,7 @@ class QTc_iOSTests: XCTestCase {
     let qtpMrrFemaleResults = [0.43332459094498, 0.532499872895024, 0.390738511829181, 0.37899124210563, 0.313225268522446, 0.532499872895024, 0.392870809721618, 0.500619231563821, 0.461441054631539, 0.47610457607386, 0.438609378969167, 0.531028704518649, 0.518778040484407, 0.404577421774221, 0.377765719134946, 0.4774043273856, 0.437625763917541, 0.340682591576259, 0.348439133333816, 0.394218737576994]
     let qtcYosResults = [0.579906218804505, 0.528825056770059, 0.828474492438624, 0.48224203851013, 0.774980584992121, 0.474932057354002, 0.343211875252954, 0.575942676843373, 0.574911678752592, 0.70808444229737, 0.510869669852896, 0.237975725997005, 0.219118704977358, 0.564706795107062, 0.439503683395084, 0.647020109439033, 0.295094939615308, 0.463050541134329, 0.568509730648057, 0.530461863859337]
     let qtpHggResults = [0.397723522060237, 0.514593140257427, 0.34948004234863, 0.336396194984426, 0.265085269300276, 0.514593140257427, 0.351865599341567, 0.476375062319597, 0.430239119560274, 0.44739646847064, 0.403795988092997, 0.512816633895587, 0.498071380426541, 0.365019999452085, 0.335037012880667, 0.448923712895632, 0.402664376373178, 0.294443542975559, 0.302846991069748, 0.353375296250318]
-    let qtcGotResults = [0.579701555909069, 0.526192720637046, 0.83011201858611, 0.483527200493947, 0.780385236656239, 0.472567984775946, 0.343848145628502, 0.573872403961191, 0.573896420246532, 0.706336663185137, 0.510550101035907, 0.236805892839094, 0.218156102907533, 0.565380045784202, 0.44070706412849, 0.645383467203001, 0.294925243935147, 0.465399082065136, 0.571103795811064, 0.531404317379911]
+    let qtcGotResults = [0.579203844535374, 0.519841973412787, 0.834110198571954, 0.486668752869248, 0.793694526906362, 0.466864447459891, 0.345401335203816, 0.568865772485733, 0.571433440838143, 0.702101733629883, 0.509773318369705, 0.233983264079855, 0.215831398660427, 0.567021643889854, 0.443649072162604, 0.641418243478878, 0.294512725299276, 0.471163742780999, 0.577465572639112, 0.533704621330601]
     let qtpGotResults = [0.44085515386182, 0.525505853647332, 0.403651700430511, 0.393285985326909, 0.334322577521446, 0.525505853647332, 0.405528252857931, 0.498571040336432, 0.465119786497204, 0.477687183972686, 0.445433277532429, 0.524268265435149, 0.513942830785809, 0.41580423347261, 0.392201879633879, 0.478798355242157, 0.444581808364807, 0.359142660259095, 0.366099746923131, 0.406713735134663]
     let qtpKlgResults = [0.404846153846154, 0.435508902929351, 0.382369863013699, 0.374548387096774, 0.309571428571429, 0.435508902929351, 0.383702702702703, 0.427916890080429, 0.415921939194741, 0.420817629179331, 0.407119402985075, 0.435193175245807, 0.432440833844267, 0.39058904109589, 0.373682926829268, 0.42122641509434, 0.406703564727955, 0.342052631578947, 0.34965671641791, 0.38453227771011]
     let qtpShpMaleResults = [0.404862149379267, 0.523829427390253, 0.355752761057451, 0.342434075407223, 0.269843210031307, 0.523829427390253, 0.358181135740005, 0.484925383950975, 0.437961360167766, 0.455426661494472, 0.411043608392102, 0.522021035016789, 0.507011123152145, 0.371571640467891, 0.341050497727243, 0.456981317998887, 0.409891685692696, 0.299728427080249, 0.308282706294077, 0.35971792977276]
@@ -614,6 +614,7 @@ class QTc_iOSTests: XCTestCase {
             XCTAssertEqual(try calculator.calculate(rrInSec: interval, age: ages[i]), qtpKwtResults[i], accuracy: delta)
             i += 1
         }
+        // NB: in between ages with extrapolated constants not tested here, but are tested in the Rabkin tests.
         calculator = QTc.qtpCalculator(formula: .qtpScl)
         i = 0
         for interval in rrIntervals {
@@ -621,16 +622,16 @@ class QTc_iOSTests: XCTestCase {
                 i += 1
                 continue
             }
-            if ages[i] < 40 {
+            if ages[i] < 30 {
                 XCTAssertEqual(try calculator.calculate(rrInSec: interval, age: ages[i]), qtpScl20to40Results[i], accuracy: delta)
             }
-            else if ages[i] < 60 {
+            else if ages[i] < 50  && ages[i] > 40 {
                 XCTAssertEqual(try calculator.calculate(rrInSec: interval, age: ages[i]), qtpScl40to60Results[i], accuracy: delta)
             }
-            else if ages[i] < 70 {
+            else if ages[i] < 70  && ages[i] > 60 {
                 XCTAssertEqual(try calculator.calculate(rrInSec: interval, age: ages[i]), qtpScl60to70Results[i], accuracy: delta)
             }
-            else {
+            else if ages[i] > 70 {
                 XCTAssertEqual(try calculator.calculate(rrInSec: interval, age: ages[i]), qtpSclOver70Results[i], accuracy: delta)
             }
             i += 1
@@ -700,7 +701,6 @@ class QTc_iOSTests: XCTestCase {
         }
     }
     
-    
     func testQTc() {
         var qtcCalculator = QTc.qtcCalculator(formula: .qtcRthb)
         var i = 0
@@ -730,7 +730,50 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(cutoffs![0].value, 0.44)
         let cutoffsMsec = test?.cutoffs(units: .msec)
         XCTAssertEqual(cutoffsMsec![0].value, 440.0)
-
     }
+
+    typealias formulaTest = (formula: Formula, result: Double)
+    typealias formulaTests = [formulaTest]
+
+    private func rabkinTest(results: formulaTests, qtMeasurement: QtMeasurement, accuracy: Double = 0.1) {
+        for result in results {
+            print(QTc.calculator(formula: result.formula).shortName + " ," + String((try!QTc.calculator(formula: result.formula).calculate(qtMeasurement: qtMeasurement))) + ", " + String(result.result))
+            XCTAssertEqual(round(try! QTc.calculator(formula: result.formula).calculate(qtMeasurement: qtMeasurement)), result.result, accuracy: accuracy)
+        }
+    }
+
+    func testRabkinResults() {
+        // Note that the QTcDMT in Rabkin appears to use a formula with a typo: the exponent he uses in 0.473 rather than 0.413.  So we have corrected his result for QTcDMT here.  Rabkin has 437 for QTcDMT.  It should be 438.
+        let results1: formulaTests = [(.qtcFrm, 439.0), (.qtcHdg, 441.0), (.qtcRtha, 439.0), (.qtcBzt, 437.0), (.qtcFrd, 439.0), (.qtcMyd, 435.0), (.qtcKwt, 440.0), (.qtcDmt, 438.0), (.qtcGot, 439.0), (.qtcRthb, 439.0)]
+        let qtMeasurement = QtMeasurement(qt: 444.0, intervalRate: 58, units: .msec, intervalRateType: .rate, sex: .male, age: 71)
+        rabkinTest(results: results1, qtMeasurement: qtMeasurement)
+        let results2: formulaTests = [(.qtpAdm, 405), (.qtpSch, 379), (.qtpKrj, 397), (.qtpSmn, 408), (.qtpBdl, 405), (.qtpHdg, 395), (.qtpWhl, 388), (.qtpKlg, 404), (.qtpBzt, 376), (.qtpFrd, 386), (.qtpMyd, 424), (.qtpScl, 388), (.qtpShp, 404), (.qtpHgg, 397), (.qtpKwt, 454), (.qtpGot, 440), (.qtpAsh, 396), (.qtpMrr, 423), (.qtpSrm, 467), (.qtpLcc, 410), (.qtpArr, 425)]
+        rabkinTest(results: results2, qtMeasurement: qtMeasurement)
+
+        let qtMeasurement2 = QtMeasurement(qt: 354, intervalRate: 107, units: .msec, intervalRateType: .rate, sex: .male, age: 53)
+        
+        let results3: formulaTests = [(.qtcFrm, 422), (.qtcHdg, 436), (.qtcRtha, 446), (.qtcBzt, 473), (.qtcFrd, 429), (.qtcMyd, 502), (.qtcKwt, 409), (.qtcDmt, 450), (.qtcGot, 431), (.qtcRthb, 429)]
+        rabkinTest(results: results3, qtMeasurement: qtMeasurement2)
+        let results4: formulaTests = [(.qtpAdm, 332), (.qtpSch, 282), (.qtpKrj, 314), (.qtpSmn, 337), (.qtpBdl, 307), (.qtpHdg, 309), (.qtpWhl, 327), (.qtpKlg, 340), (.qtpBzt, 277), (.qtpFrd, 315), (.qtpMyd, 293), (.qtpScl, 309), (.qtpShp, 297), (.qtpHgg, 292), (.qtpKwt, 389), (.qtpGot, 357), (.qtpAsh, 304), (.qtpMrr, 323), (.qtpSrm, 362), (.qtpLcc, 340), (.qtpArr, 325)]
+        rabkinTest(results: results4, qtMeasurement: qtMeasurement2)
+
+        let qtMeasurment3 = QtMeasurement(qt: 384, intervalRate: 89, units: .msec, intervalRateType: .rate, sex: .female, age: 53)
+
+        let results5: formulaTests = [(.qtcFrm, 434), (.qtcHdg, 435), (.qtcRtha, 446), (.qtcBzt, 468), (.qtcFrd, 438), (.qtcMyd, 487), (.qtcKwt, 424), (.qtcDmt, 452), (.qtcGot, 439), (.qtcRthb, 442)]
+        rabkinTest(results: results5, qtMeasurement: qtMeasurment3)
+        let results6: formulaTests = [(.qtpAdm, 364), (.qtpSch, 305), (.qtpKrj, 341), (.qtpSmn,353), (.qtpBdl, 351), (.qtpHdg, 340), (.qtpWhl, 350), (.qtpKlg, 364), (.qtpBzt, 328), (.qtpFrd, 335), (.qtpMyd, 327), (.qtpScl, 329), (.qtpShp, 341), (.qtpHgg, 320), (.qtpKwt, 408), (.qtpGot, 380), (.qtpAsh, 340), (.qtpMrr, 364), (.qtpSrm, 400), (.qtpLcc, 369), (.qtpArr, 357)]
+        rabkinTest(results: results6, qtMeasurement: qtMeasurment3)
+        // Simonson tests
+        let qtMesaurement4 = QtMeasurement(qt: 430, intervalRate: 1180, units: .msec, intervalRateType: .interval, sex: .male, age: 55)
+        let results7: formulaTests = [(.qtpBzt, 400), (.qtpShp, 430), (.qtpScl, 400), (.qtpAsh, 420), (.qtpSch, 410), (.qtpMyd, 450), (.qtpSmn, 420)]
+        rabkinTest(results: results7, qtMeasurement: qtMesaurement4, accuracy: 10.0)
+        let qtMesaurement5 = QtMeasurement(qt: 340, intervalRate: 660, units: .msec, intervalRateType: .interval, sex: .male, age: 45)
+        let results8: formulaTests = [(.qtpBzt, 300), (.qtpShp, 320), (.qtpScl, 320), (.qtpAsh, 330), (.qtpSch, 310), (.qtpMyd, 320), (.qtpSmn, 350)]
+        rabkinTest(results: results8, qtMeasurement: qtMesaurement5, accuracy: 10.0)
+        let qtMesaurement6 = QtMeasurement(qt: 370, intervalRate: 840, units: .msec, intervalRateType: .interval, sex: .male, age: 25)
+        let results9: formulaTests = [(.qtpBzt, 340), (.qtpShp, 360), (.qtpScl, 350), (.qtpAsh, 350), (.qtpSch, 340), (.qtpMyd, 370), (.qtpSmn, 370)]
+        rabkinTest(results: results9, qtMeasurement: qtMesaurement6, accuracy: 10.0)
+    }
+
     
 }
