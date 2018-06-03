@@ -1,12 +1,11 @@
 ## Description
 This QTc framework includes formulas for QTc and QTp calculation, both common and obscure.  It is intended for use in iOS and macOS programs.  It is written in Swift but can be used in Objective C projects.  This framework is free to use in your own apps and programs.
-*NB: This is a work in progress.  We are continuing to add formulas to the framework.*
 
 ## Installation
 Use Cocoapods to install the framwork.  After installing Cocoapods (see the [Cocoapods site](https://cocoapods.org) for how to do that), add a Podfile like this to the top level directory of your project:
 
 	# Set your target platform
-	platform :ios, '11.3'
+	platform :ios, '11.4'
 
 	target '<MyApp>' do
 		# Comment the next line if you're not using Swift and don't want to use dynamic frameworks
