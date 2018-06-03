@@ -1,12 +1,11 @@
 ## Description
 This QTc framework includes formulas for QTc and QTp calculation, both common and obscure.  It is intended for use in iOS and macOS programs.  It is written in Swift but can be used in Objective C projects.  This framework is free to use in your own apps and programs.
-*NB: This is a work in progress.  We are continuing to add formulas to the framework.*
 
 ## Installation
 Use Cocoapods to install the framwork.  After installing Cocoapods (see the [Cocoapods site](https://cocoapods.org) for how to do that), add a Podfile like this to the top level directory of your project:
 
 	# Set your target platform
-	platform :ios, '11.3'
+	platform :ios, '11.4'
 
 	target '<MyApp>' do
 		# Comment the next line if you're not using Swift and don't want to use dynamic frameworks
@@ -101,10 +100,10 @@ Units can be .msec or .sec, and IntervalRateType either .bpm or .interval (meani
 	let qtcBztCalculator = QTc.calculator(formula: .qtcBzt)
 	let qtc = qtcBztCalculator.calculate(qtMeasurement) // qtc = 416.34711041
 
-Note that if the QtMeasurement units are msec, the calculator returns a result in msec; if the units are secs, the result is also in secs.
+Note that if the QtMeasurement units are msec, the calculator returns a result in msec; if the units are secs, the result is in secs.
 
 ### More ways to calculate (aka the less easy way)
-If you are less interested in a universal calculator object, that handles QTc and QTp calculations the same way, you can instantiate specific QTc and QTp calculator classes.  These classes don't require use of the QtMeasurement struct. Pass to their calculate methods parameters in secs or msecs directly.  
+If you are less interested in a universal calculator object that handles QTc and QTp calculations the same way, you can instantiate specific QTc and QTp calculator classes.  These classes don't require use of the QtMeasurement struct. You can pass to their calculate methods parameters in secs or msecs directly.
 
 For example:
 
@@ -119,7 +118,7 @@ Then use the calculator to calculate the QTc:
 	double qtcBzt = [qtcBztCalculator calculateWithQtInSec: 0.334 rrInSec: 0.785]; // Objective C
 
 ### Calculate functions
-When using the `QTcCalculator` or `QTpCalculator` classes, each calculate function has 4 different signatures, using QT in sec or msec, RR in sec or msec or heart rate in beats per minute.  Functions using msec parameters return QTc in msec, while those using second parameters return QTc in seconds.  All interval/rate parameters are Double in Swift, double in Objective C.  For example:
+When using the `QTcCalculator` or `QTpCalculator` classes, each calculate function has 4 different signatures, using QT in sec or msec, RR in sec or msec or heart rate in beats per minute.  Functions using msec parameters return QTc in msec, while those using sec parameters return QTc in seconds.  All interval/rate parameters are Double in Swift, double in Objective C.  For example:
 
 	let qtcInMsec = qtcBztCalculator.calculate(qtInMsec: 402, rate 72) // returns QTc in msec
 	let qtcInSec = qtcBztCalculator.calculate(qtInSec: 0.402, rate 72) // returns QTc in sec
@@ -148,7 +147,7 @@ You can get other information from the calculator instance, for example:
 	let numberOfSubjects = qtcCalculator.numberOfSubjects // number of subjects studied
 
 ## Normal values
-Just as there are many formulas to correct of predict QT intervals, there are numerous proposals aimed at defining normal QTc intervals.  The QTc framework contains a number of these abnormal QTc definitions, along with supporting literature references.
+Just as there are many formulas to correct or predict QT intervals, there are numerous proposals aimed at defining normal QTc intervals.  The QTc framework contains a number of these abnormal QTc definitions, along with supporting literature references.
 
 The enum `Criterion` in *AbnormalQTc.swift* lists previously defined QTc criteria.
 
@@ -194,7 +193,12 @@ Of course your other option is never to send these bad parameters to the formula
 	}
 
 ### Exceptions
-Calculate methods of calculators can throw exceptions in certain situations.  For example, if you have a qt of nil in your `QtMeasurement` struct and pass this to a calculate method of a QTc calculator, a `CalculationError.qtMissing` exception will be thrown.  Similarly if a calculator from a formula requires that a sex parameter is provided and it isn't, a `CalculationError.sexRequired` exception will be thrown.  See the `CalculationError` enum in *QTc.swift* for a complete list of possible exceptions.  Make sure you code includes exception handling for the calculate functions.
+Calculate methods of calculators can throw exceptions in certain situations.  For example, if you have a qt of nil in your `QtMeasurement` struct and pass this to a calculate method of a QTc calculator, a `CalculationError.qtMissing` exception will be thrown.  Similarly if a calculator from a formula requires that a sex parameter is provided and it isn't, a `CalculationError.sexRequired` exception will be thrown.  See the `CalculationError` enum in *QTc.swift* for a complete list of possible exceptions.  Make sure you code includes exception handling for the calculate functions.  For example,
+
+	guard let qtc = try? calculator.calculate(qtInMsec: qt, rrInMsec: rr) else {
+		assertionFailure("Calculate threw an exception.")
+	}
+	print(String(format: "QTc = %.f", qtc))
 
 ## Conversion functions
 The QTc framework includes static functions to do common conversions, between seconds, milliseconds and heart rate, e.g.:

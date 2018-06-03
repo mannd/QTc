@@ -11,7 +11,7 @@ import Foundation
 
 // Nomenclature from Rabkin and Cheng, 2015: https://www.wjgnet.com/1949-8462/full/v7/i6/315.htm#B17
 /// enum listing QTc and QTp formulas
-public enum Formula {
+public enum Formula: String {
     // QTc formulas
     case qtcBzt  // Bazett
     case qtcFrd  // Fridericia
@@ -26,6 +26,7 @@ public enum Formula {
     case qtcYos  // Yoshinaga
     case qtcBdl  // Boudoulas (note Rabkin has qtcBRL -- typo?)
     case qtcAdm  // Adams
+    case qtcGot  // Goto
     case qtcTest // for testing only
     
     // QTp formulas
@@ -35,11 +36,26 @@ public enum Formula {
     case qtpBdl  // Boudoulas
     case qtpAsh  // Ashman
     case qtpHdg  // Hodges
+    case qtpMyd  // Mayeda
+    case qtpKrj  // Karjalainen
+    case qtpSch  // Schlamowitz
+    case qtpAdm  // Adams
+    case qtpSmn  // Simonson
+    case qtpKwt  // Kawataki
+    case qtpScl  // Schlomka
+    case qtpMrr  // Merri
+    case qtpHgg  // Hegglin
+    case qtpGot  // Goto
+    case qtpKlg  // Kligfield
+    case qtpShp  // Shipley
+    case qtpWhl  // Wohlfart
+    case qtpSrm  // Sarma
+    case qtpLcc  // Lecocq
     
     public func formulaType() -> FormulaType {
         let qtcFormulas: Set<Formula> = [.qtcBzt, .qtcFrd, .qtcFrm, .qtcHdg, .qtcRtha, .qtcRthb, .qtcMyd,
-                                         .qtcArr, .qtcKwt, .qtcDmt, .qtcYos, .qtcBdl, .qtcAdm]
-        let qtpFormulas: Set<Formula> = [.qtpBzt, .qtpFrd, .qtpArr, .qtpBdl, .qtpAsh, .qtpHdg]
+                                         .qtcArr, .qtcKwt, .qtcDmt, .qtcYos, .qtcBdl, .qtcAdm, .qtcGot]
+        let qtpFormulas: Set<Formula> = [.qtpBzt, .qtpFrd, .qtpArr, .qtpBdl, .qtpAsh, .qtpHdg, .qtpMyd, .qtpKrj, .qtpSch, .qtpAdm, .qtpSmn, .qtpKwt, .qtpScl, .qtpMrr, .qtpHgg, .qtpGot, .qtpKlg, .qtpShp, .qtpWhl, .qtpSrm, .qtpLcc]
         if qtcFormulas.contains(self) {
             return .qtc
         } else if qtpFormulas.contains(self) {
