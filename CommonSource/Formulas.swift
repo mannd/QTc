@@ -8,11 +8,12 @@
 
 import Foundation
 
+/// Source for all QTc and QTp formulas
 struct Formulas: QTcFormulaSource, QTpFormulaSource {
     
     static let errorMessage = "Formula not found!"
     
-    // These 4 functions are required by the protocols used by this class
+    // These functions are required by the protocols used by this class
     static func qtcCalculator(formula: Formula) -> QTcCalculator {
         guard let calculator = qtcDictionary[formula] else {
             fatalError(errorMessage)
