@@ -8,11 +8,13 @@
 
 import Foundation
 
+/// Distinguish between intervals and rates
 public enum IntervalRateType {
     case interval
     case rate
 }
 
+/// Units for intervals can be either msec or sec
 public enum Units {
     case msec
     case sec
@@ -27,7 +29,7 @@ public struct QtMeasurement {
     public let sex: Sex
     public let age: Int?  // may be nil as not always needed
     
-    // In Swift, default init is interval, so must specifically declare public init
+    // In Swift, default init is internal access, so must specifically declare public init
     public init(qt: Double?, intervalRate: Double, units: Units,
         intervalRateType: IntervalRateType, sex: Sex = .unspecified, age: Int? = nil) {
         self.qt = qt

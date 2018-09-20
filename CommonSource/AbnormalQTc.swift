@@ -18,10 +18,10 @@ public enum Criterion: String {
     case aha2009 = "aha2009"
     case gollob2011 = "gollob2011"
     case mazzanti2014 = "mazzanti2014"
-    // TODO: the rest of them
 }
 
-// Usage: if Comaprison.greaterThan, then QTc greater than the value is abnormal
+/// Comparison operators to test QTc against literature Criterion.
+/// Example: if Comparison.greaterThan, then QTc greater than the value is abnormal
 public enum Comparison {
     case greaterThan
     case greaterThanOrEqual
@@ -50,13 +50,22 @@ public struct Severity: OptionSet {
     }
 }
 
-/// A struct to wrap the parameters necessary to interpret a QTc interval
+/// A struct in which to wrap a QTc measurement so it can be interpreted.
 public struct QTcMeasurement {
     let qtc: Double
     let units: Units
     let sex: Sex
     let age: Int?
-    
+
+    /**
+     Create a QTcMeasurement that can be evaluated as normal or abnormal.
+
+     - Parameters:
+         - qtc: the calculated QTc
+         - units: units of the QTc, msec or sec
+         - sex: subject's sex.  Defaults to Sex.unspecified
+         - age: subject's age.  Defaults to nil.
+     */
     public init(qtc: Double, units: Units, sex: Sex = .unspecified, age: Int? = nil) {
         self.qtc = qtc
         self.units = units
@@ -64,6 +73,14 @@ public struct QTcMeasurement {
         self.age = age
     }
     
+    /**
+     Create a QTcMeasurement to be evaluated as normal or abnormal,
+     retrieving subject parameters from a QtMeasurement struct.
+
+     - Parameters:
+         - qtc: the calculated QTc
+         - qtMeasurement: a QtMeasurement struct used to generate the QTc.
+     */
     public init(qtc: Double, qtMeasurement: QtMeasurement) {
         self.qtc = qtc
         self.units = qtMeasurement.units
@@ -76,9 +93,13 @@ public typealias QTcTests = [QTcTest]
 public typealias Cutoff = (value: Double, severity: Severity)
 public typealias Cutoffs = [Cutoff]
 
-/// QTcTest describes a test for an abnormal QTc value, for example, QTc > 470 msec in women would be:
-///
-///     let test = QTcTest(value: 470, units: .msec, sex: .female, valueLimitType: .upper, valueIntervalType: .open)
+/**
+ QTcTest describes a test for an abnormal QTc value,
+
+ Example, if a QTc > 470 msec in women is considered abnormal:
+
+     let test = QTcTest(value: 470, units: .msec, sex: .female, valueLimitType: .upper, valueIntervalType: .open)
+ */
 public struct QTcTest {
     let value: Double
     let units: Units
@@ -88,6 +109,16 @@ public struct QTcTest {
     let ageComparison: Comparison
     public let severity: Severity
     
+    /// Create a QTcTest
+    ///
+    /// - Parameters:
+    ///   - value: the cutoff value for this QTcTest
+    ///   - units: .msec or .sec
+    ///   - valueComparison: the comparison operator that the cutoff value uses
+    ///   - sex: if test is sex-specific, which sex?  Otherwise default is .unspecified.
+    ///   - age: if test is age-specific what is cutoff age?  Default is nil.
+    ///   - ageComparison: if test is age-specific, what comparison operator is used?
+    ///   - severity: the severity value if the test is failed
     public init(value: Double, units: Units, valueComparison: Comparison, sex: Sex = .unspecified, age: Int? = nil, ageComparison: Comparison = .lessThan, severity: Severity = .abnormal) {
         self.value = value
         self.units = units
@@ -98,6 +129,10 @@ public struct QTcTest {
         self.severity = severity
     }
     
+    /// Test a QTcMeasurement to see if it passes or fails this QTcTest.
+    ///
+    /// - Parameter qtcMeasurement: the QTcMeasurement to be tested
+    /// - Returns: true if QTcMeasurement fails test, i.e. is abnormal
     func isAbnormal(qtcMeasurement: QTcMeasurement) -> Bool {
         var qtcValue = qtcMeasurement.qtc
         if units != qtcMeasurement.units {
@@ -144,6 +179,10 @@ public struct QTcTest {
         return result
     }
     
+    /// Get the Cutoff for this test in the requested Units
+    ///
+    /// - Parameter units: desired Units for Cutoff
+    /// - Returns: the Cutoff with value adjusted for Units
     func cutoff(units: Units) -> Cutoff {
         if units == self.units {
             return (value, severity)
@@ -157,8 +196,6 @@ public struct QTcTest {
             }
         }
     }
-    
-    
 }
 
 /// Wrapper for a set of QTcTests, based on a literature reference
@@ -171,6 +208,16 @@ public struct QTcTestSuite {
     public let description: String // the test described in prose
     let notes: String?  // optional notes about this test suite
     
+    /// Create a QTcTestSuite from a literature reference
+    ///
+    /// - Parameters:
+    ///   - name: short name for this suite. e.g. "Schwartz 1985"
+    ///   - qtcTests: an array of QTcTests that the suite uses
+    ///   - reference: reference in AMA format
+    ///   - description: a description of the test suite
+    ///   - notes: further notes on the the test suite
+    ///   - requiresSex: test suite requires sex to be known
+    ///   - requiresAge: test suite requires age to be known
     public init(name: String, qtcTests: QTcTests, reference: String, description: String, notes: String? = nil,
                 requiresSex: Bool = false, requiresAge: Bool = false) {
         self.name = name
@@ -182,13 +229,17 @@ public struct QTcTestSuite {
         self.requiresAge = requiresAge
     }
     
+    /// Test whether a QTcMeasurement has all the requirements for this test suite
+    ///
+    /// - Parameter qtcMeasurement: the QTcMeasurement
+    /// - Returns: true if the results of the test suite will be undefined
     public func isUndefined(qtcMeasurement: QTcMeasurement) -> Bool {
         let missingSex = requiresSex && qtcMeasurement.sex == .unspecified
         let missingAge = requiresAge && qtcMeasurement.age == nil
         return missingAge || missingSex
     }
     
-    // returns abnormal tests
+    // Returns an array of abnormal tests
     func abnormalQTcTests(qtcMeasurement: QTcMeasurement) -> [QTcTest] {
         var abnormalTests: [QTcTest] = []
         for qtcTest in qtcTests {
@@ -198,7 +249,9 @@ public struct QTcTestSuite {
         }
         return abnormalTests
     }
-    
+
+    // If more than one QTcTest fails, we need to know which gives the
+    // result with the highest Severity.
     func mostSevereFailure(failingTests: [QTcTest]) -> QTcTest? {
         if failingTests.count < 1 { return nil }
         if failingTests.count == 1 { return failingTests[0] }
@@ -212,11 +265,16 @@ public struct QTcTestSuite {
         }
         return mostSevereResult
     }
-    
+
+    // Return the QTcTest that was failed with the highest Severity
     func failingTest(measurement: QTcMeasurement) -> QTcTest? {
         return mostSevereFailure(failingTests: abnormalQTcTests(qtcMeasurement: measurement))
     }
     
+    /// Run a QTcMeasurement through the test suite and get the Severity
+    ///
+    /// - Parameter measurement: the QTcMeasurement to be tested
+    /// - Returns: the Severity returned by the test suite
     public func severity(measurement: QTcMeasurement) -> Severity {
         if isUndefined(qtcMeasurement: measurement) {
             return .undefined
@@ -230,6 +288,10 @@ public struct QTcTestSuite {
         }
     }
     
+    /// Get an array of Cutoffs in appropriate units for this test suite
+    ///
+    /// - Parameter units: the Units for the Cutoffs, .msec or .sec
+    /// - Returns: an array of Cutoffs in the appropriate Units
     public func cutoffs(units: Units) -> Cutoffs {
         var cutoffs: Cutoffs = []
         for test in qtcTests {
@@ -355,10 +417,11 @@ public struct AbnormalQTc {
     ]
     
     /// Returns a QTcTestSuite based on a test Criterion
+    ///
+    /// - Parameter criterion: the Criterion for the test suite
+    /// - Returns: the QTcTestSuite for the Criterion, nil if not found
     public static func qtcTestSuite(criterion: Criterion) -> QTcTestSuite? {
         return testSuiteDictionary[criterion]
     }
     
 }
-
-
