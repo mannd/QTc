@@ -775,5 +775,13 @@ class QTc_iOSTests: XCTestCase {
         rabkinTest(results: results9, qtMeasurement: qtMesaurement6, accuracy: 10.0)
     }
 
-    
+    func testQtcRbk() {
+        XCTAssertEqual(QtcRbk.b1(60), 0.05552338, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b1(80), 0)
+        XCTAssertEqual(QtcRbk.b2(60), 0.4502079, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b2(80), 0)
+        XCTAssertEqual(QtcRbk.b3(60), 0.4942118, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b3(80), 0.0004464286, accuracy: delta)
+    }
+
 }
