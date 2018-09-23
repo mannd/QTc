@@ -13,6 +13,38 @@ import Foundation
 ///
 /// We have split out the components to make the math as clear as possible.
 enum QtcRbk {
+    public static func qtpRbk(hr: Double, isFemale: Bool) -> Double {
+        return 533.52 - 77.57 * b1(hr) - 102.51 * b2(hr) - 131.96 * b3(hr)
+          - 146.35 * b4(hr) - 197.89 * b5(hr) - 233.7 * b6(hr)
+          - 247.2 * b7(hr) + (isFemale ? 1.0 : 0) * 9.61
+    }
+    
+    public static func qtpRbk(hr: Double, isFemale: Bool, age: Double) -> Double {
+        return 523.29 - 76.94 * b1(hr) - 101.59 * b2(hr) - 130.81 * b3(hr)
+          - 144.79 * b4(hr) - 196.76 * b5(hr) - 231.01 * b6(hr)
+          - 247.84 * b7(hr) + (isFemale ? 1.0 : 0) * 9.35 + 0.18 * age
+    }
+
+    internal static func qtpRbkR(hr: Double, isFemale: Bool, age: Double) -> Double {
+        return 523.29 - r(76.94 * b1(hr)) - r(101.59 * b2(hr)) - r(130.81 * b3(hr))
+          - r(144.79 * b4(hr)) - r(196.76 * b5(hr)) - r(231.01 * b6(hr))
+          - r(247.84 * b7(hr)) + (isFemale ? 1.0 : 0) * 9.35 + 0.18 * age
+    }
+
+    public static func qtcRbk(qt: Double, hr: Double, isFemale: Bool) -> Double {
+        return qtpRbk(hr: 60, isFemale: false) + (qt - qtpRbk(hr: hr, isFemale: isFemale))
+    }
+
+    public static func qtcRbk(qt: Double, hr: Double, isFemale: Bool, age: Double) -> Double {
+        return qtpRbk(hr: 60, isFemale: false, age: 50.3) + (qt - qtpRbk(hr: hr, isFemale: isFemale, age: age))
+    }
+
+    internal static func r(_ x: Double) -> Double {
+        // round to nearest 10,000
+        let y = round(10_000.0 * x) / 10_000
+        return y
+    }
+
     // Fundamental component of the basic functions b0 to b1.
     private static func f(_ x: Double, _ c0: Double, _ c1: Double) -> Double {
         return (x - c0) / (c1 - c0)
@@ -86,4 +118,42 @@ enum QtcRbk {
             g(x, 61, 81) * g(x, 67, 81) * g(x, 73, 81) * ind(x, 73, 81)
     }
 
+    internal static func b4(_ x: Double) -> Double {
+        return f(x, 61, 67) * f(x, 61 ,73) * f(x, 61, 81) * ind(x, 61, 67)
+          +
+          f(x, 61, 81) * (f(x, 61, 73) * g(x, 67, 73) + f(x, 67, 73) * g(x, 67, 81))
+          * ind(x, 67, 73)
+          +
+          f(x, 67, 73) * f(x, 67, 81) * g(x, 67, 156) * ind(x, 67, 73)
+          +
+          g(x, 73, 81) * (f(x, 61, 81) * g(x, 67, 81) + f(x, 67, 81) * g(x, 67, 156))
+          * ind(x, 73, 81)
+          +
+          f(x, 73, 81) * g(x, 67, 156) * g(x, 73, 156) * ind(x, 73, 81)
+          +
+          g(x, 67, 156) * g(x, 73, 156) * g(x, 81, 156) * ind(x, 81, 156)
+    }
+
+    internal static func b5(_ x: Double) -> Double {
+        return f(x, 67, 73) * f(x, 67, 81) * f(x, 67, 156) * ind(x, 67, 73)
+          +
+          f(x, 67, 156) * (f(x, 67, 81) * g(x, 73, 81) + f(x, 73, 81) * g(x, 73,156))
+          * ind(x, 73, 81)
+          +
+          f(x, 73, 81) * f(x, 73, 156) * g(x, 73, 156) * ind(x, 73, 81)
+          +
+          g(x, 73, 156) * g(x, 81, 156) * (f(x, 67, 156) + f(x, 73, 156) + f(x, 81, 156))
+          * ind(x, 81, 156)
+    }
+
+    internal static func b6(_ x: Double) -> Double {
+        return f(x, 73, 81) * f2(x, 73, 156) * ind(x, 73, 81)
+          +
+          g(x, 81, 156) * (f2(x, 73, 156) + f(x, 73, 156) * f(x, 81, 156) + f2(x, 81, 156))
+          * ind(x, 81, 156)
+    }
+
+    internal static func b7(_ x: Double) -> Double {
+        return f3(x, 81, 156) * ind(x, 81, 156)
+    }
 }
