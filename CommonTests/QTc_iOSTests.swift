@@ -775,5 +775,64 @@ class QTc_iOSTests: XCTestCase {
         rabkinTest(results: results9, qtMeasurement: qtMesaurement6, accuracy: 10.0)
     }
 
-    
+    func testRound() {
+        print(QtcRbk.r(15.783353333))
+    }
+
+    func testQtcRbk() {
+        XCTAssertEqual(QtcRbk.b1(60), 0.05552338, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b1(80), 0)
+        XCTAssertEqual(QtcRbk.b2(60), 0.4502079, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b2(80), 0)
+        XCTAssertEqual(QtcRbk.b3(60), 0.4942118, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b3(80), 0.0004464286, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b4(60), 0, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b4(80), 0.7917742, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b5(60), 0, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b5(80), 0.2015557, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b6(60), 0, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b6(80), 0.00622369, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b7(60), 0, accuracy: delta)
+        XCTAssertEqual(QtcRbk.b7(80), 0, accuracy: delta)
+
+        // The calculations in Rabkin seem to be off by a few hundreths msec, thus the rough rounding here.
+        // Change accuracy to delta to see the difference between Rabkin results and hand calculated results.
+        XCTAssertEqual(QtcRbk.qtpRbkR(hr: 60, isFemale: false, age: 50.3), 417.7246, accuracy: veryVeryRoughDelta)
+        XCTAssertEqual(QtcRbk.qtpRbkR(hr: 80, isFemale: true, age: 70), 389.5633, accuracy: veryVeryRoughDelta)
+        XCTAssertEqual(QtcRbk.qtcRbk(qt: 405, hr: 80, isFemale: true, age: 70), 433.1613, accuracy: veryVeryRoughDelta)
+
+        // test Table 1 in https://www.sciencedirect.com/science/article/pii/S2405500X16305199?via%3Dihub#bib9
+        XCTAssertEqual(QtcRbk.qtcRbk(qt: 340, hr: 114, isFemale: true, age: 72), 419, accuracy: veryVeryRoughDelta)
+        XCTAssertEqual(QtcRbk.qtcRbk(qt: 340, hr: 114, isFemale: true), 423, accuracy: veryVeryRoughDelta)
+        var calculator = QTc.calculator(formula: .qtcBzt)
+        XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: 340, intervalRate: 114, units: .msec, intervalRateType: .rate, sex: .female, age: 72)), 469, accuracy: veryVeryRoughDelta)
+        calculator = QTc.calculator(formula: .qtcDmt)
+        XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: 340, intervalRate: 114, units: .msec, intervalRateType: .rate, sex: .female, age: 72)), 443, accuracy: veryVeryRoughDelta)
+        calculator = QTc.calculator(formula: .qtcFrd)
+        XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: 340, intervalRate: 114, units: .msec, intervalRateType: .rate, sex: .female, age: 72)), 421, accuracy: veryVeryRoughDelta)
+        calculator = QTc.calculator(formula: .qtcFrm)
+        XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: 340, intervalRate: 114, units: .msec, intervalRateType: .rate, sex: .female, age: 72)), 413, accuracy: veryVeryRoughDelta)
+        calculator = QTc.calculator(formula: .qtcHdg)
+        XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: 340, intervalRate: 114, units: .msec, intervalRateType: .rate, sex: .female, age: 72)), 434, accuracy: veryVeryRoughDelta)
+        calculator = QTc.calculator(formula: .qtcRtha)
+        XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: 340, intervalRate: 114, units: .msec, intervalRateType: .rate, sex: .female, age: 72)), 442, accuracy: veryVeryRoughDelta)
+        calculator = QTc.calculator(formula: .qtcRthb)
+        XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: 340, intervalRate: 114, units: .msec, intervalRateType: .rate, sex: .female, age: 72)), 431, accuracy: veryVeryRoughDelta)
+
+        // rates < 35 should be constant
+        XCTAssertEqual(QtcRbk.qtpRbk(hr: 34, isFemale: false), QtcRbk.qtpRbk(hr: 23, isFemale: false))
+        // rates > 156 should be constant
+        XCTAssertEqual(QtcRbk.qtpRbk(hr: 158, isFemale: true), QtcRbk.qtpRbk(hr: 177, isFemale: true))
+
+        // test formula
+        calculator = QTc.calculator(formula: .qtcRbk)
+        XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: 340, intervalRate: 114, units: .msec, intervalRateType: .rate, sex: .female, age: 72)), 419, accuracy: veryVeryRoughDelta)
+        XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: 340, intervalRate: 114, units: .msec, intervalRateType: .rate, sex: .female)), 423, accuracy: veryVeryRoughDelta)
+        XCTAssertThrowsError(try calculator.calculate(qtMeasurement: QtMeasurement(qt: 340, intervalRate: 114, units: .msec, intervalRateType: .rate)))
+        calculator = QTc.calculator(formula: .qtpRbk)
+        XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: nil, intervalRate: 60, units: .msec, intervalRateType: .rate, sex: .male, age: 50)), 417, accuracy: veryVeryRoughDelta)
+        XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: nil, intervalRate: 80, units: .msec, intervalRateType: .rate, sex: .female, age: 70)), 390, accuracy: veryVeryRoughDelta)
+    }
+
+
 }
