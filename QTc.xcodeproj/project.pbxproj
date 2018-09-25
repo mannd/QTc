@@ -14,6 +14,7 @@
 		8E7E241F2081842A00A1BE89 /* AbnormalQTc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7E241E2081842A00A1BE89 /* AbnormalQTc.swift */; };
 		8E7E24202081842A00A1BE89 /* AbnormalQTc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7E241E2081842A00A1BE89 /* AbnormalQTc.swift */; };
 		8E82609D2156E36F00D65042 /* QtcRbk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E82609C2156E36F00D65042 /* QtcRbk.swift */; };
+		8E82609E2159E56300D65042 /* QtcRbk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E82609C2156E36F00D65042 /* QtcRbk.swift */; };
 		8EE366F11F5B566A0003E5DA /* QTc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EE366E71F5B566A0003E5DA /* QTc.framework */; };
 		8EE367231F5B58C50003E5DA /* QTc.h in Headers */ = {isa = PBXBuildFile; fileRef = 8EE3671F1F5B57B20003E5DA /* QTc.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8EE367241F5B58C60003E5DA /* QTc.h in Headers */ = {isa = PBXBuildFile; fileRef = 8EE3671F1F5B57B20003E5DA /* QTc.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -297,6 +298,7 @@
 			files = (
 				8E7E24202081842A00A1BE89 /* AbnormalQTc.swift in Sources */,
 				8E61A2321F984E5F00625288 /* Formulas.swift in Sources */,
+				8E82609E2159E56300D65042 /* QtcRbk.swift in Sources */,
 				8EE367291F5B5B330003E5DA /* QTc.swift in Sources */,
 				8EFC82C8207C5CE0000C92CE /* QtMeasurement.swift in Sources */,
 			);
