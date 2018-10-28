@@ -287,6 +287,27 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           notes: "1276 healthy men, age 20-35.",
                           publicationDate: "2008",
                           numberOfSubjects: 1276),
+         .qtcRbk:
+            QTcCalculator(formula: .qtcRbk,
+                          longName: "Rabkin",
+                          shortName: "QTcRBK",
+                          reference: "Rabkin SW, Szefer E, Thompson DJS. A New QT Interval Correction Formulae to Adjust for Increases in Heart Rate. JACC: Clinical Electrophysiology. 2017;3(7):756-766. doi:10.1016/j.jacep.2016.12.005",
+                          equation: "Spline equation, see reference",
+                          baseEquation: {qtInSec, rrInSec, sex, age in
+                            // check for lack of sex and throw
+                            guard sex != .unspecified else {
+                                throw CalculationError.sexRequired
+                            }
+                            if let age = age {
+                                return QTc.msecToSec(QtcRbk.qtcRbk(qt: QTc.secToMsec(qtInSec), hr: QTc.secToBpm(rrInSec), isFemale: sex == .female ? true : false, age: Double(age)))
+                            }
+                            else {
+                                return QTc.msecToSec(QtcRbk.qtcRbk(qt: QTc.secToMsec(qtInSec), hr: QTc.secToBpm(rrInSec), isFemale: sex == .female ? true : false))
+                            }},
+                          classification: .other,
+                          notes: "13,627 ECGs with rates 40-120 from NHANES database.",
+                          publicationDate: "2017",
+                          numberOfSubjects: 13627),
          // Add new equations above
          .qtcTest:
             QTcCalculator(formula: .qtcTest,
@@ -622,6 +643,28 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                          classification: .exponential,
                          notes: "11 healthy subjects, 5 men, 6 women, age 22-26.  Rest and exercise ECGs.",
                          publicationDate: "1989",
-                         numberOfSubjects: 11)
-            ]
+                         numberOfSubjects: 11),
+         .qtpRbk:
+            QTpCalculator(formula: .qtpRbk,
+                          longName: QTc.qtcCalculator(formula: .qtcRbk).longName,
+                          shortName: QTc.qtcCalculator(formula: .qtcRbk).shortName,
+                          reference: QTc.qtcCalculator(formula: .qtcRbk).reference,
+                          equation: QTc.qtcCalculator(formula: .qtcRbk).equation,
+                          // TODO: below is fake
+                          baseEquation: {rrInSec, sex, age in
+                            // check for lack of sex and throw
+                            guard sex != .unspecified else {
+                                throw CalculationError.sexRequired
+                            }
+                            if let age = age {
+                                return QTc.msecToSec(QtcRbk.qtpRbk(hr: QTc.secToBpm(rrInSec), isFemale: sex == .female ? true : false, age: Double(age)))
+                            }
+                            else {
+                                return QTc.msecToSec(QtcRbk.qtpRbk(hr: QTc.secToBpm(rrInSec), isFemale: sex == .female ? true : false))
+                            }},
+                          classification: QTc.qtcCalculator(formula: .qtcRbk).classification,
+                          notes: QTc.qtcCalculator(formula: .qtcRbk).notes,
+                          publicationDate: QTc.qtcCalculator(formula: .qtcRbk).publicationDate,
+                          numberOfSubjects: QTc.qtcCalculator(formula: .qtcRbk).numberOfSubjects)
+    ]
 }
