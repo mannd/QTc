@@ -1,5 +1,5 @@
 ## Description
-This QTc framework includes a multitude of formulas for QTc and QTp calculation, both common and obscure.  It is intended for use in iOS and macOS programs.  It is written in Swift but can be used in Objective C projects.  This framework is free to use in your own apps and programs.  Usages include designing simple QTc calculators to medical research involving calculated QTc and QTp intervals.
+This QTc framework includes a multitude of formulas for QTc and QTp calculation, both common and obscure.  It is intended for use in iOS and macOS programs.  It is written in Swift but can be used in Objective C projects.  This framework is free to use in your own apps and programs.  Usages include designing simple QTc calculators to medical research involving calculated QTc and QTp intervals.  For more background on this project, see the blog post [Hacking the QTc](https://www.epstudiossoftware.com/hacking-the-qtc/).
 
 ## Installation
 Use Cocoapods to install the framwork.  After installing Cocoapods (see the [Cocoapods site](https://cocoapods.org) for how to do that), add a Podfile like this to the top level directory of your project:
@@ -17,7 +17,7 @@ Use Cocoapods to install the framwork.  After installing Cocoapods (see the [Coc
 		pod 'QTc'
 	end
 
-The QTc framework is available at cocoapods.org.  Inserting `pod 'QTc'` into your Podfile as above will use the version of QTc at cocoapods.org.  If you wish the latest version use the `pod 'QTc', :git => 'https://github.com/mannd/QTc.git', :branch => 'master'` line instead.  The QTc framework as of version 3.3 uses Swift 4.2.  For more details visit [cocoapods.org](https://cocoapods.org).
+The QTc framework is available at cocoapods.org.  Inserting `pod 'QTc'` into your Podfile as above will use the version of QTc at cocoapods.org.  If you wish to use the latest version use the `pod 'QTc', :git => 'https://github.com/mannd/QTc.git', :branch => 'master'` line instead.  The QTc framework as of version 3.3 uses Swift 4.2.  For more details visit [cocoapods.org](https://cocoapods.org).
 
 Install the pod by running from the command line within your project directory:
 

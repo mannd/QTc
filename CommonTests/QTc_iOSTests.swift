@@ -833,6 +833,4 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: nil, intervalRate: 60, units: .msec, intervalRateType: .rate, sex: .male, age: 50)), 418, accuracy: veryRoughDelta)
         XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: nil, intervalRate: 80, units: .msec, intervalRateType: .rate, sex: .female, age: 70)), 389, accuracy: veryRoughDelta)
     }
-
-
 }
