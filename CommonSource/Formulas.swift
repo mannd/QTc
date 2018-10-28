@@ -647,7 +647,7 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
          .qtpRbk:
             QTpCalculator(formula: .qtpRbk,
                           longName: QTc.qtcCalculator(formula: .qtcRbk).longName,
-                          shortName: QTc.qtcCalculator(formula: .qtcRbk).shortName,
+                          shortName: "QTpRBK",
                           reference: QTc.qtcCalculator(formula: .qtcRbk).reference,
                           equation: QTc.qtcCalculator(formula: .qtcRbk).equation,
                           // TODO: below is fake
