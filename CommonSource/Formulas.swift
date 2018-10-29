@@ -650,7 +650,6 @@ struct Formulas: QTcFormulaSource, QTpFormulaSource {
                           shortName: "QTpRBK",
                           reference: QTc.qtcCalculator(formula: .qtcRbk).reference,
                           equation: QTc.qtcCalculator(formula: .qtcRbk).equation,
-                          // TODO: below is fake
                           baseEquation: {rrInSec, sex, age in
                             // check for lack of sex and throw
                             guard sex != .unspecified else {

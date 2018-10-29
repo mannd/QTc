@@ -11,8 +11,18 @@ import XCTest
 
 class QTc_iOSTests: XCTestCase {
     // Add formulas to these arrays as they are created
-    let qtcFormulas: [Formula] = [.qtcBzt, .qtcArr, .qtcDmt, .qtcFrd, .qtcFrm, .qtcHdg, .qtcKwt, .qtcMyd, .qtcYos]
-    let qtpFormulas: [Formula] = [.qtpArr]
+    let qtcFormulas: [Formula] = [.qtcBzt, .qtcArr, .qtcDmt,
+                                  .qtcFrd, .qtcFrm, .qtcHdg,
+                                  .qtcKwt, .qtcMyd, .qtcYos,
+                                  .qtcRtha, .qtcRthb, .qtcArr,
+                                  .qtcKwt, .qtcDmt, 
+                                  .qtcAdm, .qtcGot, .qtcRbk]
+    let qtpFormulas: [Formula] = [.qtpArr, .qtpBzt, .qtpFrd, .qtpBdl,
+                                  .qtpAsh, .qtpHdg, .qtpMyd, .qtpKrj,
+                                  .qtpSch, .qtpAdm, .qtpSmn, .qtpKwt,
+                                  .qtpScl,.qtpMrr, .qtpHgg, .qtpGot,
+                                  .qtpKlg, .qtpShp, .qtpWhl, .qtpSrm,
+                                  .qtpLcc, .qtpRbk]
     // Accuracy for all non-integral measurements
     let delta = 0.0000001
     let roughDelta = 0.1
@@ -345,13 +355,6 @@ class QTc_iOSTests: XCTestCase {
         XCTAssertEqual(qtpTest.equation, "TestEquation")
         XCTAssertEqual(qtpTest.publicationDate, nil)
         XCTAssertEqual(try! qtpTest.calculate(rrInSec: 5), 25)
-    }
-    
-    func testShortNames() {
-        let qtcBzt = QTc.qtcCalculator(formula: .qtcBzt)
-        let qtpArr = QTc.qtpCalculator(formula: .qtpArr)
-        XCTAssertEqual(qtcBzt.shortName, "QTcBZT")
-        XCTAssertEqual(qtpArr.shortName, "QTpARR")
     }
     
     func testSexFormulas() {
@@ -832,5 +835,14 @@ class QTc_iOSTests: XCTestCase {
         calculator = QTc.calculator(formula: .qtpRbk)
         XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: nil, intervalRate: 60, units: .msec, intervalRateType: .rate, sex: .male, age: 50)), 418, accuracy: veryRoughDelta)
         XCTAssertEqual(try calculator.calculate(qtMeasurement: QtMeasurement(qt: nil, intervalRate: 80, units: .msec, intervalRateType: .rate, sex: .female, age: 70)), 389, accuracy: veryRoughDelta)
+    }
+
+    func testShortNames() {
+        for formula in qtcFormulas {
+            XCTAssertEqual(QTc.qtcCalculator(formula: formula).shortName.prefix(3), "QTc")
+        }
+        for formula in qtpFormulas {
+            XCTAssertEqual(QTc.qtpCalculator(formula: formula).shortName.prefix(3), "QTp")
+        }
     }
 }
