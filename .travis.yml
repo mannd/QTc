@@ -1,0 +1,6 @@
+os: osx
+language: swift
+osx_image: xcode10.1
+xcode_project: QTc.xcworkspace
+xcode_scheme: QTc
+xcode_destination: platform=macOS
