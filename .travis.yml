@@ -1,6 +1,6 @@
 os: osx
 language: swift
-osx_image: xcode10.1
+osx_image: xcode10.2
 xcode_project: QTc.xcodeproj
 xcode_scheme: QTc_iOS
 xcode_destination: platform=iOS Simulator,OS=12.1,name=iPhone XR
